@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import Redirect from "../views/Redirect.vue";
 
 Vue.use(VueRouter);
 
@@ -18,10 +19,16 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () =>
             import(/* webpackChunkName: "about" */ "../views/Dashboard.vue")
+    },
+    {
+        path: "/redirect",
+        name: "redirect",
+        component: Redirect
     }
 ];
 
 const router = new VueRouter({
+    mode: "history",
     routes
 });
 

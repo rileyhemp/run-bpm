@@ -1,7 +1,7 @@
 <template>
-    <div class="home">
-        <spotify-login />
-    </div>
+  <div class="home">
+    <spotify-login />
+  </div>
 </template>
 
 <script>
@@ -9,9 +9,9 @@
 import SpotifyLogin from "@/components/SpotifyLogin.vue";
 
 export default {
-    name: "home",
-    components: {
-        "spotify-login": SpotifyLogin
-    }
+  name: "home",
+  components: {
+    "spotify-login": SpotifyLogin
+  }
 };
 </script>
