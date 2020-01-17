@@ -12,23 +12,9 @@ export default {
 			userPlaylists: Object
 		};
 	},
-	methods: {
-		call(method, query, options) {
-			return this.$http
-				.get("http://localhost:3000/api", {
-					params: {
-						method: method,
-						query: query,
-						options: options
-					}
-				})
-				.then(function(data) {
-					return data.data;
-				});
-		}
-	},
 	mounted: async function() {
 		this.userData = await this.call("getMe");
+		this.userPlaylists = await this.call("getUserPlaylists");
 	}
 };
 </script>
