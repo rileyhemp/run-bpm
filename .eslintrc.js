@@ -1,26 +1,25 @@
 module.exports = {
-  root: true,
+	root: true,
 
-  env: {
-    node: true
-  },
+	env: {
+		node: true
+	},
 
-  extends: ["plugin:vue/essential", "@vue/prettier"],
+	extends: ["plugin:vue/essential", "@vue/prettier"],
 
-  rules: {
-    'no-console': 'off',
-    'no-debugger': 'off',
-    'vue/array-bracket-spacing': 'warning',
-    'vue/arrow-spacing': 'warning',
-    'vue/eqeqeq': 'warning'
-  },
+	rules: {
+		"prettier/prettier": {
+			"tabs": true,
+		},
+		"no-console": "off",
+		"no-debugger": "off",
+		"vue/array-bracket-spacing": "warning",
+		"vue/arrow-spacing": "warning",
+		"vue/eqeqeq": "warning",
+		"indent": ["error", "tab"]
+	},
 
-  parserOptions: {
-    parser: 'babel-eslint'
-  },
-
-  'extends': [
-    'plugin:vue/recommended',
-    '@vue/prettier'
-  ]
+	parserOptions: {
+		parser: "babel-eslint"
+	}
 };

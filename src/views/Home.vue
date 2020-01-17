@@ -1,17 +1,26 @@
 <template>
-  <div class="home">
-    <spotify-login />
-  </div>
+	<div class="home"></div>
 </template>
 
 <script>
-// @ is an alias to /src
-import SpotifyLogin from "@/components/SpotifyLogin.vue";
+// import jwt from "jsonwebtoken";
+
+// const token = jwt.sign({ username: "rileyhemp" }, "shhhh");
 
 export default {
-  name: "home",
-  components: {
-    "spotify-login": SpotifyLogin
-  }
+	name: "Home",
+	mounted: function() {
+		if (window.localStorage.RunBPM !== undefined) {
+			this.$http
+				.get(
+					`http://localhost:3000/validate-user?${window.localStorage.RunBPM}`
+				)
+				.then(() => {
+					this.$router.push("dashboard");
+				});
+		} else {
+			this.$router.push("connect");
+		}
+	}
 };
 </script>
