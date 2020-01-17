@@ -42,6 +42,22 @@ app.get("/validate-user", function (req, res) {
 	res.send('ok')
 })
 
+app.get("/api", function (req, res) {
+	let
+		method = req.query.method,
+		query = req.query.query,
+		options = req.query.options
+
+	spotifyApi[method](query, JSON.parse(options)).then(function (data) {
+		res.send(data.body)
+	})
+})
+
+
+
+
+
+
 app.listen(3000, function () {
 	console.log("Listening on port 3000");
 });
