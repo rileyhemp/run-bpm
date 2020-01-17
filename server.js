@@ -45,8 +45,8 @@ app.get("/validate-user", function (req, res) {
 app.get("/api", function (req, res) {
 	let
 		method = req.query.method,
-		query = req.query.query,
-		options = req.query.options
+		query = req.query.query || null,
+		options = req.query.options || null
 
 	spotifyApi[method](query, JSON.parse(options)).then(function (data) {
 		res.send(data.body)

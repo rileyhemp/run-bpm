@@ -1,6 +1,6 @@
 <template>
 	<div class="dashboard">
-		<h1>Dashboard</h1>
+		<h1>Hello {{this.userData.display_name}}!</h1>
 	</div>
 </template>
 
@@ -8,21 +8,27 @@
 export default {
 	data: function() {
 		return {
-			spotifyApi: Object
+			userData: Object,
+			userPlaylists: Object
 		};
+	},
+	methods: {
+		call(method, query, options) {
+			return this.$http
+				.get("http://localhost:3000/api", {
+					params: {
+						method: method,
+						query: query,
+						options: options
+					}
+				})
+				.then(function(data) {
+					return data.data;
+				});
+		}
+	},
+	mounted: async function() {
+		this.userData = await this.call("getMe");
 	}
-	// mounted: function() {
-	// 	this.$http
-	// 		.get("http://localhost:3000/api", {
-	// 			params: {
-	// 				method: "getArtistAlbums",
-	// 				query: "43ZHCT0cAZBISjO8DG9PnE",
-	// 				options: { limit: 10, offset: 20 }
-	// 			}
-	// 		})
-	// 		.then(function(data) {
-	// 			console.log(data);
-	// 		});
-	// }
 };
 </script>
