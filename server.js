@@ -8,7 +8,7 @@ const credentials = {
 	clientSecret: "515a0f00287745c19c006ce63af4d7b6",
 	redirectUri: "http://localhost:8080/redirect"
 };
-const scopes = ["user-read-private", "user-read-email"];
+const scopes = ["user-read-private", "user-read-email", "playlist-read-private"];
 
 const spotifyApi = new SpotifyWebApi(credentials);
 
@@ -29,7 +29,8 @@ app.get("/get-auth-url", function (req, res) {
 
 app.get("/authorize", function (req, res) {
 	spotifyApi.authorizationCodeGrant(req.query.code).then(function (data) {
-		registerUserForSession(data.body)
+		spotifyApi.setAccessToken(data["access_token"]);
+		spotifyApi.setRefreshToken(data["refresh_token"]);
 		res.send(jwt.sign(data.body, credentials.clientSecret))
 	}).catch(function (err) {
 		res.send(err)
@@ -38,8 +39,14 @@ app.get("/authorize", function (req, res) {
 
 app.get("/validate-user", function (req, res) {
 	let token = jwt.verify(req.originalUrl.split('?')[1], credentials.clientSecret)
-	registerUserForSession(token)
-	res.send('ok')
+	spotifyApi.setAccessToken(token["access_token"]);
+	spotifyApi.setRefreshToken(token["refresh_token"]);
+	spotifyApi.refreshAccessToken().then(function (data) {
+		spotifyApi.setAccessToken(data.body['access_token'])
+		res.send('ok')
+	}).catch(function (err) {
+		res.send(err)
+	})
 })
 
 app.get("/api", function (req, res) {
@@ -50,6 +57,8 @@ app.get("/api", function (req, res) {
 
 	spotifyApi[method](query, JSON.parse(options)).then(function (data) {
 		res.send(data.body)
+	}).catch(function (err) {
+		res.send(err)
 	})
 })
 
@@ -62,10 +71,7 @@ app.listen(3000, function () {
 	console.log("Listening on port 3000");
 });
 
-function registerUserForSession(data) {
-	spotifyApi.setAccessToken(data["access_token"]);
-	spotifyApi.setRefreshToken(data["refresh_token"]);
-};
+
 
 
 

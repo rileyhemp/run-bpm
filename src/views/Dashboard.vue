@@ -1,6 +1,7 @@
 <template>
 	<div class="dashboard">
 		<h1>Hello {{this.userData.display_name}}!</h1>
+		<van-button type="primary">Default</van-button>
 	</div>
 </template>
 
@@ -14,7 +15,10 @@ export default {
 	},
 	mounted: async function() {
 		this.userData = await this.call("getMe");
-		this.userPlaylists = await this.call("getUserPlaylists");
+		this.userPlaylists = await this.call(
+			"getUserPlaylists",
+			this.userData.id
+		);
 	}
 };
 </script>
