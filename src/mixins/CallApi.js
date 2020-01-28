@@ -1,6 +1,6 @@
 export default {
 	methods: {
-		call(method, query, options) {
+		callSpotifyApi(method, query, options) {
 			return this.$http
 				.get("http://localhost:3000/api", {
 					params: {

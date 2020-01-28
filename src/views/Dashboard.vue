@@ -1,8 +1,5 @@
 <template>
-	<div class="dashboard">
-		<h1>Hello {{this.userData.display_name}}!</h1>
-		<van-button type="primary">Default</van-button>
-	</div>
+	<div class="dashboard"></div>
 </template>
 
 <script>
@@ -10,12 +7,13 @@ export default {
 	data: function() {
 		return {
 			userData: Object,
-			userPlaylists: Object
+			userPlaylists: Object,
+			playlistThumbs: Array
 		};
 	},
 	mounted: async function() {
-		this.userData = await this.call("getMe");
-		this.userPlaylists = await this.call(
+		this.userData = await this.callSpotifyApi("getMe");
+		this.userPlaylists = await this.callSpotifyApi(
 			"getUserPlaylists",
 			this.userData.id
 		);

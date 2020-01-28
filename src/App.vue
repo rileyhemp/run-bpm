@@ -6,6 +6,6 @@
 
 <style lang="scss">
 body {
-	margin: 16px;
+	margin: 16px !important;
 }
 </style>
