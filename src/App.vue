@@ -1,11 +1,14 @@
 <template>
-	<div id="app">
+	<v-app>
 		<router-view />
-	</div>
+	</v-app>
 </template>
 
-<style lang="scss">
-body {
-	margin: 16px !important;
-}
-</style>
+<script>
+export default {
+	name: "App",
+	data: () => ({
+		//
+	})
+};
+</script>

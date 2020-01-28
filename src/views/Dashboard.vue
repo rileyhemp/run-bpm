@@ -1,9 +1,16 @@
 <template>
-	<div class="dashboard"></div>
+	<div class="dashboard">
+		<bpm-header pageTitle="Dashbaord" :user="this.userData" />
+	</div>
 </template>
 
 <script>
+import Header from "../components/Header";
 export default {
+	name: "Dashboard",
+	components: {
+		"bpm-header": Header
+	},
 	data: function() {
 		return {
 			userData: Object,
