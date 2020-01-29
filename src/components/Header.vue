@@ -1,8 +1,8 @@
 <template>
-	<v-app-bar>
+	<v-app-bar flat>
 		<v-toolbar-title>{{pageTitle}}</v-toolbar-title>
-		<v-spacer></v-spacer>
-		<user-profile />
+		<v-spacer />
+		<user-profile v-bind="$attrs" />
 	</v-app-bar>
 </template>
 
