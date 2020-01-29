@@ -12,17 +12,17 @@ Vue.use(VueRouter);
 const routes = [
 	{
 		path: "/",
-		name: "Authentication",
+		name: "authentication",
 		component: Authentication
 	},
 	{
 		path: "/connect",
-		name: "Connect",
+		name: "connect",
 		component: Connect
 	},
 	{
 		path: "/redirect",
-		name: "Redirect",
+		name: "redirect",
 		component: Redirect
 	},
 	{
