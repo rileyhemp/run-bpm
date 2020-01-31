@@ -5,6 +5,7 @@ import Redirect from "../views/Redirect.vue";
 import Connect from "../views/Connect.vue";
 import Dashboard from "../views/Dashboard.vue";
 import ImportVue from "../components/Import.vue";
+import CreateVue from "../components/CreatePlaylist.vue"
 import GeneratedPlaylistsVue from '../components/GeneratedPlaylists'
 
 Vue.use(VueRouter);
@@ -38,6 +39,11 @@ const routes = [
 				path: '/import',
 				name: 'Import',
 				component: ImportVue
+			},
+			{
+				path: '/create',
+				name: 'Create',
+				component: CreateVue
 			}
 		]
 	},

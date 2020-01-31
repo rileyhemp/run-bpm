@@ -18,6 +18,11 @@ export default {
 			userPlaylists: Object
 		};
 	},
+	methods: {
+		getPlaylists(data) {
+			console.log("abc", data);
+		}
+	},
 	mounted: async function() {
 		this.userData = await this.callSpotifyApi("getMe");
 		this.userPlaylists = await this.callSpotifyApi(
