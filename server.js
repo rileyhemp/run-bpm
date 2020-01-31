@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
+const _ = require("lodash")
 
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
@@ -62,7 +63,56 @@ app.get("/api", function (req, res) {
 	})
 })
 
+app.get("/get-audio-features", async function (req, res) {
+	let playlists = [
+		'1NTVwBdECVO40r5wiOErrq',
+		'0kLOv8Jr3ZgyMPxzWIjJHY',
+		'0ALMWejRHRzrdWRabpujpP'
+	]
 
+	getTrackIDs(function (tracks) {
+		const IDs = []
+		tracks.forEach(track => {
+			IDs.push(track.track.id)
+		})
+		return IDs
+	})
+
+	function getTrackIDs(callback) {
+		const playlistDetails = []
+		//Call the spotify API and add playlist tracks to array
+		for (let i = 0; i < playlists.length; i++) {
+			spotifyApi.getPlaylistTracks(playlists[i]).then(function (data) {
+				playlistDetails.push(data.body.items)
+			}).catch(function (err) { console.log(err) })
+		}
+		//Use an interval to check completion of the asyncrouns api calls
+		let i = setInterval(function () {
+			if (playlistDetails.length === playlists.length) {
+				clearInterval(i)
+				//Return just the track details
+				callback(_.flatten(playlistDetails))
+			}
+		})
+	}
+
+
+
+
+	// let test123 = await Promise.all(playlistDetails)
+	// console.log(test123)
+
+	// const resolvedDetails = await Promise.all(playlistDetails)
+	// console.log(playlistDetails)
+	// playlists.forEach((playlist) => {
+	// 	playlistDetails.push(spotifyApi.getPlaylistTracks(playlist).then((data) => {
+	// 		return data.body
+	// 	})
+	// 	).catch((err) => { console.log(err) })
+	// })
+	// const resolvedPlaylistDetails = await Promise.all(playlistDetails);
+
+})
 
 
 

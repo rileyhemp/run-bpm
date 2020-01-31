@@ -11,7 +11,15 @@ export default {
 		};
 	},
 	mounted: function() {
-		console.log(this.$route.params.playlists);
+		this.$http
+			.get("http://localhost:3000/get-audio-features", {
+				params: {
+					playlists: this.$route.params.playlists
+				}
+			})
+			.then(function(data) {
+				console.log(data);
+			});
 	}
 };
 </script>
