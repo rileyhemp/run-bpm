@@ -9,11 +9,15 @@ const credentials = {
 	clientSecret: "515a0f00287745c19c006ce63af4d7b6",
 	redirectUri: "http://localhost:8080/redirect"
 };
-const scopes = ["user-read-private", "user-read-email", "playlist-read-private"];
+const scopes = [
+	"user-read-private",
+	"user-read-email",
+	"playlist-read-private",
+	"playlist-modify-public",
+	"playlist-modify-private"
+];
 
 const spotifyApi = new SpotifyWebApi(credentials);
-
-const authorizeURL = spotifyApi.createAuthorizeURL(scopes);
 
 const allowCrossDomain = function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
@@ -25,7 +29,8 @@ const allowCrossDomain = function (req, res, next) {
 app.use(allowCrossDomain);
 
 app.get("/get-auth-url", function (req, res) {
-	res.send(authorizeURL);
+	let authURL = spotifyApi.createAuthorizeURL(scopes)
+	res.send(authURL)
 });
 
 app.get("/authorize", function (req, res) {
@@ -50,20 +55,73 @@ app.get("/validate-user", function (req, res) {
 	})
 })
 
-app.get("/api", function (req, res) {
-	let
-		method = req.query.method,
-		query = req.query.query || null,
-		options = req.query.options || null
-
-	spotifyApi[method](query, JSON.parse(options)).then(function (data) {
-		res.send(data.body)
-	}).catch(function (err) {
+app.get("/get-user-data", function (req, res) {
+	let userData
+	let userPlaylists
+	spotifyApi.getMe().then(data => {
+		userData = data.body
+	}).then(() => {
+		spotifyApi.getUserPlaylists(userData.id).then(data => {
+			userPlaylists = data.body
+			res.send({
+				userData: userData,
+				userPlaylists: userPlaylists
+			})
+		})
+	}).catch(err => {
 		res.send(err)
 	})
 })
 
-app.get("/get-audio-features", async function (req, res) {
+
+app.get('/initialize-create-page', (req, res) => {
+	let playlists = [
+		'1NTVwBdECVO40r5wiOErrq',
+		'0kLOv8Jr3ZgyMPxzWIjJHY',
+		'0ALMWejRHRzrdWRabpujpP'
+	]
+	let trackIDs
+	getPlaylistDetails(playlists).then(details => {
+		trackIDs = getTrackIDs(details)
+	}).catch(err => {
+		console.log(err)
+	})
+})
+
+function getPlaylistDetails(playlists) {
+	const playlistDetails = []
+
+	return new Promise((resolve, reject) => {
+
+		for (let i = 0; i < playlists.length; i++) {
+			playlistDetails.push(new Promise((resolve, reject) => {
+				spotifyApi.getPlaylistTracks(playlists[i]).then(function (data) {
+					resolve(data.body.items)
+				}).catch(function (err) { reject(err) })
+			}))
+		}
+
+		Promise.all(playlistDetails).then(data => {
+			resolve(_.flatten(data))
+		}).catch(err => {
+			reject(err)
+		})
+	})
+}
+
+function getTrackIDs(details) {
+	const trackIDs = []
+	details.forEach(track => {
+		trackIDs.push(track.track.id)
+	})
+	return trackIDs
+}
+
+
+
+
+
+app.get("/get-track-ids", function (req, res) {
 	let playlists = [
 		'1NTVwBdECVO40r5wiOErrq',
 		'0kLOv8Jr3ZgyMPxzWIjJHY',
@@ -82,16 +140,26 @@ app.get("/get-audio-features", async function (req, res) {
 	}
 
 	Promise.all(playlistDetails).then((data) => {
-
 		_.flatten(data).forEach(track => {
-			trackIDs.IDs.push(track.track.id)
+			trackIDs.push(track.track.id)
 		})
-		console.log(trackIDs)
+		res.send(trackIDs)
 	})
 })
 
+app.get('/create-playlist', function (req, res) {
+	let playlistID = new Date().getTime()
+	spotifyApi.createPlaylist(req.query.user, playlistID, { public: false }).then(data => {
+		console.log(data)
+	}).catch(err => {
+		console.log(err)
+	})
+	res.send(req.query.tracks)
+})
 
-
+app.get('/get-audio-features', function (req, res) {
+	res.send(req.query)
+})
 
 app.listen(3000, function () {
 	console.log("Listening on port 3000");

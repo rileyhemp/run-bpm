@@ -38,46 +38,22 @@ export default {
 				this.selectedPlaylists.splice(playlistIndex, 1);
 			} else this.selectedPlaylists.push(playlist);
 		}
-		// getSongData() {
-		// 	this.loading = true;
-		// 	let playlists = this.getPlaylistDetails();
-		// 	//Wait until playlist details populate, then get track details from ids.
-		// 	let i = setInterval(() => {
-		// 		if (playlists.length === this.selected.length) {
-		// 			this.getTrackDetails(this.getTrackIDs(playlists));
-		// 			clearInterval(i);
-		// 		}
-		// 	}, 25);
-		// },
-		// getTrackIDs(playlists) {
-		// 	//extract the track ids from the playlist details
-		// 	let trackIDs = [];
-		// 	playlists.forEach(playlist =>
-		// 		playlist.forEach(track => trackIDs.push(track.track.id))
-		// 	);
-		// 	return trackIDs;
-		// },
-		// getPlaylistDetails() {
-		// 	let allTracks = [];
-		// 	this.selected.forEach(async el => {
-		// 		let tracks = await this.callSpotifyApi("getPlaylistTracks", el);
-		// 		allTracks.push(tracks.items);
-		// 	});
-		// 	return allTracks;
-		// },
-		// async getTrackDetails(tracks) {
-		// 	let chunkedArrays = _.chunk(tracks, 50);
-		// 	let allDetails = [];
-		// 	chunkedArrays.forEach(async arr => {
-		// 		let details = await this.callSpotifyApi(
-		// 			"getAudioFeaturesForTracks",
-		// 			arr
-		// 		);
-		// 		allDetails.push(details);
-		// 		this.trackDetails = _.flatten(allDetails);
-		// 		_.flatten(this.trackDetails);
-		// 	});
-		// }
+	},
+	mounted() {
+		if (window.localStorage.RunBPM !== undefined) {
+			this.$http
+				.get(
+					`http://localhost:3000/validate-user?${window.localStorage.RunBPM}`
+				)
+				.then(() => {
+					console.log("user is authenticated");
+				})
+				.catch(function(err) {
+					console.log(err);
+				});
+		} else {
+			this.$router.push("connect");
+		}
 	}
 };
 //

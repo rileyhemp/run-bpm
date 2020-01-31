@@ -17,6 +17,9 @@ export default {
 				)
 				.then(() => {
 					this.$router.push("dashboard");
+				})
+				.catch(function(err) {
+					console.log(err);
 				});
 		} else {
 			this.$router.push("connect");

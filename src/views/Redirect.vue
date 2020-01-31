@@ -12,6 +12,9 @@ export default {
 			.then(data => {
 				window.localStorage.RunBPM = data.data;
 				this.$router.push("dashboard");
+			})
+			.catch(function(err) {
+				console.log(err);
 			});
 	}
 };
