@@ -70,48 +70,24 @@ app.get("/get-audio-features", async function (req, res) {
 		'0ALMWejRHRzrdWRabpujpP'
 	]
 
-	getTrackIDs(function (tracks) {
-		const IDs = []
-		tracks.forEach(track => {
-			IDs.push(track.track.id)
-		})
-		return IDs
-	})
+	const playlistDetails = []
+	const trackIDs = []
 
-	function getTrackIDs(callback) {
-		const playlistDetails = []
-		//Call the spotify API and add playlist tracks to array
-		for (let i = 0; i < playlists.length; i++) {
+	for (let i = 0; i < playlists.length; i++) {
+		playlistDetails.push(new Promise((resolve, reject) => {
 			spotifyApi.getPlaylistTracks(playlists[i]).then(function (data) {
-				playlistDetails.push(data.body.items)
-			}).catch(function (err) { console.log(err) })
-		}
-		//Use an interval to check completion of the asyncrouns api calls
-		let i = setInterval(function () {
-			if (playlistDetails.length === playlists.length) {
-				clearInterval(i)
-				//Return just the track details
-				callback(_.flatten(playlistDetails))
-			}
-		})
+				resolve(data.body.items)
+			}).catch(function (err) { reject(err) })
+		}))
 	}
 
+	Promise.all(playlistDetails).then((data) => {
 
-
-
-	// let test123 = await Promise.all(playlistDetails)
-	// console.log(test123)
-
-	// const resolvedDetails = await Promise.all(playlistDetails)
-	// console.log(playlistDetails)
-	// playlists.forEach((playlist) => {
-	// 	playlistDetails.push(spotifyApi.getPlaylistTracks(playlist).then((data) => {
-	// 		return data.body
-	// 	})
-	// 	).catch((err) => { console.log(err) })
-	// })
-	// const resolvedPlaylistDetails = await Promise.all(playlistDetails);
-
+		_.flatten(data).forEach(track => {
+			trackIDs.IDs.push(track.track.id)
+		})
+		console.log(trackIDs)
+	})
 })
 
 
