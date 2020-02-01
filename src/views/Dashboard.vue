@@ -1,7 +1,7 @@
 <template>
 	<div class="dashboard">
 		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" />
-		<router-view :playlists="this.userPlaylists" :user="this.userData" />
+		<router-view :playlists="this.userPlaylists" :user="this.userData" v-bind="$attrs" />
 	</div>
 </template>
 
@@ -30,6 +30,7 @@ export default {
 				.catch(err => console.log(err));
 		}
 	},
+	//create user is authenticated function
 	mounted: function() {
 		if (window.localStorage.RunBPM !== undefined) {
 			this.$http

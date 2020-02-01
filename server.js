@@ -27,6 +27,7 @@ const allowCrossDomain = function (req, res, next) {
 };
 
 app.use(allowCrossDomain);
+app.use(express.json())
 
 app.get("/get-auth-url", function (req, res) {
 	let authURL = spotifyApi.createAuthorizeURL(scopes)
@@ -74,21 +75,22 @@ app.get("/get-user-data", function (req, res) {
 })
 
 
-app.get('/analyze-selected', (req, res) => {
-	let playlists = [
-		'1NTVwBdECVO40r5wiOErrq',
-	]
-	// getAudioFeaturesFromPlaylists().then(data => res.send(data))
-	getPlaylistDetails(playlists).then(details => {
-		spotifyApi.getAudioFeaturesForTracks(getTrackIDs(details)).then(data => {
-			res.send(data)
+app.post('/analyze-selected', (req, res) => {
+	getPlaylistDetails(req.body.data.playlists).then(details => {
+		const trackIDs = _.chunk(getTrackIDs(details), 100)
+		const trackDetails = []
+		for (let i = 0; i < trackIDs.length; i++) {
+			trackDetails.push(new Promise((resolve, reject) => {
+				spotifyApi.getAudioFeaturesForTracks(trackIDs[i]).then(data => {
+					resolve(data.body.audio_features)
+				}).catch(err => reject(err))
+			}))
+		}
+		Promise.all(trackDetails).then(data => {
+			res.send(_.flatten(data))
 		}).catch(err => res.send(err))
-	}).catch(err => res.send(err))
+	})
 })
-
-// getAudioFeaturesFromSelection(req.query.userID, getTrackURIs(details), getTrackIDs(details)).then(data => {
-// 	res.send(data)
-// }).catch(err => console.log(err))
 
 
 // let playlistName = new Date().getTime()

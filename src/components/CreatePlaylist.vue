@@ -57,10 +57,9 @@ export default {
 	// },
 	mounted: function() {
 		this.$http
-			.get("http://localhost:3000/initialize-create-page", {
-				params: {
-					playlists: null,
-					userID: this.$attrs.user.id
+			.post("http://localhost:3000/analyze-selected", {
+				data: {
+					playlists: this.$route.params.playlists
 				}
 			})
 			.then(response => {

@@ -37,6 +37,7 @@ export default {
 			if (playlistIndex != -1) {
 				this.selectedPlaylists.splice(playlistIndex, 1);
 			} else this.selectedPlaylists.push(playlist);
+			this.$attrs.selectedPlaylists = this.selectedPlaylists;
 		}
 	},
 	mounted() {
