@@ -74,10 +74,9 @@ app.get("/get-user-data", function (req, res) {
 	})
 })
 
-
 app.post('/analyze-selected', (req, res) => {
 	getPlaylistDetails(req.body.data.playlists).then(details => {
-		const trackIDs = _.chunk(getTrackIDs(details), 100)
+		const trackIDs = _.chunk(getIDsFromDetails(details), 100)
 		const trackDetails = []
 		for (let i = 0; i < trackIDs.length; i++) {
 			trackDetails.push(new Promise((resolve, reject) => {
@@ -92,17 +91,19 @@ app.post('/analyze-selected', (req, res) => {
 	})
 })
 
-
-// let playlistName = new Date().getTime()
-// spotifyApi.createPlaylist(userID, playlistName).then(data => {
-// 	spotifyApi.addTracksToPlaylist(data.body.id, trackURIs).then(data => {
-// 	}).catch(err => reject(err))
-// }).catch(err => reject(err))
+function createPlaylistFromTracks(userID, tracks) {
+	let playlistName = new Date().getTime()
+	return new Promise((resolve, reject) => {
+		spotifyApi.createPlaylist(userID, playlistName).then(data => {
+			spotifyApi.addTracksToPlaylist(userID, tracks).then(data => {
+				resolve(data)
+			}).catch(err => reject(err))
+		}).catch(err => reject(err))
+	})
+}
 function getPlaylistDetails(playlists) {
 	const playlistDetails = []
-
 	return new Promise((resolve, reject) => {
-
 		for (let i = 0; i < playlists.length; i++) {
 			playlistDetails.push(new Promise((resolve, reject) => {
 				spotifyApi.getPlaylistTracks(playlists[i]).then(function (data) {
@@ -110,14 +111,13 @@ function getPlaylistDetails(playlists) {
 				}).catch(err => reject(err))
 			}))
 		}
-
 		Promise.all(playlistDetails).then(data => {
 			resolve(_.flatten(data))
 		}).catch(err => reject(err))
 	})
 }
 
-function getTrackIDs(details) {
+function getIDsFromDetails(details, type) {
 	const trackIDs = []
 	details.forEach(track => {
 		trackIDs.push(track.track.id)
@@ -125,54 +125,13 @@ function getTrackIDs(details) {
 	return trackIDs
 }
 
-function getTrackURIs(details) {
+function getURIsFromIDs(IDs) {
 	const trackURIs = []
-	details.forEach(track => {
-		trackURIs.push(track.track.uri)
+	IDs.forEach(ID => {
+		trackURIs.push('spotify:track:' + ID)
 	})
 	return trackURIs
 }
-
-
-// app.get("/get-track-ids", function (req, res) {
-// 	let playlists = [
-// 		'1NTVwBdECVO40r5wiOErrq',
-// 		'0kLOv8Jr3ZgyMPxzWIjJHY',
-// 		'0ALMWejRHRzrdWRabpujpP'
-// 	]
-
-// 	const playlistDetails = []
-// 	const trackIDs = []
-
-// 	for (let i = 0; i < playlists.length; i++) {
-// 		playlistDetails.push(new Promise((resolve, reject) => {
-// 			spotifyApi.getPlaylistTracks(playlists[i]).then(function (data) {
-// 				resolve(data.body.items)
-// 			}).catch(function (err) { reject(err) })
-// 		}))
-// 	}
-
-// 	Promise.all(playlistDetails).then((data) => {
-// 		_.flatten(data).forEach(track => {
-// 			trackIDs.push(track.track.id)
-// 		})
-// 		res.send(trackIDs)
-// 	})
-// })
-
-// app.get('/create-playlist', function (req, res) {
-// 	let playlistID = new Date().getTime()
-// 	spotifyApi.createPlaylist(req.query.user, playlistID, { public: false }).then(data => {
-// 		console.log(data)
-// 	}).catch(err => {
-// 		console.log(err)
-// 	})
-// 	res.send(req.query.tracks)
-// })
-
-// app.get('/get-audio-features', function (req, res) {
-// 	res.send(req.query)
-// })
 
 app.listen(3000, function () {
 	console.log("Listening on port 3000");
