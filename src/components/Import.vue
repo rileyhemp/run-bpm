@@ -5,6 +5,7 @@
 			<v-spacer />
 			<v-btn
 				color="primary"
+				:disabled="isDisabled"
 				:to="{ name: 'Create', params: { playlists: this.selectedPlaylists }}"
 			>Continue</v-btn>
 		</v-row>
@@ -31,6 +32,11 @@ export default {
 			selectedPlaylists: []
 		};
 	},
+	computed: {
+		isDisabled: function() {
+			return this.selectedPlaylists.length > 0 ? false : true;
+		}
+	},
 	methods: {
 		selectPlaylist(playlist) {
 			const playlistIndex = this.selectedPlaylists.indexOf(playlist);
@@ -41,14 +47,12 @@ export default {
 		}
 	},
 	mounted() {
+		// Simplify with login check
 		if (window.localStorage.RunBPM !== undefined) {
 			this.$http
 				.get(
 					`http://localhost:3000/validate-user?${window.localStorage.RunBPM}`
 				)
-				.then(() => {
-					console.log("user is authenticated");
-				})
 				.catch(function(err) {
 					console.log(err);
 				});
