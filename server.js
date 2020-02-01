@@ -77,16 +77,29 @@ app.get("/get-user-data", function (req, res) {
 app.get('/initialize-create-page', (req, res) => {
 	let playlists = [
 		'1NTVwBdECVO40r5wiOErrq',
-		'0kLOv8Jr3ZgyMPxzWIjJHY',
-		'0ALMWejRHRzrdWRabpujpP'
 	]
-	let trackIDs
+	let trackIDs = []
+	getAudioFeaturesFromSelection().then(data => res.send(data))
 	getPlaylistDetails(playlists).then(details => {
-		trackIDs = getTrackIDs(details)
-	}).catch(err => {
-		console.log(err)
-	})
+		getAudioFeaturesFromSelection(req.query.userID, getTrackURIs(details), getTrackIDs(details)).then(data => {
+			res.send(data)
+		}).catch(err => console.log(err))
+	}).catch(err => console.log(err))
 })
+
+
+function getAudioFeaturesFromSelection(userID, trackURIs, trackIDs) {
+	let playlistName = new Date().getTime()
+	return new Promise((resolve, reject) => {
+		spotifyApi.createPlaylist(userID, playlistName).then(data => {
+			spotifyApi.addTracksToPlaylist(data.body.id, trackURIs).then(data => {
+				spotifyApi.getAudioFeaturesForTracks(trackIDs).then(data => {
+					resolve(data)
+				}).catch(err => reject(err))
+			}).catch(err => reject(err))
+		}).catch(err => reject(err))
+	})
+}
 
 function getPlaylistDetails(playlists) {
 	const playlistDetails = []
@@ -97,15 +110,13 @@ function getPlaylistDetails(playlists) {
 			playlistDetails.push(new Promise((resolve, reject) => {
 				spotifyApi.getPlaylistTracks(playlists[i]).then(function (data) {
 					resolve(data.body.items)
-				}).catch(function (err) { reject(err) })
+				}).catch(err => reject(err))
 			}))
 		}
 
 		Promise.all(playlistDetails).then(data => {
 			resolve(_.flatten(data))
-		}).catch(err => {
-			reject(err)
-		})
+		}).catch(err => reject(err))
 	})
 }
 
@@ -117,49 +128,54 @@ function getTrackIDs(details) {
 	return trackIDs
 }
 
-
-
-
-
-app.get("/get-track-ids", function (req, res) {
-	let playlists = [
-		'1NTVwBdECVO40r5wiOErrq',
-		'0kLOv8Jr3ZgyMPxzWIjJHY',
-		'0ALMWejRHRzrdWRabpujpP'
-	]
-
-	const playlistDetails = []
-	const trackIDs = []
-
-	for (let i = 0; i < playlists.length; i++) {
-		playlistDetails.push(new Promise((resolve, reject) => {
-			spotifyApi.getPlaylistTracks(playlists[i]).then(function (data) {
-				resolve(data.body.items)
-			}).catch(function (err) { reject(err) })
-		}))
-	}
-
-	Promise.all(playlistDetails).then((data) => {
-		_.flatten(data).forEach(track => {
-			trackIDs.push(track.track.id)
-		})
-		res.send(trackIDs)
+function getTrackURIs(details) {
+	const trackURIs = []
+	details.forEach(track => {
+		trackURIs.push(track.track.uri)
 	})
-})
+	return trackURIs
+}
 
-app.get('/create-playlist', function (req, res) {
-	let playlistID = new Date().getTime()
-	spotifyApi.createPlaylist(req.query.user, playlistID, { public: false }).then(data => {
-		console.log(data)
-	}).catch(err => {
-		console.log(err)
-	})
-	res.send(req.query.tracks)
-})
 
-app.get('/get-audio-features', function (req, res) {
-	res.send(req.query)
-})
+// app.get("/get-track-ids", function (req, res) {
+// 	let playlists = [
+// 		'1NTVwBdECVO40r5wiOErrq',
+// 		'0kLOv8Jr3ZgyMPxzWIjJHY',
+// 		'0ALMWejRHRzrdWRabpujpP'
+// 	]
+
+// 	const playlistDetails = []
+// 	const trackIDs = []
+
+// 	for (let i = 0; i < playlists.length; i++) {
+// 		playlistDetails.push(new Promise((resolve, reject) => {
+// 			spotifyApi.getPlaylistTracks(playlists[i]).then(function (data) {
+// 				resolve(data.body.items)
+// 			}).catch(function (err) { reject(err) })
+// 		}))
+// 	}
+
+// 	Promise.all(playlistDetails).then((data) => {
+// 		_.flatten(data).forEach(track => {
+// 			trackIDs.push(track.track.id)
+// 		})
+// 		res.send(trackIDs)
+// 	})
+// })
+
+// app.get('/create-playlist', function (req, res) {
+// 	let playlistID = new Date().getTime()
+// 	spotifyApi.createPlaylist(req.query.user, playlistID, { public: false }).then(data => {
+// 		console.log(data)
+// 	}).catch(err => {
+// 		console.log(err)
+// 	})
+// 	res.send(req.query.tracks)
+// })
+
+// app.get('/get-audio-features', function (req, res) {
+// 	res.send(req.query)
+// })
 
 app.listen(3000, function () {
 	console.log("Listening on port 3000");

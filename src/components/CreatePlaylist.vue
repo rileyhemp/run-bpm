@@ -58,7 +58,10 @@ export default {
 	mounted: function() {
 		this.$http
 			.get("http://localhost:3000/initialize-create-page", {
-				params: this.$route.params.playlists
+				params: {
+					playlists: null,
+					userID: this.$attrs.user.id
+				}
 			})
 			.then(response => {
 				console.log(response);
