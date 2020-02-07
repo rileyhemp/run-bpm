@@ -86,7 +86,7 @@ app.post('/analyze-selected', (req, res) => {
 			}))
 		}
 		Promise.all(trackDetails).then(data => {
-			res.send(_.flatten(data))
+			res.send(_.flatten(data), deets)
 		}).catch(err => res.send(err))
 	})
 })

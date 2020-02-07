@@ -28,7 +28,13 @@ export default {
 	},
 	computed: {
 		hasAvatar: function() {
-			return this.$attrs.user.images ? true : false;
+			if (this.$attrs.user.images) {
+				if (this.$attrs.user.images[0].height) {
+					return true;
+				}
+				return false;
+			}
+			return false;
 		}
 	}
 };

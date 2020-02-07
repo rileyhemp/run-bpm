@@ -3,71 +3,44 @@
 </template>
 	
 <script>
+import features from "../assets/temp-features";
+import details from "../assets/temp-details";
+import _ from "lodash";
 export default {
 	name: "create-playlist",
 	data: function() {
 		return {
 			loading: true,
+			audioFeaturesTemp: features.data,
+			playlistDetailsTemp: details,
 			audioFeatures: Object,
 			initialPlaylist: Object
 		};
 	},
-	// methods: {
-	// 	getTrackIDs() {
-	// 		this.$http
-	// 			.get("http://localhost:3000/get-track-ids", {
-	// 				params: this.$route.params.playlists
-	// 			})
-	// 			.then(response => {
-	// 				this.trackIDs = _.chunk(response.data, 50);
-	// 				this.createPlaylistFromIDs();
-	// 				this.getAudioFeaturesFromIDs();
-	// 			})
-	// 			.catch(err => {
-	// 				console.log(err);
-	// 			});
-	// 	},
-	// 	createPlaylistFromIDs() {
-	// 		this.$http
-	// 			.get("http://localhost:3000/create-playlist", {
-	// 				params: {
-	// 					tracks: this.trackIDs,
-	// 					user: this.$attrs.user.id
-	// 				}
-	// 			})
-	// 			.then(response => {
-	// 				console.log(response);
-	// 			})
-	// 			.catch(err => {
-	// 				console.log(err);
-	// 			});
-	// 	},
-	// 	getAudioFeaturesFromIDs() {
-	// 		this.$http
-	// 			.get("http://localhost:3000/get-audio-features", {
-	// 				params: this.trackIDs
-	// 			})
-	// 			.then(response => {
-	// 				console.log(response);
-	// 			})
-	// 			.catch(err => {
-	// 				console.log(err);
-	// 			});
-	// 	}
-	// },
 	mounted: function() {
-		this.$http
-			.post("http://localhost:3000/analyze-selected", {
-				data: {
-					playlists: this.$route.params.playlists
-				}
-			})
-			.then(response => {
-				console.log(response);
-			})
-			.catch(err => {
-				console.log(err);
-			});
+		//Combines audio features and track details for each track into a single object
+		this.audioFeatures = _.zipWith(
+			this.playlistDetailsTemp,
+			this.audioFeaturesTemp,
+			function(a, b) {
+				return { track: a.track, features: b };
+			}
+		);
 	}
+	// mounted: function() {
+	// 	this.$http
+	// 		.post("http://localhost:3000/analyze-selected", {
+	// 			data: {
+	// 				playlists: this.$route.params.playlists
+	// 			}
+	// 		})
+	// 		.then(response => {
+	// 			console.log(response);
+	// 			console.log(this.$route.params.playlists);
+	// 		})
+	// 		.catch(err => {
+	// 			console.log(err);
+	// 		});
+	// }
 };
 </script>

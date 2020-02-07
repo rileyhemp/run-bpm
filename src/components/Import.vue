@@ -6,7 +6,7 @@
 			<v-btn
 				color="primary"
 				:disabled="isDisabled"
-				:to="{ name: 'Create', params: { playlists: this.selectedPlaylists }}"
+				:to="{ name: 'Create', params: { playlists: this.selected }}"
 			>Continue</v-btn>
 		</v-row>
 		<v-row class="mx-1 mt-3" dense>
@@ -29,25 +29,26 @@ export default {
 	},
 	data: function() {
 		return {
-			selectedPlaylists: []
+			selected: []
 		};
 	},
 	computed: {
 		isDisabled: function() {
-			return this.selectedPlaylists.length > 0 ? false : true;
+			return this.selected.length > 0 ? false : true;
 		}
 	},
 	methods: {
 		selectPlaylist(playlist) {
-			const playlistIndex = this.selectedPlaylists.indexOf(playlist);
-			if (playlistIndex != -1) {
-				this.selectedPlaylists.splice(playlistIndex, 1);
-			} else this.selectedPlaylists.push(playlist);
-			this.$attrs.selectedPlaylists = this.selectedPlaylists;
+			//If the playlist has already been selected, deselect it.
+			this.selected.indexOf(playlist) != -1
+				? this.selected.splice(this.selected.indexOf(playlist), 1)
+				: this.selected.push(playlist);
+			//Push list to $attrs so the 'create' component can access it
+			this.$attrs.selected = this.selected;
 		}
 	},
 	mounted() {
-		// Simplify with login check
+		// TODO: Simplify with login check
 		if (window.localStorage.RunBPM !== undefined) {
 			this.$http
 				.get(

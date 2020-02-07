@@ -23,7 +23,6 @@ export default {
 			this.$http
 				.get("http://localhost:3000/get-user-data")
 				.then(data => {
-					console.log(data);
 					this.userData = data.data.userData;
 					this.userPlaylists = data.data.userPlaylists;
 				})
@@ -38,7 +37,6 @@ export default {
 					`http://localhost:3000/validate-user?${window.localStorage.RunBPM}`
 				)
 				.then(() => {
-					console.log("user is authenticated");
 					this.getUserData();
 				})
 				.catch(err => console.log(err));
