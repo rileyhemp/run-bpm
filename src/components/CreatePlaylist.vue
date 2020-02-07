@@ -1,13 +1,19 @@
 <template>
-	<v-container></v-container>
+	<v-container fluid>
+		<radar-chart :data="this.audioFeatures" />
+	</v-container>
 </template>
 	
 <script>
 import features from "../assets/temp-features";
 import details from "../assets/temp-details";
+import RadarChart from "../components/RadarChart";
 import _ from "lodash";
 export default {
 	name: "create-playlist",
+	components: {
+		"radar-chart": RadarChart
+	},
 	data: function() {
 		return {
 			loading: true,
