@@ -4,8 +4,8 @@
 
 <script>
 //eslint-disable-next-line
-const margin = { top: 30, right: 50, bottom: 50, left: 50 },
-	width = Math.min(700, window.innerWidth - 100) - margin.left - margin.right,
+const margin = { top: 30, right: 50, bottom: 30, left: 50 },
+	width = Math.min(700, window.innerWidth - 110) - margin.left - margin.right,
 	height = Math.min(
 		width,
 		window.innerHeight - margin.top - margin.bottom - 20

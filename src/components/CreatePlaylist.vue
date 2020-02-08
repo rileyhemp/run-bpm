@@ -10,7 +10,21 @@
 			</v-btn>
 		</v-row>
 		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" />
-		<line-graph v-if="this.chartReady && !radar" :chartData="this.chartData" />
+		<line-graph
+			v-if="this.chartReady && !radar"
+			:chartData="this.chartData"
+			:key="sliderRange[0]+sliderRange[1]"
+		/>
+		<vue-slider
+			:min="100"
+			:max="200"
+			v-model="sliderRange"
+			tooltip="none"
+			:enable-cross="false"
+			class="px-2"
+			:marks="[sliderRange[0], sliderRange[1]]"
+			@change="this.updateChartData"
+		></vue-slider>
 	</v-container>
 </template>
 	
@@ -19,12 +33,17 @@ import features from "../assets/temp-features";
 import details from "../assets/temp-details";
 import RadarChart from "../components/RadarChart";
 import LineGraph from "../components/LineGraph";
+import VueSlider from "vue-slider-component";
+import gsap from "gsap";
+import "vue-slider-component/theme/material.css";
 import _ from "lodash";
+
 export default {
 	name: "create-playlist",
 	components: {
 		"radar-chart": RadarChart,
-		"line-graph": LineGraph
+		"line-graph": LineGraph,
+		VueSlider
 	},
 	data: function() {
 		return {
@@ -35,10 +54,35 @@ export default {
 			initialPlaylist: Object,
 			chartData: Array,
 			chartReady: false,
-			radar: false
+			radar: false,
+			sliderRange: [100, 200]
 		};
 	},
 	methods: {
+		updateChartData() {
+			_.throttle(
+				this.chartData[0].forEach(el => {
+					if (
+						el.axis < this.sliderRange[0] - 5 ||
+						el.axis > this.sliderRange[1] + 5
+					) {
+						!el.outOfRange
+							? gsap.to(el, { value: 0, duration: 0.5 })
+							: null;
+						el.outOfRange = true;
+					} else {
+						el.outOfRange = false;
+						!el.outOfRange
+							? gsap.to(el, {
+									value: el.valueSave,
+									duration: 0.5
+							  })
+							: null;
+					}
+				}),
+				200
+			);
+		},
 		initSpiderChart() {
 			//Double tempo for tracks under 100bpm
 			this.audioFeatures.forEach(track => {
@@ -60,6 +104,8 @@ export default {
 				});
 				segment.axis = i;
 				segment.value = tracks / this.audioFeatures.length;
+				segment.valueSave = tracks / this.audioFeatures.length;
+				segment.outOfRange = false;
 				segment.tracks = tracks;
 				tempoSegments.push(segment);
 			}

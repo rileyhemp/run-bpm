@@ -5,7 +5,6 @@ import Axios from "axios";
 import 'vant/lib/index.css';
 import vuetify from './plugins/vuetify';
 
-
 Vue.config.productionTip = false;
 Vue.prototype.$http = Axios;
 

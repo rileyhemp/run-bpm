@@ -2,7 +2,7 @@
 	<v-sparkline
 		class="line-graph"
 		:value="value"
-		:labels="label"
+		:labels="axis"
 		:gradient="gradient"
 		:smooth="radius || false"
 		:padding="padding"
@@ -10,9 +10,9 @@
 		:stroke-linecap="lineCap"
 		:gradient-direction="gradientDirection"
 		:fill="fill"
-		:type="type"
 		:auto-line-width="autoLineWidth"
 		:auto-draw-duration="1000"
+		:type="type"
 		:height="height"
 		:show-labels="showLabels"
 		:label-size="labelSize"
@@ -40,18 +40,19 @@ export default {
 		lineCap: "round",
 		gradient: gradients[5],
 		value: [],
-		label: [],
+		axis: [],
+		tracks: [],
 		gradientDirection: "right",
-		gradients,
 		fill: false,
-		type: "bars",
+		type: "bar",
 		duration: 2000,
 		autoLineWidth: true
 	}),
 	mounted: function() {
 		this.chartData[0].forEach(el => {
 			this.value.push(el.value);
-			this.label.push(el.axis);
+			this.axis.push(el.axis);
+			this.tracks.push(el.tracks);
 		});
 	}
 };
@@ -60,5 +61,6 @@ export default {
 <style scoped>
 .line-graph {
 	margin-top: 40px;
+	margin-bottom: 20px;
 }
 </style>
