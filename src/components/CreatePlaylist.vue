@@ -25,10 +25,35 @@
 			v-model="sliderRange"
 			tooltip="none"
 			:enable-cross="false"
-			class="px-2"
+			class="px-3"
 			:marks="[sliderRange[0], sliderRange[1]]"
 			@change="this.updateChartData"
 		></vue-slider>
+		<v-row class="px-4 mt-8">
+			<v-text-field label="Title yor mix" hide-details="auto" />
+		</v-row>
+		<v-row class="mt-3">
+			<span class="mx-4 my-2 body-2">{{getSongCount}} Songs {{getDuration}}</span>
+			<v-spacer />
+			<v-btn flat text medium>EDIT SELECTION</v-btn>
+		</v-row>
+		<v-row class="pl-2 mt-2">
+			<v-btn icon>
+				<v-icon :color="'primary'">mdi-image-plus</v-icon>
+			</v-btn>
+			<span class="py-2 body-3">Add a photo</span>
+		</v-row>
+		<v-row class="pl-2">
+			<v-btn icon>
+				<v-icon :color="'blue-grey lighten-2'">mdi-earth</v-icon>
+			</v-btn>
+			<span class="py-2 body-3">Make public</span>
+		</v-row>
+		<v-row class="pr-4 mt-8">
+			<v-btn text>Add another</v-btn>
+			<v-spacer />
+			<v-btn color="primary">Done</v-btn>
+		</v-row>
 	</v-container>
 </template>
 	
@@ -39,7 +64,7 @@ import RadarChart from "../components/RadarChart";
 import LineGraph from "../components/LineGraph";
 import VueSlider from "vue-slider-component";
 import gsap from "gsap";
-import "vue-slider-component/theme/material.css";
+import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 
 export default {
@@ -124,6 +149,37 @@ export default {
 			this.chartData = [tempoSegments];
 		}
 	},
+	computed: {
+		getSongCount: function() {
+			let totalSongs = 0;
+			this.audioFeatures.forEach(track => {
+				if (
+					track.features.doubletime >= this.sliderRange[0] &&
+					track.features.doubletime <= this.sliderRange[1]
+				)
+					totalSongs++;
+			});
+			return totalSongs;
+		},
+		getDuration: function() {
+			function msToHMS(ms) {
+				var seconds = ms / 1000;
+				var hours = parseInt(seconds / 3600); // 3,600 seconds in 1 hour
+				var minutes = parseInt(seconds / 60); // 60 seconds in 1 minute
+				seconds = seconds % 60;
+				return hours + ":" + minutes + ":" + seconds.toFixed(0);
+			}
+			let totalLength = 0;
+			this.audioFeatures.forEach(track => {
+				if (
+					track.features.doubletime >= this.sliderRange[0] &&
+					track.features.doubletime <= this.sliderRange[1]
+				)
+					totalLength += track.track.duration_ms;
+			});
+			return msToHMS(totalLength);
+		}
+	},
 	mounted: function() {
 		//Combines audio features and track details for each track into a single object
 		this.audioFeatures = _.zipWith(
@@ -152,3 +208,6 @@ export default {
 	// }
 };
 </script>
+
+<style scoped>
+</style>
