@@ -84,12 +84,13 @@ function RadarChart(id, data, options) {
 	axisGrid.selectAll(".levels")
 		.data(d3.range(1, (cfg.levels + 1)).reverse())
 		.enter()
-		.append("circle")
+		.append("polygon")
+		.attr("points", "114.12678195541842,37.08203932499369 70.53423027509677,97.0820393249937 7.34788079488412e-15,120 -70.53423027509676,97.0820393249937 -114.12678195541842,37.0820393249937 -114.12678195541844,-37.08203932499367 -70.53423027509679,-97.08203932499369 -2.2043642384652355e-14,-120 70.53423027509675,-97.0820393249937 114.12678195541842,-37.082039324993715")
 		.attr("class", "gridCircle")
 		.attr("r", function (d, i) { return radius / cfg.levels * d; })
 		.style("fill", "#CDCDCD")
 		.style("stroke", "#CDCDCD")
-		.style("transform", "rotate(9deg)")
+		.style("transform", "rotate(36deg)")
 		.style("fill-opacity", cfg.opacityCircles)
 		.style("filter", "url(#glow)");
 
@@ -121,7 +122,7 @@ function RadarChart(id, data, options) {
 		.attr("x2", function (d, i) { return rScale(maxValue) * Math.cos(angleSlice * i - Math.PI / 2); })
 		.attr("y2", function (d, i) { return rScale(maxValue) * Math.sin(angleSlice * i - Math.PI / 2); })
 		.attr("class", "line")
-		.style("stroke", "rgba(255,255,255,0.7")
+		.style("stroke", "rgba(255,255,255,0.0")
 		.style("stroke-width", "2px");
 
 	//Select the odd axis only

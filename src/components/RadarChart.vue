@@ -29,16 +29,16 @@ export default {
 		};
 	},
 	mounted: function() {
-		// RadarChart(".radarChart", this.passedData, this.chartOptions);
-	},
-	computed: {
-		displayChart() {
-			if (this.chartReady) {
-				RadarChart(".radarChart", this.chartData, this.chartOptions);
-			}
-			return true;
-		}
+		RadarChart(".radarChart", this.chartData, this.chartOptions);
 	}
+	// computed: {
+	// 	displayChart() {
+	// 		if (this.chartReady) {
+	// 			RadarChart(".radarChart", this.chartData, this.chartOptions);
+	// 		}
+	// 		return true;
+	// 	}
+	// }
 };
 </script>
 

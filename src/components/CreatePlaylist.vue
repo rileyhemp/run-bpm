@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<radar-chart :chartData="this.chartData" :chartReady="this.chartReady" />
+		<radar-chart v-if="this.chartReady" :chartData="this.chartData" />
 	</v-container>
 </template>
 	
@@ -21,30 +21,6 @@ export default {
 			playlistDetailsTemp: details,
 			audioFeatures: Object,
 			initialPlaylist: Object,
-			passedData: [
-				[
-					{ axis: "100", value: 0.22 },
-					{ axis: "105", value: 0.22 },
-					{ axis: "110", value: 0.3 },
-					{ axis: "115", value: 0.3 },
-					{ axis: "120", value: 0.25 },
-					{ axis: "125", value: 0.25 },
-					{ axis: "130", value: 0.5 },
-					{ axis: "135", value: 0.5 },
-					{ axis: "140", value: 0.21 },
-					{ axis: "145", value: 0.21 },
-					{ axis: "150", value: 0.02 },
-					{ axis: "155", value: 0.02 },
-					{ axis: "160", value: 0.22 },
-					{ axis: "165", value: 0.22 },
-					{ axis: "170", value: 0.17 },
-					{ axis: "175", value: 0.17 },
-					{ axis: "180", value: 0.29 },
-					{ axis: "185", value: 0.29 },
-					{ axis: "190", value: 0.28 },
-					{ axis: "195", value: 0.28 }
-				]
-			],
 			chartData: Array,
 			chartReady: false
 		};
