@@ -2,19 +2,18 @@
 	<v-container fluid>
 		<v-row class="pr-2">
 			<v-spacer />
-			<v-btn class="mr-1" icon @click="radar=false">
+			<v-btn class="mr-1" icon @click="radar=false, line=false">
 				<v-icon :color="radar ? 'default' : 'primary'">mdi-chart-bar</v-icon>
+			</v-btn>
+			<v-btn class="mr-1" icon @click="radar=false, line=true">
+				<v-icon :color="radar && line ? 'default' : 'primary'">mdi-graph-line</v-icon>
 			</v-btn>
 			<v-btn icon @click="radar=true">
 				<v-icon :color="radar ? 'primary' : 'default'">mdi-spider-web</v-icon>
 			</v-btn>
 		</v-row>
-		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" />
-		<line-graph
-			v-if="this.chartReady && !radar"
-			:chartData="this.chartData"
-			:key="sliderRange[0]+sliderRange[1]"
-		/>
+		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
+		<line-graph v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
 		<vue-slider
 			:min="100"
 			:max="200"
@@ -55,33 +54,37 @@ export default {
 			chartData: Array,
 			chartReady: false,
 			radar: false,
-			sliderRange: [100, 200]
+			sliderRange: [100, 200],
+			renderKey: 1
 		};
 	},
 	methods: {
 		updateChartData() {
-			_.throttle(
-				this.chartData[0].forEach(el => {
-					if (
-						el.axis < this.sliderRange[0] - 5 ||
-						el.axis > this.sliderRange[1] + 5
-					) {
-						!el.outOfRange
-							? gsap.to(el, { value: 0, duration: 0.5 })
-							: null;
-						el.outOfRange = true;
-					} else {
-						el.outOfRange = false;
-						!el.outOfRange
-							? gsap.to(el, {
-									value: el.valueSave,
-									duration: 0.5
-							  })
-							: null;
-					}
-				}),
-				200
-			);
+			this.chartData[0].forEach(el => {
+				const duration = 0.75;
+				if (
+					el.axis < this.sliderRange[0] ||
+					el.axis > this.sliderRange[1]
+				) {
+					gsap.to(el, {
+						value: 0.01,
+						duration: duration
+					});
+					gsap.to(this, {
+						renderKey: this.renderKey + 1,
+						duration: duration
+					});
+				} else {
+					gsap.to(el, {
+						value: el.valueSave,
+						duration: duration
+					});
+					gsap.to(this, {
+						renderKey: this.renderKey + 1,
+						duration: duration
+					});
+				}
+			});
 		},
 		initSpiderChart() {
 			//Double tempo for tracks under 100bpm
