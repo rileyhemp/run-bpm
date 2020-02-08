@@ -29,16 +29,13 @@ export default {
 		};
 	},
 	mounted: function() {
+		//Set graph's max value to highest value in the data set
+		let values = [];
+		this.chartData[0].forEach(el => values.push(el.value));
+		this.chartOptions.maxValue = Math.max(...values);
+		//Draw the chart
 		RadarChart(".radarChart", this.chartData, this.chartOptions);
 	}
-	// computed: {
-	// 	displayChart() {
-	// 		if (this.chartReady) {
-	// 			RadarChart(".radarChart", this.chartData, this.chartOptions);
-	// 		}
-	// 		return true;
-	// 	}
-	// }
 };
 </script>
 
