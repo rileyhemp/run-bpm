@@ -12,12 +12,12 @@ function RadarChart(id, data, options) {
 		w: 600,				//Width of the circle
 		h: 600,				//Height of the circle
 		margin: { top: 20, right: 20, bottom: 20, left: 20 }, //The margins of the SVG
-		levels: 3,				//How many levels or inner circles should there be drawn
+		levels: 1,				//How many levels or inner circles should there be drawn
 		maxValue: 0, 			//What is the value that the biggest circle will represent
 		labelFactor: 1.25, 	//How much farther than the radius of the outer circle should the labels be placed
 		wrapWidth: 60, 		//The number of pixels after which a label needs to be given a new line
 		opacityArea: 0.35, 	//The opacity of the area of the blob
-		dotRadius: 4, 			//The size of the colored circles of each blog
+		dotRadius: 0, 			//The size of the colored circles of each blog
 		opacityCircles: 0.1, 	//The opacity of the circles of each blob
 		strokeWidth: 2, 		//The width of the stroke around each blob
 		roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
@@ -72,6 +72,7 @@ function RadarChart(id, data, options) {
 		feMergeNode_1 = feMerge.append('feMergeNode').attr('in', 'coloredBlur'),
 		feMergeNode_2 = feMerge.append('feMergeNode').attr('in', 'SourceGraphic');
 
+
 	/////////////////////////////////////////////////////////
 	/////////////// Draw the Circular grid //////////////////
 	/////////////////////////////////////////////////////////
@@ -88,6 +89,7 @@ function RadarChart(id, data, options) {
 		.attr("r", function (d, i) { return radius / cfg.levels * d; })
 		.style("fill", "#CDCDCD")
 		.style("stroke", "#CDCDCD")
+		.style("transform", "rotate(9deg)")
 		.style("fill-opacity", cfg.opacityCircles)
 		.style("filter", "url(#glow)");
 
@@ -102,7 +104,6 @@ function RadarChart(id, data, options) {
 		.style("font-size", "10px")
 		.attr("fill", "#737373")
 	// .text(function (d, i) { return Format(maxValue * d / cfg.levels); });
-
 	/////////////////////////////////////////////////////////
 	//////////////////// Draw the axes //////////////////////
 	/////////////////////////////////////////////////////////
@@ -117,16 +118,18 @@ function RadarChart(id, data, options) {
 	axis.append("line")
 		.attr("x1", 0)
 		.attr("y1", 0)
-		.attr("x2", function (d, i) { return rScale(maxValue * 1.1) * Math.cos(angleSlice * i - Math.PI / 2); })
-		.attr("y2", function (d, i) { return rScale(maxValue * 1.1) * Math.sin(angleSlice * i - Math.PI / 2); })
+		.attr("x2", function (d, i) { return rScale(maxValue) * Math.cos(angleSlice * i - Math.PI / 2); })
+		.attr("y2", function (d, i) { return rScale(maxValue) * Math.sin(angleSlice * i - Math.PI / 2); })
 		.attr("class", "line")
-		.style("stroke", "white")
+		.style("stroke", "rgba(255,255,255,0.7")
 		.style("stroke-width", "2px");
 
+	//Select the odd axis only
+	const axisEven = axis.select(function (d, i) { return i & 1 ? null : this; });
 	//Append the labels at each axis
 	axis.append("text")
 		.attr("class", "legend")
-		.style("font-size", "11px")
+		.style("font-size", "12px")
 		.attr("text-anchor", "middle")
 		.attr("dy", "0.35em")
 		.attr("x", function (d, i) { return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2); })
