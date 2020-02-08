@@ -4,15 +4,14 @@
 		:value="value"
 		:labels="axis"
 		:gradient="gradient"
-		:smooth="radius || false"
+		:smooth="this.type==='trend' ? 12 : 2"
 		:padding="padding"
-		:line-width="lineWidth"
+		:line-width="this.type==='trend' ? 5 : 2"
 		:stroke-linecap="lineCap"
 		:gradient-direction="gradientDirection"
 		:fill="fill"
-		:auto-line-width="autoLineWidth"
-		:auto-draw-duration="1000"
-		:type="type"
+		:auto-line-width="this.type==='trend' ? false : true"
+		:type="this.type"
 		:height="height"
 		:show-labels="showLabels"
 		:label-size="labelSize"
@@ -29,13 +28,12 @@ const gradients = [
 	["#f72047", "#ffd200", "#1feaea"]
 ];
 export default {
-	props: ["chartData"],
+	props: ["chartData", "type"],
 	data: () => ({
 		showLabels: false,
 		height: 100,
 		lineWidth: 4,
 		labelSize: 10,
-		radius: 2,
 		padding: 8,
 		lineCap: "round",
 		gradient: gradients[5],
@@ -44,9 +42,7 @@ export default {
 		tracks: [],
 		gradientDirection: "right",
 		fill: false,
-		type: "bar",
-		duration: 2000,
-		autoLineWidth: true
+		duration: 2000
 	}),
 	mounted: function() {
 		this.chartData[0].forEach(el => {

@@ -2,18 +2,23 @@
 	<v-container fluid>
 		<v-row class="pr-2">
 			<v-spacer />
-			<v-btn class="mr-1" icon @click="radar=false, line=false">
-				<v-icon :color="radar ? 'default' : 'primary'">mdi-chart-bar</v-icon>
+			<v-btn class="mr-1" icon @click="radar=false, trend=false, bars=true">
+				<v-icon :color="radar || trend ? 'default' : 'primary'">mdi-chart-bar</v-icon>
 			</v-btn>
-			<v-btn class="mr-1" icon @click="radar=false, line=true">
-				<v-icon :color="radar && line ? 'default' : 'primary'">mdi-graph-line</v-icon>
+			<v-btn class="mr-1" icon @click="radar=false, bars=false, trend=true">
+				<v-icon :color="radar || bars ? 'default' : 'primary'">mdi-chart-line</v-icon>
 			</v-btn>
-			<v-btn icon @click="radar=true">
-				<v-icon :color="radar ? 'primary' : 'default'">mdi-spider-web</v-icon>
+			<v-btn icon @click="radar=true, bars=false, trend=false">
+				<v-icon :color="bars || trend ? 'default' : 'primary'">mdi-spider-web</v-icon>
 			</v-btn>
 		</v-row>
 		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
-		<line-graph v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
+		<line-graph
+			:type="bars ? 'bar' : 'trend'"
+			v-if="this.chartReady && !radar"
+			:chartData="this.chartData"
+			:key="renderKey"
+		/>
 		<vue-slider
 			:min="100"
 			:max="200"
@@ -54,22 +59,25 @@ export default {
 			chartData: Array,
 			chartReady: false,
 			radar: false,
+			trend: false,
+			bars: true,
 			sliderRange: [100, 200],
 			renderKey: 1
 		};
 	},
 	methods: {
-		updateChartData() {
+		updateChartData: _.throttle(function() {
 			this.chartData[0].forEach(el => {
 				const duration = 0.75;
 				if (
 					el.axis < this.sliderRange[0] ||
 					el.axis > this.sliderRange[1]
 				) {
-					gsap.to(el, {
+					gsap.to([el], {
 						value: 0.01,
 						duration: duration
 					});
+					//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
 					gsap.to(this, {
 						renderKey: this.renderKey + 1,
 						duration: duration
@@ -85,7 +93,7 @@ export default {
 					});
 				}
 			});
-		},
+		}, 100),
 		initSpiderChart() {
 			//Double tempo for tracks under 100bpm
 			this.audioFeatures.forEach(track => {
