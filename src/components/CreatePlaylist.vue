@@ -1,6 +1,16 @@
 <template>
 	<v-container fluid>
-		<radar-chart v-if="this.chartReady" :chartData="this.chartData" />
+		<v-row class="pr-2">
+			<v-spacer />
+			<v-btn class="mr-1" icon @click="radar=false">
+				<v-icon :color="radar ? 'default' : 'primary'">mdi-chart-bar</v-icon>
+			</v-btn>
+			<v-btn icon @click="radar=true">
+				<v-icon :color="radar ? 'primary' : 'default'">mdi-spider-web</v-icon>
+			</v-btn>
+		</v-row>
+		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" />
+		<line-graph v-if="this.chartReady && !radar" :chartData="this.chartData" />
 	</v-container>
 </template>
 	
@@ -8,11 +18,13 @@
 import features from "../assets/temp-features";
 import details from "../assets/temp-details";
 import RadarChart from "../components/RadarChart";
+import LineGraph from "../components/LineGraph";
 import _ from "lodash";
 export default {
 	name: "create-playlist",
 	components: {
-		"radar-chart": RadarChart
+		"radar-chart": RadarChart,
+		"line-graph": LineGraph
 	},
 	data: function() {
 		return {
@@ -22,7 +34,8 @@ export default {
 			audioFeatures: Object,
 			initialPlaylist: Object,
 			chartData: Array,
-			chartReady: false
+			chartReady: false,
+			radar: false
 		};
 	},
 	methods: {

@@ -1,5 +1,5 @@
 <template>
-	<v-btn icon class="mr-1">
+	<v-btn icon class="pr-2">
 		<v-avatar v-if="this.$attrs.user" color="primary" size="42px">
 			<span v-if="!this.hasAvatar" style="color:white">{{getInitials(this.$attrs.user.display_name)}}</span>
 			<img v-if="this.hasAvatar" :src="this.hasAvatar ? this.$attrs.user.images[0].url : null" />
