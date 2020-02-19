@@ -101,8 +101,9 @@ app.post('/create-playlist', (req, res) => {
 function createPlaylist(user, playlistName, tracks) {
 	return new Promise((resolve, reject) => {
 		spotifyApi.createPlaylist(user, playlistName).then(response => {
-			spotifyApi.addTracksToPlaylist(response.body.id, getURIsFromIDs(tracks)).then(response => {
-				resolve(response)
+			const playlistID = response.body.id
+			spotifyApi.addTracksToPlaylist(playlistID, getURIsFromIDs(tracks)).then(response => {
+				resolve({ playlistID: playlistID })
 			}).catch(err => reject(err))
 		}).catch(err => reject(err))
 	})

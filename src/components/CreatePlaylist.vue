@@ -73,6 +73,7 @@ import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "../scripts/msToHMS";
 import getIDsFromDetails from "../scripts/getIDsFromDetails";
+const jwt = require("jsonwebtoken");
 
 export default {
 	name: "create-playlist",
@@ -160,6 +161,7 @@ export default {
 		createPlaylistFromSelection() {
 			this.isLoading = true;
 			const trackIDs = getIDsFromDetails(this.selectedTracks);
+
 			this.$http
 				.post("http://localhost:3000/create-playlist", {
 					data: {
@@ -173,12 +175,24 @@ export default {
 				})
 				.then(response => {
 					this.isLoading = false;
+					this.savePlaylistToLocal(response.data.playlistID);
 					console.log("Success", response);
 				})
 				.catch(err => {
 					this.isLoading = false;
 					console.log("Something went wrong", err);
 				});
+		},
+		savePlaylistToLocal(id) {
+			const userID = this.$attrs.user.id;
+			const savedLists = localStorage.getItem("savedPlaylists")
+				? jwt.verify(localStorage.getItem("savedPlaylists"), userID)
+				: { ids: [] };
+			savedLists.ids.push(id);
+			localStorage.setItem(
+				"savedPlaylists",
+				jwt.sign(savedLists, userID)
+			);
 		}
 	},
 	computed: {
