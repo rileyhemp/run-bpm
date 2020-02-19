@@ -55,9 +55,9 @@
 				:ripple="false"
 				@click="this.createPlaylistFromSelection"
 				class="plain-btn"
-			>Add another</v-btn>
+			>{{addButtonTxt}}</v-btn>
 			<v-spacer />
-			<v-btn color="primary">Done</v-btn>
+			<v-btn color="primary" @click="createPlaylistFromSelection(); finishedWithSelection=true">Done</v-btn>
 		</v-row>
 	</v-container>
 </template>
@@ -73,7 +73,6 @@ import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "../scripts/msToHMS";
 import getIDsFromDetails from "../scripts/getIDsFromDetails";
-const jwt = require("jsonwebtoken");
 
 export default {
 	name: "create-playlist",
@@ -96,104 +95,10 @@ export default {
 			bars: true,
 			sliderRange: [100, 200],
 			renderKey: 1,
-			playlistName: undefined
+			playlistName: undefined,
+			finishedWithSelection: false,
+			addButtonTxt: "Add another"
 		};
-	},
-	methods: {
-		initChartData() {
-			//Double tempo for tracks under 100bpm
-			this.audioFeatures.forEach(track => {
-				track.features.tempo = Math.round(track.features.tempo);
-				track.features.tempo < 100
-					? (track.features.doubletime = track.features.tempo * 2)
-					: (track.features.doubletime = track.features.tempo);
-			});
-			//Group tracks that are within 5bpm of each other
-			let tempoSegments = [];
-			for (let i = 100; i < 200; i = i + 10) {
-				let segment = {};
-				let tracks = 0;
-				this.audioFeatures.forEach(track => {
-					track.features.doubletime >= i &&
-					track.features.doubletime < i + 10
-						? tracks++
-						: null;
-				});
-				segment.axis = i;
-				segment.value = tracks / this.audioFeatures.length;
-				segment.valueSave = tracks / this.audioFeatures.length;
-				segment.outOfRange = false;
-				segment.tracks = tracks;
-				tempoSegments.push(segment);
-			}
-			//Set flag to render charts
-			this.chartReady = true;
-			this.chartData = [tempoSegments];
-		},
-		filterChartData: _.throttle(function() {
-			this.chartData[0].forEach(el => {
-				const duration = 0.75;
-				if (
-					el.axis < this.sliderRange[0] ||
-					el.axis > this.sliderRange[1]
-				) {
-					gsap.to([el], {
-						value: 0.01,
-						duration: duration
-					});
-					//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
-					gsap.to(this, {
-						renderKey: this.renderKey + 1,
-						duration: duration
-					});
-				} else {
-					gsap.to(el, {
-						value: el.valueSave,
-						duration: duration
-					});
-					gsap.to(this, {
-						renderKey: this.renderKey + 1,
-						duration: duration
-					});
-				}
-			});
-		}, 100),
-		createPlaylistFromSelection() {
-			this.isLoading = true;
-			const trackIDs = getIDsFromDetails(this.selectedTracks);
-
-			this.$http
-				.post("http://localhost:3000/create-playlist", {
-					data: {
-						user: this.$attrs.user.id,
-						tracks: trackIDs,
-						name:
-							this.playlistName != undefined
-								? this.playlistName
-								: this.defaultPlaylistName
-					}
-				})
-				.then(response => {
-					this.isLoading = false;
-					this.savePlaylistToLocal(response.data.playlistID);
-					console.log("Success", response);
-				})
-				.catch(err => {
-					this.isLoading = false;
-					console.log("Something went wrong", err);
-				});
-		},
-		savePlaylistToLocal(id) {
-			const userID = this.$attrs.user.id;
-			const savedLists = localStorage.getItem("savedPlaylists")
-				? jwt.verify(localStorage.getItem("savedPlaylists"), userID)
-				: { ids: [] };
-			savedLists.ids.push(id);
-			localStorage.setItem(
-				"savedPlaylists",
-				jwt.sign(savedLists, userID)
-			);
-		}
 	},
 	computed: {
 		defaultPlaylistName: function() {
@@ -230,6 +135,119 @@ export default {
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
 		}
+	},
+	methods: {
+		createPlaylistFromSelection() {
+			//Get array of selected track's IDs.
+			const trackIDs = getIDsFromDetails(this.selectedTracks);
+			this.isLoading = true;
+			this.$http
+				.post("http://localhost:3000/create-playlist", {
+					data: {
+						user: this.$attrs.user.id,
+						tracks: trackIDs,
+						name:
+							this.playlistName != undefined
+								? this.playlistName
+								: this.defaultPlaylistName
+					}
+				})
+				.then(response => {
+					//Check if user is done or wants to add more playlists
+					this.finishedWithSelection
+						? this.saveCreated(response.data.playlistID)
+						: this.stashCreated(response.data.playlistID);
+					this.isLoading = false;
+				})
+				.catch(err => {
+					this.isLoading = false;
+					console.log("Something went wrong", err);
+				});
+		},
+		saveCreated(id) {
+			console.log(id);
+			//Clear local stash
+			localStorage.getItem("stashedPlaylists")
+				? localStorage.removeItem("stashedPlaylists")
+				: null;
+			//Save playlist to database
+		},
+		stashCreated(id) {
+			const stashedLists = localStorage.getItem("stashedPlaylists")
+				? JSON.parse(localStorage.getItem("stashedPlaylists"))
+				: { ids: [] };
+			stashedLists.ids.push(id);
+			localStorage.setItem(
+				"stashedPlaylists",
+				JSON.stringify(stashedLists)
+			);
+			//Reset the selection
+			this.playlistName = undefined;
+			this.sliderRange = [100, 200];
+			setTimeout(() => this.filterChartData(), 150);
+			//Change 'add another' to 'save' so they aren't forced to add another list
+			this.addButtonTxt = "Save";
+		},
+		initChartData() {
+			//Double tempo for tracks under 100bpm.
+			//Reason: 80bpm and 160bpm line up on the same cadence and should be treated as equal.
+			this.audioFeatures.forEach(track => {
+				track.features.tempo = Math.round(track.features.tempo);
+				track.features.tempo < 100
+					? (track.features.doubletime = track.features.tempo * 2)
+					: (track.features.doubletime = track.features.tempo);
+			});
+			//Group tracks that are within 5bpm of each other
+			let tempoSegments = [];
+			for (let i = 100; i < 200; i = i + 10) {
+				let segment = {};
+				let tracks = 0;
+				this.audioFeatures.forEach(track => {
+					track.features.doubletime >= i &&
+					track.features.doubletime < i + 10
+						? tracks++
+						: null;
+				});
+				segment.axis = i;
+				segment.value = tracks / this.audioFeatures.length;
+				segment.valueSave = tracks / this.audioFeatures.length;
+				segment.outOfRange = false;
+				segment.tracks = tracks;
+				tempoSegments.push(segment);
+			}
+			//Let the charts know the data is ready and they can render
+			this.chartReady = true;
+			this.chartData = [tempoSegments];
+		},
+		filterChartData: _.throttle(function() {
+			//Filters charts in real time
+			this.chartData[0].forEach(el => {
+				const duration = 0.75;
+				if (
+					el.axis < this.sliderRange[0] ||
+					el.axis > this.sliderRange[1]
+				) {
+					gsap.to([el], {
+						value: 0.01,
+						duration: duration
+					});
+					//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
+					gsap.to(this, {
+						renderKey: this.renderKey + 1,
+						duration: duration
+					});
+				} else {
+					gsap.to(el, {
+						value: el.valueSave,
+						duration: duration
+					});
+					gsap.to(this, {
+						renderKey: this.renderKey + 1,
+						duration: duration
+					});
+				}
+			});
+		}, 100)
 	},
 	mounted: function() {
 		//Combines audio features and track details into a single object

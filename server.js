@@ -3,6 +3,94 @@ const app = express();
 const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash")
+const sqlite3 = require('sqlite3').verbose()
+
+// open the database
+// let db = new sqlite3.Database('./db/sample.db');
+
+// let languages = ['c++', 'python', 'js']
+// let placeholders = languages.map((language) =>
+// 	'(?)').join(',')
+
+// let sql = 'INSERT INTO langs(name) VALUES ' + placeholders
+
+
+// db.run(sql, languages, function (err) {
+// 	if (err) {
+// 		return console.error(err.message)
+// 	}
+// 	console.log('Rows inserted' + this.changes)
+// })
+
+// let db = new sqlite3.Database('./db/sample.db');
+
+// let data = ['habba', 'Ansi C'];
+
+// let sql = `UPDATE langs
+//             SET name = ?
+//             WHERE name = ?`;
+
+// db.run(sql, data, function (err) {
+// 	if (err) {
+// 		return console.error(err.message);
+// 	}
+// 	console.log(`Row(s) updated: ${this.changes}`);
+
+// });
+
+
+// let db = new sqlite3.Database('./db/sample.db', (err) => {
+// 	if (err) {
+// 		console.error(err.message);
+// 	}
+// });
+
+// let id = 'habba';
+// // delete a row based on id
+// db.run(`DELETE FROM langs WHERE name=?`, id, function (err) {
+// 	if (err) {
+// 		return console.error(err.message);
+// 	}
+// 	console.log(`Row(s) deleted ${this.changes}`);
+// });
+
+// // close the database connection
+// db.close((err) => {
+// 	if (err) {
+// 		return console.error(err.message);
+// 	}
+// });
+
+function getSavedPlaylists(userID) {
+	let db = new sqlite3.Database('./db/users.db')
+	let selectPlaylists = `SELECT DISTINCT (user_playlists) FROM users WHERE user_id = ?`
+	db.serialize(() => {
+		db.all(selectPlaylists, [userID], (err, rows) => {
+			if (err) {
+				throw err;
+			}
+			if (rows.length) {
+				return rows;
+			} else {
+				return 'no user exists'
+			}
+		});
+	})
+}
+
+//Add user
+// let sql = `INSERT INTO users(user_id, user_playlists) VALUES('abc123', 'mycoolplaylist');`
+// db.run(sql, [], function (err) {
+// 	if (err) {
+// 		return console.log(err.message)
+// 	}
+// 	console.log(`A row has been inserted with the user id of ${this.lastID}`)
+// })
+
+
+// close the database connection
+
+
 
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
