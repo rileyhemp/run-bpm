@@ -95,8 +95,7 @@ export default {
 			bars: true,
 			sliderRange: [100, 200],
 			renderKey: 1,
-			playlistName: undefined,
-			playListDescription: "Created with Run BPM"
+			playlistName: undefined
 		};
 	},
 	methods: {
@@ -159,6 +158,7 @@ export default {
 			});
 		}, 100),
 		createPlaylistFromSelection() {
+			this.isLoading = true;
 			const trackIDs = getIDsFromDetails(this.selectedTracks);
 			this.$http
 				.post("http://localhost:3000/create-playlist", {
@@ -168,15 +168,16 @@ export default {
 						name:
 							this.playlistName != undefined
 								? this.playlistName
-								: this.defaultPlaylistName,
-						description: this.playListDescription
+								: this.defaultPlaylistName
 					}
 				})
 				.then(response => {
-					console.log(response);
+					this.isLoading = false;
+					console.log("Success", response);
 				})
 				.catch(err => {
-					console.log(err);
+					this.isLoading = false;
+					console.log("Something went wrong", err);
 				});
 		}
 	},

@@ -92,22 +92,22 @@ app.post('/analyze-selected', (req, res) => {
 })
 
 app.post('/create-playlist', (req, res) => {
-	console.log(req.body.data)
-	// createPlaylistFromTracks(req.body.data.tracks).then(response => {
-	// 	res.send(response)
-	// }).catch(err => res.send(err))
+	let request = req.body.data
+	createPlaylist(request.user, request.name, request.tracks).then(response => {
+		res.send(response)
+	}).catch(err => res.send(err))
 })
 
-function createPlaylistFromTracks(userID, tracks) {
-	let playlistName = new Date().getTime()
+function createPlaylist(user, playlistName, tracks) {
 	return new Promise((resolve, reject) => {
-		spotifyApi.createPlaylist(userID, playlistName).then(data => {
-			spotifyApi.addTracksToPlaylist(userID, tracks).then(data => {
-				resolve(data)
+		spotifyApi.createPlaylist(user, playlistName).then(response => {
+			spotifyApi.addTracksToPlaylist(response.body.id, getURIsFromIDs(tracks)).then(response => {
+				resolve(response)
 			}).catch(err => reject(err))
 		}).catch(err => reject(err))
 	})
 }
+
 function getPlaylistDetails(playlists) {
 	const playlistDetails = []
 	return new Promise((resolve, reject) => {
@@ -124,7 +124,7 @@ function getPlaylistDetails(playlists) {
 	})
 }
 
-function getIDsFromDetails(details, type) {
+function getIDsFromDetails(details) {
 	const trackIDs = []
 	details.forEach(track => {
 		trackIDs.push(track.track.id)
