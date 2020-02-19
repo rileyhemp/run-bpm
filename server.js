@@ -91,6 +91,13 @@ app.post('/analyze-selected', (req, res) => {
 	})
 })
 
+app.post('/create-playlist', (req, res) => {
+	console.log(req.body.data)
+	// createPlaylistFromTracks(req.body.data.tracks).then(response => {
+	// 	res.send(response)
+	// }).catch(err => res.send(err))
+})
+
 function createPlaylistFromTracks(userID, tracks) {
 	let playlistName = new Date().getTime()
 	return new Promise((resolve, reject) => {

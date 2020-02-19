@@ -27,15 +27,15 @@
 			:enable-cross="false"
 			class="px-3"
 			:marks="[sliderRange[0], sliderRange[1]]"
-			@change="this.updateChartData"
+			@change="this.filterChartData"
 		></vue-slider>
 		<v-row class="px-4 mt-8">
 			<v-text-field label="Title yor mix" hide-details="auto" />
 		</v-row>
 		<v-row class="mt-3">
-			<span class="mx-4 my-2 body-2">{{getSongCount}} Songs {{getDuration}}</span>
-			<v-spacer />
-			<v-btn flat text medium>EDIT SELECTION</v-btn>
+			<span class="mx-4 my-2 body-2">{{songCount}} Songs {{mixDuration}}</span>
+			<!-- <v-spacer /> -->
+			<!-- <v-btn flat text medium>EDIT SELECTION</v-btn> -->
 		</v-row>
 		<v-row class="pl-2 mt-2">
 			<v-btn icon>
@@ -50,7 +50,12 @@
 			<span class="py-2 body-3">Make public</span>
 		</v-row>
 		<v-row class="pr-4 mt-8">
-			<v-btn text>Add another</v-btn>
+			<v-btn
+				text
+				:ripple="false"
+				@click="this.createPlaylistFromSelection"
+				class="plain-btn"
+			>Add another</v-btn>
 			<v-spacer />
 			<v-btn color="primary">Done</v-btn>
 		</v-row>
@@ -66,6 +71,8 @@ import VueSlider from "vue-slider-component";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
+import msToHMS from "../scripts/msToHMS";
+import getIDsFromDetails from "../scripts/getIDsFromDetails";
 
 export default {
 	name: "create-playlist",
@@ -87,11 +94,43 @@ export default {
 			trend: false,
 			bars: true,
 			sliderRange: [100, 200],
-			renderKey: 1
+			renderKey: 1,
+			playlistName: undefined,
+			playListDescription: "Created with Run BPM"
 		};
 	},
 	methods: {
-		updateChartData: _.throttle(function() {
+		initChartData() {
+			//Double tempo for tracks under 100bpm
+			this.audioFeatures.forEach(track => {
+				track.features.tempo = Math.round(track.features.tempo);
+				track.features.tempo < 100
+					? (track.features.doubletime = track.features.tempo * 2)
+					: (track.features.doubletime = track.features.tempo);
+			});
+			//Group tracks that are within 5bpm of each other
+			let tempoSegments = [];
+			for (let i = 100; i < 200; i = i + 10) {
+				let segment = {};
+				let tracks = 0;
+				this.audioFeatures.forEach(track => {
+					track.features.doubletime >= i &&
+					track.features.doubletime < i + 10
+						? tracks++
+						: null;
+				});
+				segment.axis = i;
+				segment.value = tracks / this.audioFeatures.length;
+				segment.valueSave = tracks / this.audioFeatures.length;
+				segment.outOfRange = false;
+				segment.tracks = tracks;
+				tempoSegments.push(segment);
+			}
+			//Set flag to render charts
+			this.chartReady = true;
+			this.chartData = [tempoSegments];
+		},
+		filterChartData: _.throttle(function() {
 			this.chartData[0].forEach(el => {
 				const duration = 0.75;
 				if (
@@ -119,69 +158,66 @@ export default {
 				}
 			});
 		}, 100),
-		initSpiderChart() {
-			//Double tempo for tracks under 100bpm
-			this.audioFeatures.forEach(track => {
-				track.features.tempo = Math.round(track.features.tempo);
-				track.features.tempo < 100
-					? (track.features.doubletime = track.features.tempo * 2)
-					: (track.features.doubletime = track.features.tempo);
-			});
-			//Group tracks that are within 5bpm of each other
-			let tempoSegments = [];
-			for (let i = 100; i < 200; i = i + 10) {
-				let segment = {};
-				let tracks = 0;
-				this.audioFeatures.forEach(track => {
-					track.features.doubletime >= i &&
-					track.features.doubletime < i + 10
-						? tracks++
-						: null;
+		createPlaylistFromSelection() {
+			const trackIDs = getIDsFromDetails(this.selectedTracks);
+			this.$http
+				.post("http://localhost:3000/create-playlist", {
+					data: {
+						user: this.$attrs.user.id,
+						tracks: trackIDs,
+						name:
+							this.playlistName != undefined
+								? this.playlistName
+								: this.defaultPlaylistName,
+						description: this.playListDescription
+					}
+				})
+				.then(response => {
+					console.log(response);
+				})
+				.catch(err => {
+					console.log(err);
 				});
-				segment.axis = i;
-				segment.value = tracks / this.audioFeatures.length;
-				segment.valueSave = tracks / this.audioFeatures.length;
-				segment.outOfRange = false;
-				segment.tracks = tracks;
-				tempoSegments.push(segment);
-			}
-			this.chartReady = true;
-			this.chartData = [tempoSegments];
 		}
 	},
 	computed: {
-		getSongCount: function() {
-			let totalSongs = 0;
-			this.audioFeatures.forEach(track => {
-				if (
-					track.features.doubletime >= this.sliderRange[0] &&
-					track.features.doubletime <= this.sliderRange[1]
-				)
-					totalSongs++;
-			});
-			return totalSongs;
+		defaultPlaylistName: function() {
+			return (
+				this.sliderRange[0] +
+				"–" +
+				this.sliderRange[1] +
+				"bpm -- " +
+				new Date().getTime()
+			);
 		},
-		getDuration: function() {
-			function msToHMS(ms) {
-				var seconds = ms / 1000;
-				var hours = parseInt(seconds / 3600); // 3,600 seconds in 1 hour
-				var minutes = parseInt(seconds / 60); // 60 seconds in 1 minute
-				seconds = seconds % 60;
-				return hours + ":" + minutes + ":" + seconds.toFixed(0);
-			}
-			let totalLength = 0;
-			this.audioFeatures.forEach(track => {
+		selectedTracks: function() {
+			let tracksArray = [];
+			Object.keys(this.audioFeatures).forEach(i => {
+				let track = this.audioFeatures[i];
+				let bpmSliderRangeLow = this.sliderRange[0];
+				let bpmSliderRangeHigh = this.sliderRange[1];
 				if (
-					track.features.doubletime >= this.sliderRange[0] &&
-					track.features.doubletime <= this.sliderRange[1]
+					track.features.doubletime >= bpmSliderRangeLow &&
+					track.features.doubletime <= bpmSliderRangeHigh
 				)
-					totalLength += track.track.duration_ms;
+					tracksArray.push(track);
 			});
+			return tracksArray;
+		},
+		songCount: function() {
+			return this.selectedTracks.length;
+		},
+		mixDuration: function() {
+			let totalLength = 0;
+			this.selectedTracks.forEach(track => {
+				totalLength += track.track.duration_ms;
+			});
+			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
 		}
 	},
 	mounted: function() {
-		//Combines audio features and track details for each track into a single object
+		//Combines audio features and track details into a single object
 		this.audioFeatures = _.zipWith(
 			this.playlistDetailsTemp,
 			this.audioFeaturesTemp,
@@ -189,7 +225,7 @@ export default {
 				return { track: a.track, features: b };
 			}
 		);
-		this.initSpiderChart();
+		this.initChartData();
 	}
 	// mounted: function() {
 	// 	this.$http
@@ -210,4 +246,7 @@ export default {
 </script>
 
 <style scoped>
+.plain-btn:hover:before {
+	background-color: transparent;
+}
 </style>
