@@ -26,6 +26,13 @@ const allowCrossDomain = function (req, res, next) {
 	res.header("Access-Control-Allow-Headers", "*");
 	next();
 };
+// let db = new sqlite3.Database('./db/users.db')
+// let sql = `CREATE TABLE users (
+//     user_id TEXT NOT NULL,
+//     user_playlists TEXT NOT NULL
+// );`
+
+// db.run(sql)
 
 app.use(allowCrossDomain);
 app.use(express.json())
@@ -108,6 +115,24 @@ app.get("/get-saved-playlists", function (req, res) {
 	}))
 })
 
+app.post("/save-playlists", (req, res) => {
+	let user = req.body.data.user
+	let playlists = req.body.data.playlists
+	console.log(playlists)
+	console.log(user)
+	if (getSavedPlaylists() == false) {
+		console.log('I should do this')
+		createUser(user, playlists).then(response => {
+			res.send(response)
+		}).catch(err => res.send(err))
+	} else {
+		console.log('I should do this')
+		updatePlaylists(user, playlists).then(response => {
+			res.send(response)
+		}).catch(err => res.send(err))
+	}
+})
+
 //SQLite functions
 
 function getSavedPlaylists(userID) {
@@ -121,7 +146,7 @@ function getSavedPlaylists(userID) {
 			if (rows.length) {
 				resolve(rows);
 			} else {
-				resolve('No such user')
+				resolve(false)
 			}
 		});
 		db.close()

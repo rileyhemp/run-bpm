@@ -166,13 +166,29 @@ export default {
 		},
 		saveCreated(id) {
 			console.log(id);
+			//Get local stash
+			let saved = JSON.parse(localStorage.getItem("stashedPlaylists"));
 			//Clear local stash
 			localStorage.getItem("stashedPlaylists")
 				? localStorage.removeItem("stashedPlaylists")
 				: null;
+			//If saved playlists, add the new one to it. Otherwise, just send the one.
+			saved ? saved.ids.push(id) : null;
 			//Save playlist to database
+			this.$http
+				.post("http://localhost:3000/save-playlists", {
+					data: {
+						user: this.$attrs.user.id,
+						playlists: saved ? JSON.stringify(saved.ids) : id
+					}
+				})
+				.then(response => {
+					console.log(response);
+				})
+				.catch(err => console.log(err));
 		},
 		stashCreated(id) {
+			//Saves the created playlists locally until user is finished with track set
 			const stashedLists = localStorage.getItem("stashedPlaylists")
 				? JSON.parse(localStorage.getItem("stashedPlaylists"))
 				: { ids: [] };
