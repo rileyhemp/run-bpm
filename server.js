@@ -5,93 +5,6 @@ const jwt = require("jsonwebtoken");
 const _ = require("lodash")
 const sqlite3 = require('sqlite3').verbose()
 
-// open the database
-// let db = new sqlite3.Database('./db/sample.db');
-
-// let languages = ['c++', 'python', 'js']
-// let placeholders = languages.map((language) =>
-// 	'(?)').join(',')
-
-// let sql = 'INSERT INTO langs(name) VALUES ' + placeholders
-
-
-// db.run(sql, languages, function (err) {
-// 	if (err) {
-// 		return console.error(err.message)
-// 	}
-// 	console.log('Rows inserted' + this.changes)
-// })
-
-// let db = new sqlite3.Database('./db/sample.db');
-
-// let data = ['habba', 'Ansi C'];
-
-// let sql = `UPDATE langs
-//             SET name = ?
-//             WHERE name = ?`;
-
-// db.run(sql, data, function (err) {
-// 	if (err) {
-// 		return console.error(err.message);
-// 	}
-// 	console.log(`Row(s) updated: ${this.changes}`);
-
-// });
-
-
-// let db = new sqlite3.Database('./db/sample.db', (err) => {
-// 	if (err) {
-// 		console.error(err.message);
-// 	}
-// });
-
-// let id = 'habba';
-// // delete a row based on id
-// db.run(`DELETE FROM langs WHERE name=?`, id, function (err) {
-// 	if (err) {
-// 		return console.error(err.message);
-// 	}
-// 	console.log(`Row(s) deleted ${this.changes}`);
-// });
-
-// // close the database connection
-// db.close((err) => {
-// 	if (err) {
-// 		return console.error(err.message);
-// 	}
-// });
-
-function getSavedPlaylists(userID) {
-	let db = new sqlite3.Database('./db/users.db')
-	let selectPlaylists = `SELECT DISTINCT (user_playlists) FROM users WHERE user_id = ?`
-	db.serialize(() => {
-		db.all(selectPlaylists, [userID], (err, rows) => {
-			if (err) {
-				throw err;
-			}
-			if (rows.length) {
-				return rows;
-			} else {
-				return 'no user exists'
-			}
-		});
-	})
-}
-
-//Add user
-// let sql = `INSERT INTO users(user_id, user_playlists) VALUES('abc123', 'mycoolplaylist');`
-// db.run(sql, [], function (err) {
-// 	if (err) {
-// 		return console.log(err.message)
-// 	}
-// 	console.log(`A row has been inserted with the user id of ${this.lastID}`)
-// })
-
-
-// close the database connection
-
-
-
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
 	clientSecret: "515a0f00287745c19c006ce63af4d7b6",
@@ -162,6 +75,7 @@ app.get("/get-user-data", function (req, res) {
 	})
 })
 
+
 app.post('/analyze-selected', (req, res) => {
 	getPlaylistDetails(req.body.data.playlists).then(details => {
 		const trackIDs = _.chunk(getIDsFromDetails(details), 100)
@@ -185,6 +99,66 @@ app.post('/create-playlist', (req, res) => {
 		res.send(response)
 	}).catch(err => res.send(err))
 })
+
+app.get("/get-saved-playlists", function (req, res) {
+	let userID = req.query.id
+	getSavedPlaylists(userID).then((response => {
+		console.log(response)
+		res.send(response)
+	}))
+})
+
+//SQLite functions
+
+function getSavedPlaylists(userID) {
+	let db = new sqlite3.Database('./db/users.db')
+	let sql = `SELECT DISTINCT (user_playlists) FROM users WHERE user_id = ?`
+	return new Promise((resolve, reject) => {
+		db.all(sql, [userID], (err, rows) => {
+			if (err) {
+				reject(err);
+			}
+			if (rows.length) {
+				resolve(rows);
+			} else {
+				resolve('No such user')
+			}
+		});
+		db.close()
+	})
+}
+
+function createUser(userID, userPlaylists) {
+	let db = new sqlite3.Database('./db/users.db')
+	let sql = `INSERT INTO users(user_id, user_playlists) VALUES(${userID}, ${userPlaylists});`
+	return new Promise((resolve, reject) => {
+		db.run(sql, [], function (err) {
+			if (err) {
+				reject(err.message)
+			} else {
+				resolve('Done')
+			}
+		})
+		db.close()
+	})
+}
+
+function updatePlaylists(userID, userPlaylists) {
+	let db = new sqlite3.Database('./db/users.db')
+	let sql = `UPDATE users
+			SET user_playlists = ${userPlaylists}
+			WHERE user_id = ${userID}`;
+	return new Promise((resolve, reject) => {
+		db.run(sql, [], function (err) {
+			if (err) {
+				reject(err.message)
+			} else {
+				resolve('Done')
+			}
+		})
+		db.close()
+	})
+}
 
 function createPlaylist(user, playlistName, tracks) {
 	return new Promise((resolve, reject) => {
@@ -229,9 +203,11 @@ function getURIsFromIDs(IDs) {
 	return trackURIs
 }
 
+
 app.listen(3000, function () {
 	console.log("Listening on port 3000");
 });
+
 
 
 

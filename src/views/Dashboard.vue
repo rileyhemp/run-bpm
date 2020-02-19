@@ -22,9 +22,16 @@ export default {
 		getUserData() {
 			this.$http
 				.get("http://localhost:3000/get-user-data")
-				.then(data => {
-					this.userData = data.data.userData;
-					this.userPlaylists = data.data.userPlaylists;
+				.then(response => {
+					this.userData = response.data.userData;
+					this.userPlaylists = response.data.userPlaylists;
+					this.$http
+						.get(
+							`http://localhost:3000/get-saved-playlists?id=${this.userData.id}`
+						)
+						.then(response => {
+							console.log(response);
+						});
 				})
 				.catch(err => console.log(err));
 		}
