@@ -4,7 +4,7 @@ const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash")
 const UserDB = require('./sql')
-const DatabasePath = './server/db/users.db'
+const DatabasePath = './server/db/playlists.db'
 
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
@@ -20,7 +20,6 @@ const scopes = [
 ];
 
 const spotifyApi = new SpotifyWebApi(credentials);
-const db = new UserDB(DatabasePath)
 
 const allowCrossDomain = function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
@@ -33,6 +32,7 @@ app.use(allowCrossDomain);
 app.use(express.json())
 
 app.get("/get-user-playlists", function (req, res) {
+	const db = new UserDB(DatabasePath)
 	let userID = req.query.id
 	//Returns user playlists if they exist
 	db.getUserPlaylists(userID).then(response => {
@@ -105,26 +105,24 @@ app.post('/analyze-selected', (req, res) => {
 app.post('/create-playlist', (req, res) => {
 	let request = req.body.data
 	createPlaylist(request.userID, request.name, request.tracks).then(response => {
-		res.send(response)
-	}).catch(err => res.send(err))
+		res.statusCode = 201; res.send(response)
+	}).catch(err => { res.statusCode = 500; res.send(err) })
 })
 
 function createPlaylist(userID, playlistName, tracks) {
-	let playlistID = new Date().getTime()
 	return new Promise((resolve, reject) => {
-		// spotifyApi.createPlaylist(userID, playlistName).then(response => 
-		// 	{
-		// 	const playlistID = response.body.id
-		// 	spotifyApi.addTracksToPlaylist(playlistID, getURIsFromIDs(tracks)).then(response => 
-		// 		{
-		// 		resolve({ playlistID: playlistID })
-		// 	}).catch(err => reject(err))
-		// }).catch(err => reject(err))
-
-		//Save to database
-		db.savePlaylist(playlistID, userID).then(response => {
-			console.log(response)
-		})
+		//Create the playlist
+		spotifyApi.createPlaylist(userID, playlistName).then(response => {
+			//Add tracks to the playlist
+			const playlistID = response.body.id
+			spotifyApi.addTracksToPlaylist(playlistID, getURIsFromIDs(tracks)).then(response => {
+				//Save the playlist to apps database
+				const db = new UserDB(DatabasePath)
+				db.savePlaylist(playlistID, userID).then(response => {
+					resolve(response)
+				}).catch(err => reject(err.message))
+			}).catch(err => reject(err.message))
+		}).catch(err => reject(err.message))
 	})
 }
 

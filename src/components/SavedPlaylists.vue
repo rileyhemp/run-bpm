@@ -1,8 +1,6 @@
 <template>
 	<v-list two-line>
-		<add-button />
-		<v-subheader>My Playlists</v-subheader>
-		<v-list-item>
+		<v-list-item v-for="playlist in $attrs.playlists" :key="playlist.key">
 			<v-list-item-content>
 				<v-list-item-title>Title</v-list-item-title>
 				<v-list-item-subtitle>Description</v-list-item-subtitle>
@@ -16,11 +14,7 @@
 </template>
 
 <script>
-import AddNewButtonVue from "./AddNewButton.vue";
-
 export default {
-	components: {
-		"add-button": AddNewButtonVue
-	}
+	components: {}
 };
 </script>

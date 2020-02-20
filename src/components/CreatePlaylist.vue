@@ -160,10 +160,6 @@ export default {
 					console.log("Something went wrong", err);
 				});
 		},
-		// savePlaylist(playlistID) {
-		// 	console.log(playlistID);
-		// 	this.$http.post("http://localhost:3000/save-playlist")
-		// },
 		doneCheck() {
 			//Check if user is done or wants to add more playlists
 			this.finishedWithSelection

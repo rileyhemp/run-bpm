@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<v-row class="ma-1">
-			<v-btn text>Back</v-btn>
+			<v-btn text @click="$router.push('dashboard')">Back</v-btn>
 			<v-spacer />
 			<v-btn
 				color="primary"

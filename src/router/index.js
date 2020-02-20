@@ -3,10 +3,10 @@ import VueRouter from "vue-router";
 import Authentication from "../views/Authentication.vue";
 import Redirect from "../views/Redirect.vue";
 import Connect from "../views/Connect.vue";
-import Dashboard from "../views/Dashboard.vue";
-import ImportVue from "../components/Import.vue";
-import CreateVue from "../components/CreatePlaylist.vue"
-import GeneratedPlaylistsVue from '../components/GeneratedPlaylists'
+import App from "../views/App.vue";
+import Import from "../components/Import.vue";
+import Create from "../components/CreatePlaylist.vue"
+import Home from '../components/Home.vue'
 
 Vue.use(VueRouter);
 
@@ -28,22 +28,22 @@ const routes = [
 	},
 	{
 		path: "/dashboard",
-		component: Dashboard,
+		component: App,
 		children: [
 			{
 				path: '',
-				name: 'Dashboard',
-				component: GeneratedPlaylistsVue
+				name: 'Home',
+				component: Home
 			},
 			{
 				path: '/import',
 				name: 'Import',
-				component: ImportVue
+				component: Import
 			},
 			{
 				path: '/create',
 				name: 'Create',
-				component: CreateVue
+				component: Create
 			}
 		]
 	},

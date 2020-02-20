@@ -22,7 +22,7 @@ class UserDB extends sqlite3.Database {
 				if (err) {
 					reject(err.message)
 				}
-				resolve("Playlist " + playlistID + " added successfully!")
+				resolve()
 			})
 			this.close()
 		})
