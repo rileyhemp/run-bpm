@@ -3,7 +3,8 @@ const app = express();
 const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash")
-const sqlite3 = require('sqlite3').verbose()
+const UserDB = require('./sql')
+const DatabasePath = './server/db/users.db'
 
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
@@ -19,6 +20,7 @@ const scopes = [
 ];
 
 const spotifyApi = new SpotifyWebApi(credentials);
+const db = new UserDB(DatabasePath)
 
 const allowCrossDomain = function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
@@ -26,16 +28,17 @@ const allowCrossDomain = function (req, res, next) {
 	res.header("Access-Control-Allow-Headers", "*");
 	next();
 };
-// let db = new sqlite3.Database('./db/users.db')
-// let sql = `CREATE TABLE users (
-//     user_id TEXT NOT NULL,
-//     user_playlists TEXT NOT NULL
-// );`
-
-// db.run(sql)
 
 app.use(allowCrossDomain);
 app.use(express.json())
+
+app.get("/get-user-playlists", function (req, res) {
+	let userID = req.query.id
+	//Returns user playlists if they exist
+	db.getUserPlaylists(userID).then(response => {
+		res.send(response)
+	}).catch(err => res.send(err))
+})
 
 app.get("/get-auth-url", function (req, res) {
 	let authURL = spotifyApi.createAuthorizeURL(scopes)
@@ -82,7 +85,6 @@ app.get("/get-user-data", function (req, res) {
 	})
 })
 
-
 app.post('/analyze-selected', (req, res) => {
 	getPlaylistDetails(req.body.data.playlists).then(details => {
 		const trackIDs = _.chunk(getIDsFromDetails(details), 100)
@@ -107,92 +109,22 @@ app.post('/create-playlist', (req, res) => {
 	}).catch(err => res.send(err))
 })
 
-app.get("/get-saved-playlists", function (req, res) {
-	let userID = req.query.id
-	getSavedPlaylists(userID).then((response => {
-		console.log(response)
-		res.send(response)
-	}))
-})
-
-app.post("/save-playlists", (req, res) => {
-	let user = req.body.data.user
-	let playlists = req.body.data.playlists
-	console.log(playlists)
-	console.log(user)
-	if (getSavedPlaylists() == false) {
-		console.log('I should do this')
-		createUser(user, playlists).then(response => {
-			res.send(response)
-		}).catch(err => res.send(err))
-	} else {
-		console.log('I should do this')
-		updatePlaylists(user, playlists).then(response => {
-			res.send(response)
-		}).catch(err => res.send(err))
-	}
-})
-
-//SQLite functions
-
-function getSavedPlaylists(userID) {
-	let db = new sqlite3.Database('./db/users.db')
-	let sql = `SELECT DISTINCT (user_playlists) FROM users WHERE user_id = ?`
-	return new Promise((resolve, reject) => {
-		db.all(sql, [userID], (err, rows) => {
-			if (err) {
-				reject(err);
-			}
-			if (rows.length) {
-				resolve(rows);
-			} else {
-				resolve(false)
-			}
-		});
-		db.close()
-	})
-}
-
-function createUser(userID, userPlaylists) {
-	let db = new sqlite3.Database('./db/users.db')
-	let sql = `INSERT INTO users(user_id, user_playlists) VALUES(${userID}, ${userPlaylists});`
-	return new Promise((resolve, reject) => {
-		db.run(sql, [], function (err) {
-			if (err) {
-				reject(err.message)
-			} else {
-				resolve('Done')
-			}
-		})
-		db.close()
-	})
-}
-
-function updatePlaylists(userID, userPlaylists) {
-	let db = new sqlite3.Database('./db/users.db')
-	let sql = `UPDATE users
-			SET user_playlists = ${userPlaylists}
-			WHERE user_id = ${userID}`;
-	return new Promise((resolve, reject) => {
-		db.run(sql, [], function (err) {
-			if (err) {
-				reject(err.message)
-			} else {
-				resolve('Done')
-			}
-		})
-		db.close()
-	})
-}
-
 function createPlaylist(user, playlistName, tracks) {
 	return new Promise((resolve, reject) => {
-		spotifyApi.createPlaylist(user, playlistName).then(response => {
-			const playlistID = response.body.id
-			spotifyApi.addTracksToPlaylist(playlistID, getURIsFromIDs(tracks)).then(response => {
-				resolve({ playlistID: playlistID })
-			}).catch(err => reject(err))
-		}).catch(err => reject(err))
+		let playlistID = new Date().getTime()
+		// spotifyApi.createPlaylist(user, playlistName).then(response => 
+		// 	{
+		// 	const playlistID = response.body.id
+		// 	spotifyApi.addTracksToPlaylist(playlistID, getURIsFromIDs(tracks)).then(response => 
+		// 		{
+		// 		resolve({ playlistID: playlistID })
+		// 	}).catch(err => reject(err))
+		// }).catch(err => reject(err))
+
+		//Save to database
+		UserDB.save(playlistID, userID).then(response => {
+			console.log(response)
+		}).catch(err => console.log(err))
 	})
 }
 

@@ -15,7 +15,8 @@ export default {
 	data: function() {
 		return {
 			userData: Object,
-			userPlaylists: Object
+			userPlaylists: Object,
+			displaySaved: false
 		};
 	},
 	methods: {
@@ -25,6 +26,7 @@ export default {
 				.then(response => {
 					this.userData = response.data.userData;
 					this.userPlaylists = response.data.userPlaylists;
+					//this.getSavedPlaylists()
 					this.$http
 						.get(
 							`http://localhost:3000/get-saved-playlists?id=${this.userData.id}`

@@ -55,7 +55,7 @@
 				:ripple="false"
 				@click="this.createPlaylistFromSelection"
 				class="plain-btn"
-			>{{addButtonTxt}}</v-btn>
+			>Add another</v-btn>
 			<v-spacer />
 			<v-btn color="primary" @click="createPlaylistFromSelection(); finishedWithSelection=true">Done</v-btn>
 		</v-row>
@@ -96,8 +96,7 @@ export default {
 			sliderRange: [100, 200],
 			renderKey: 1,
 			playlistName: undefined,
-			finishedWithSelection: false,
-			addButtonTxt: "Add another"
+			finishedWithSelection: false
 		};
 	},
 	computed: {
@@ -141,6 +140,7 @@ export default {
 			//Get array of selected track's IDs.
 			const trackIDs = getIDsFromDetails(this.selectedTracks);
 			this.isLoading = true;
+			//Create the playlist
 			this.$http
 				.post("http://localhost:3000/create-playlist", {
 					data: {
@@ -153,56 +153,32 @@ export default {
 					}
 				})
 				.then(response => {
-					//Check if user is done or wants to add more playlists
-					this.finishedWithSelection
-						? this.saveCreated(response.data.playlistID)
-						: this.stashCreated(response.data.playlistID);
-					this.isLoading = false;
+					console.log(response);
 				})
 				.catch(err => {
 					this.isLoading = false;
 					console.log("Something went wrong", err);
 				});
 		},
-		saveCreated(id) {
-			console.log(id);
-			//Get local stash
-			let saved = JSON.parse(localStorage.getItem("stashedPlaylists"));
-			//Clear local stash
-			localStorage.getItem("stashedPlaylists")
-				? localStorage.removeItem("stashedPlaylists")
-				: null;
-			//If saved playlists, add the new one to it. Otherwise, just send the one.
-			saved ? saved.ids.push(id) : null;
-			//Save playlist to database
-			this.$http
-				.post("http://localhost:3000/save-playlists", {
-					data: {
-						user: this.$attrs.user.id,
-						playlists: saved ? JSON.stringify(saved.ids) : id
-					}
-				})
-				.then(response => {
-					console.log(response);
-				})
-				.catch(err => console.log(err));
+		// savePlaylist(playlistID) {
+		// 	console.log(playlistID);
+		// 	this.$http.post("http://localhost:3000/save-playlist")
+		// },
+		doneCheck() {
+			//Check if user is done or wants to add more playlists
+			this.finishedWithSelection
+				? this.$router.push("dashboard")
+				: this.resetScreen();
+			this.isLoading = false;
 		},
-		stashCreated(id) {
-			//Saves the created playlists locally until user is finished with track set
-			const stashedLists = localStorage.getItem("stashedPlaylists")
-				? JSON.parse(localStorage.getItem("stashedPlaylists"))
-				: { ids: [] };
-			stashedLists.ids.push(id);
-			localStorage.setItem(
-				"stashedPlaylists",
-				JSON.stringify(stashedLists)
-			);
-			//Reset the selection
+		resetScreen() {
+			//Get the users created playlists for session
+			//Get specific list vs get all lists
+
+			//Reset the selection, slider range, and chart
 			this.playlistName = undefined;
 			this.sliderRange = [100, 200];
 			setTimeout(() => this.filterChartData(), 150);
-			//Change 'add another' to 'save' so they aren't forced to add another list
-			this.addButtonTxt = "Save";
 		},
 		initChartData() {
 			//Double tempo for tracks under 100bpm.
@@ -291,6 +267,12 @@ export default {
 	// 			console.log(err);
 	// 		});
 	// }
+	//Saves the created playlists locally until user is finished with track set
+	// const saved = localStorage.getItem("stashedPlaylists")
+	// 	? JSON.parse(localStorage.getItem("stashedPlaylists"))
+	// 	: [];
+	// saved.push(id);
+	// localStorage.setItem("stashedPlaylists", JSON.stringify(saved));
 };
 </script>
 
@@ -299,3 +281,6 @@ export default {
 	background-color: transparent;
 }
 </style>
+
+
+
