@@ -104,15 +104,15 @@ app.post('/analyze-selected', (req, res) => {
 
 app.post('/create-playlist', (req, res) => {
 	let request = req.body.data
-	createPlaylist(request.user, request.name, request.tracks).then(response => {
+	createPlaylist(request.userID, request.name, request.tracks).then(response => {
 		res.send(response)
 	}).catch(err => res.send(err))
 })
 
-function createPlaylist(user, playlistName, tracks) {
+function createPlaylist(userID, playlistName, tracks) {
+	let playlistID = new Date().getTime()
 	return new Promise((resolve, reject) => {
-		let playlistID = new Date().getTime()
-		// spotifyApi.createPlaylist(user, playlistName).then(response => 
+		// spotifyApi.createPlaylist(userID, playlistName).then(response => 
 		// 	{
 		// 	const playlistID = response.body.id
 		// 	spotifyApi.addTracksToPlaylist(playlistID, getURIsFromIDs(tracks)).then(response => 
@@ -122,9 +122,9 @@ function createPlaylist(user, playlistName, tracks) {
 		// }).catch(err => reject(err))
 
 		//Save to database
-		UserDB.save(playlistID, userID).then(response => {
+		db.savePlaylist(playlistID, userID).then(response => {
 			console.log(response)
-		}).catch(err => console.log(err))
+		})
 	})
 }
 

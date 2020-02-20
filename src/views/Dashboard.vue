@@ -29,7 +29,7 @@ export default {
 					//this.getSavedPlaylists()
 					this.$http
 						.get(
-							`http://localhost:3000/get-saved-playlists?id=${this.userData.id}`
+							`http://localhost:3000/get-user-playlists?id=${this.userData.id}`
 						)
 						.then(response => {
 							console.log(response);

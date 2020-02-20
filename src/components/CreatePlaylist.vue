@@ -144,7 +144,7 @@ export default {
 			this.$http
 				.post("http://localhost:3000/create-playlist", {
 					data: {
-						user: this.$attrs.user.id,
+						userID: this.$attrs.user.id,
 						tracks: trackIDs,
 						name:
 							this.playlistName != undefined

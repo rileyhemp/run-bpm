@@ -15,6 +15,18 @@ class UserDB extends sqlite3.Database {
 		)`
 		this.run(sql)
 	}
+	savePlaylist(playlistID, userID) {
+		let sql = `INSERT INTO playlists(playlist_id, owner) VALUES(?,?)`
+		return new Promise((resolve, reject) => {
+			this.run(sql, [playlistID, userID], (err) => {
+				if (err) {
+					reject(err.message)
+				}
+				resolve("Playlist " + playlistID + " added successfully!")
+			})
+			this.close()
+		})
+	}
 	getUserPlaylists(userID) {
 		let sql = `SELECT DISTINCT (playlist_id) FROM playlists WHERE owner = ?`
 		return new Promise((resolve, reject) => {
