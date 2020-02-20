@@ -125,6 +125,19 @@ export default {
 			});
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
+		},
+		tempos: function() {
+			let tempos = [];
+			this.selectedTracks.map(el => {
+				tempos.push(el.features.tempo);
+			});
+			return tempos;
+		},
+		lowBPM: function() {
+			return _.min(this.tempos);
+		},
+		highBPM: function() {
+			return _.max(this.tempos);
 		}
 	},
 	methods: {
@@ -138,8 +151,8 @@ export default {
 			//Collect metadata
 			const metadata = JSON.stringify({
 				name: name,
-				lowBPM: this.sliderRange[0],
-				highBPM: this.sliderRange[1],
+				lowBPM: this.lowBPM,
+				highBPM: this.highBPM,
 				tracks: this.songCount,
 				duration: this.mixDuration
 			});

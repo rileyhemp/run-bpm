@@ -1,7 +1,12 @@
 <template>
 	<div class="dashboard">
 		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" />
-		<router-view :playlists="this.userPlaylists" :user="this.userData" v-bind="$attrs" />
+		<router-view
+			:userPlaylists="this.userPlaylists"
+			:savedPlaylists="this.savedPlaylists"
+			:user="this.userData"
+			v-bind="$attrs"
+		/>
 	</div>
 </template>
 
@@ -16,6 +21,7 @@ export default {
 		return {
 			userData: Object,
 			userPlaylists: Object,
+			savedPlaylists: Object,
 			displaySaved: false
 		};
 	},
@@ -31,7 +37,6 @@ export default {
 							`http://localhost:3000/get-saved-playlists?id=${this.userData.id}`
 						)
 						.then(response => {
-							console.log(response.data);
 							let parsedData = response.data.map(el => {
 								return {
 									id: el.playlist_id,
@@ -39,7 +44,7 @@ export default {
 									metadata: JSON.parse(el.metadata)
 								};
 							});
-							this.userPlaylists = parsedData;
+							this.savedPlaylists = parsedData;
 						});
 				})
 				.catch(err => console.log(err));

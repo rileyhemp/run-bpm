@@ -11,7 +11,7 @@
 		</v-row>
 		<v-row class="mx-1 mt-3" dense>
 			<playlist-card
-				v-for="playlist in this.$attrs.playlists.items"
+				v-for="playlist in this.$attrs.userPlaylists.items"
 				:key="playlist.id"
 				:playlist="playlist"
 				@click.native="selectPlaylist(playlist.id)"
