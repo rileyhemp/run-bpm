@@ -2,8 +2,8 @@
 	<v-list two-line>
 		<v-list-item v-for="playlist in $attrs.playlists" :key="playlist.key">
 			<v-list-item-content>
-				<v-list-item-title>Title</v-list-item-title>
-				<v-list-item-subtitle>Description</v-list-item-subtitle>
+				<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
+				<v-list-item-subtitle>{{playlist.metadata.tracks}} Tracks, {{playlist.metadata.lowBPM}}–{{playlist.metadata.highBPM}}bpm</v-list-item-subtitle>
 			</v-list-item-content>
 			<v-spacer />
 			<v-btn icon>

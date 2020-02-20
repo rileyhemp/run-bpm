@@ -33,7 +33,7 @@
 			<v-text-field label="Title yor mix" hide-details="auto" />
 		</v-row>
 		<v-row class="mt-3">
-			<span class="mx-4 my-2 body-2">{{songCount}} Songs {{mixDuration}}</span>
+			<span class="mx-4 my-2 body-2">{{songCount}} Tracks {{mixDuration}}</span>
 			<!-- <v-spacer /> -->
 			<!-- <v-btn flat text medium>EDIT SELECTION</v-btn> -->
 		</v-row>
@@ -96,19 +96,11 @@ export default {
 			sliderRange: [100, 200],
 			renderKey: 1,
 			playlistName: undefined,
-			finishedWithSelection: false
+			finishedWithSelection: false,
+			defaultPlaylistName: "Running Playlist"
 		};
 	},
 	computed: {
-		defaultPlaylistName: function() {
-			return (
-				this.sliderRange[0] +
-				"–" +
-				this.sliderRange[1] +
-				"bpm -- " +
-				new Date().getTime()
-			);
-		},
 		selectedTracks: function() {
 			let tracksArray = [];
 			Object.keys(this.audioFeatures).forEach(i => {
@@ -137,19 +129,29 @@ export default {
 	},
 	methods: {
 		createPlaylistFromSelection() {
+			const name =
+				this.playlistName != undefined
+					? this.playlistName
+					: this.defaultPlaylistName;
 			//Get array of selected track's IDs.
 			const trackIDs = getIDsFromDetails(this.selectedTracks);
+			//Collect metadata
+			const metadata = JSON.stringify({
+				name: name,
+				lowBPM: this.sliderRange[0],
+				highBPM: this.sliderRange[1],
+				tracks: this.songCount,
+				duration: this.mixDuration
+			});
 			this.isLoading = true;
 			//Create the playlist
 			this.$http
 				.post("http://localhost:3000/create-playlist", {
 					data: {
 						userID: this.$attrs.user.id,
-						tracks: trackIDs,
-						name:
-							this.playlistName != undefined
-								? this.playlistName
-								: this.defaultPlaylistName
+						trackIDs: trackIDs,
+						metadata: metadata,
+						name: name
 					}
 				})
 				.then(response => {

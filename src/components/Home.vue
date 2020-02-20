@@ -2,7 +2,7 @@
 	<div class="dashboard-wrapper">
 		<add-button />
 		<v-subheader>My Playlists</v-subheader>
-		<saved-playlists v-bind="$attrs" />
+		<saved-playlists v-bind="$attrs" v-if="$attrs.playlists.length" />
 	</div>
 </template>
 

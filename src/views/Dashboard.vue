@@ -28,10 +28,18 @@ export default {
 					this.userPlaylists = response.data.userPlaylists;
 					this.$http
 						.get(
-							`http://localhost:3000/get-user-playlists?id=${this.userData.id}`
+							`http://localhost:3000/get-saved-playlists?id=${this.userData.id}`
 						)
 						.then(response => {
-							this.userPlaylists = response.data;
+							console.log(response.data);
+							let parsedData = response.data.map(el => {
+								return {
+									id: el.playlist_id,
+									tracks: JSON.parse(el.tracks),
+									metadata: JSON.parse(el.metadata)
+								};
+							});
+							this.userPlaylists = parsedData;
 						});
 				})
 				.catch(err => console.log(err));

@@ -11,14 +11,16 @@ class UserDB extends sqlite3.Database {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			playlist_id TEXT NOT NULL,
 			owner TEXT NOT NULL,
-			description TEXT
+			tracks TEXT NOT NULL,
+			metadata TEXT NOT NULL
 		)`
 		this.run(sql)
 	}
-	savePlaylist(playlistID, userID) {
-		let sql = `INSERT INTO playlists(playlist_id, owner) VALUES(?,?)`
+	savePlaylist(playlistID, userID, trackIDs, metadata) {
+		let tracks = JSON.stringify(trackIDs)
+		let sql = `INSERT INTO playlists(playlist_id, owner, tracks, metadata) VALUES(?,?,?,?)`
 		return new Promise((resolve, reject) => {
-			this.run(sql, [playlistID, userID], (err) => {
+			this.run(sql, [playlistID, userID, tracks, metadata], (err) => {
 				if (err) {
 					reject(err.message)
 				}
@@ -27,8 +29,8 @@ class UserDB extends sqlite3.Database {
 			this.close()
 		})
 	}
-	getUserPlaylists(userID) {
-		let sql = `SELECT DISTINCT (playlist_id) FROM playlists WHERE owner = ?`
+	getSavedPlaylists(userID) {
+		let sql = `SELECT * FROM playlists WHERE owner = ?`
 		return new Promise((resolve, reject) => {
 			this.all(sql, [userID], (err, rows) => {
 				if (err) {

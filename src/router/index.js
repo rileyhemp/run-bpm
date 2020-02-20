@@ -3,7 +3,7 @@ import VueRouter from "vue-router";
 import Authentication from "../views/Authentication.vue";
 import Redirect from "../views/Redirect.vue";
 import Connect from "../views/Connect.vue";
-import App from "../views/App.vue";
+import Dashboard from "../views/Dashboard.vue";
 import Import from "../components/Import.vue";
 import Create from "../components/CreatePlaylist.vue"
 import Home from '../components/Home.vue'
@@ -28,11 +28,11 @@ const routes = [
 	},
 	{
 		path: "/dashboard",
-		component: App,
+		component: Dashboard,
 		children: [
 			{
 				path: '',
-				name: 'Home',
+				name: 'Dashboard',
 				component: Home
 			},
 			{

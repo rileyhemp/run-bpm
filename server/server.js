@@ -4,7 +4,7 @@ const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash")
 const UserDB = require('./sql')
-const DatabasePath = './server/db/playlists.db'
+const DatabasePath = './server/db/new.db'
 
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
@@ -30,15 +30,6 @@ const allowCrossDomain = function (req, res, next) {
 
 app.use(allowCrossDomain);
 app.use(express.json())
-
-app.get("/get-user-playlists", function (req, res) {
-	const db = new UserDB(DatabasePath)
-	let userID = req.query.id
-	//Returns user playlists if they exist
-	db.getUserPlaylists(userID).then(response => {
-		res.send(response)
-	}).catch(err => res.send(err))
-})
 
 app.get("/get-auth-url", function (req, res) {
 	let authURL = spotifyApi.createAuthorizeURL(scopes)
@@ -85,9 +76,18 @@ app.get("/get-user-data", function (req, res) {
 	})
 })
 
+app.get("/get-saved-playlists", function (req, res) {
+	const db = new UserDB(DatabasePath)
+	let userID = req.query.id
+	//Fetch user playlists if they exist
+	db.getSavedPlaylists(userID).then(response => {
+		res.send(response)
+	}).catch(err => res.send(err))
+})
+
 app.post('/analyze-selected', (req, res) => {
-	getPlaylistDetails(req.body.data.playlists).then(details => {
-		const trackIDs = _.chunk(getIDsFromDetails(details), 100)
+	getPlaylistTracks(req.body.data.playlists).then(details => {
+		const trackIDs = _.chunk(getIDsFromTracks(details), 100)
 		const trackDetails = []
 		for (let i = 0; i < trackIDs.length; i++) {
 			trackDetails.push(new Promise((resolve, reject) => {
@@ -104,29 +104,29 @@ app.post('/analyze-selected', (req, res) => {
 
 app.post('/create-playlist', (req, res) => {
 	let request = req.body.data
-	createPlaylist(request.userID, request.name, request.tracks).then(response => {
+	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata).then(response => {
 		res.statusCode = 201; res.send(response)
-	}).catch(err => { res.statusCode = 500; res.send(err) })
+	}).catch(err => res.send("Something went wrong. Error: " + err))
 })
 
-function createPlaylist(userID, playlistName, tracks) {
+function createPlaylist(userID, playlistName, trackIDs, metadata) {
 	return new Promise((resolve, reject) => {
 		//Create the playlist
 		spotifyApi.createPlaylist(userID, playlistName).then(response => {
 			//Add tracks to the playlist
 			const playlistID = response.body.id
-			spotifyApi.addTracksToPlaylist(playlistID, getURIsFromIDs(tracks)).then(response => {
+			spotifyApi.addTracksToPlaylist(playlistID, getURIsFromIDs(trackIDs)).then(response => {
 				//Save the playlist to apps database
 				const db = new UserDB(DatabasePath)
-				db.savePlaylist(playlistID, userID).then(response => {
-					resolve(response)
+				db.savePlaylist(playlistID, userID, trackIDs, metadata).then(response => {
+					resolve("Playlist added")
 				}).catch(err => reject(err.message))
 			}).catch(err => reject(err.message))
 		}).catch(err => reject(err.message))
 	})
 }
 
-function getPlaylistDetails(playlists) {
+function getPlaylistTracks(playlists) {
 	const playlistDetails = []
 	return new Promise((resolve, reject) => {
 		for (let i = 0; i < playlists.length; i++) {
@@ -142,7 +142,7 @@ function getPlaylistDetails(playlists) {
 	})
 }
 
-function getIDsFromDetails(details) {
+function getIDsFromTracks(details) {
 	const trackIDs = []
 	details.forEach(track => {
 		trackIDs.push(track.track.id)
