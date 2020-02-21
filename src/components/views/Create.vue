@@ -49,7 +49,7 @@
 			</v-btn>
 			<span class="py-2 body-3">Make public</span>
 		</v-row>
-		<v-row class="pr-4 mt-8">
+		<v-row class="mt-8">
 			<v-btn
 				text
 				:ripple="false"
@@ -57,7 +57,11 @@
 				class="plain-btn"
 			>Add another</v-btn>
 			<v-spacer />
-			<v-btn color="primary" @click="createPlaylistFromSelection(); finishedWithSelection=true">Done</v-btn>
+			<v-btn
+				color="primary"
+				class="mr-4"
+				@click="createPlaylistFromSelection(); finishedWithSelection=true"
+			>Done</v-btn>
 			<saved-playlists v-bind="$attrs" :isSession="true" @updatePlaylists="updatePlaylists" />
 		</v-row>
 	</v-container>

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="full-width">
 		<v-list two-line v-if="!$attrs.savedPlaylists.length && !isSession">
 			<v-list-item>
 				<v-list-item-content>
@@ -36,3 +36,9 @@ export default {
 	}
 };
 </script>
+
+<style scoped>
+.full-width {
+	width: 100%;
+}
+</style>
