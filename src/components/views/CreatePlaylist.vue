@@ -159,7 +159,7 @@ export default {
 			this.isLoading = true;
 			//Create the playlist
 			this.$http
-				.post("http://localhost:3000/create-playlist", {
+				.post("http://localhost:3000/playlist", {
 					data: {
 						userID: this.$attrs.user.id,
 						trackIDs: trackIDs,
@@ -265,7 +265,7 @@ export default {
 	}
 	// mounted: function() {
 	// 	this.$http
-	// 		.post("http://localhost:3000/analyze-selected", {
+	// 		.post("http://localhost:3000/analyze-tracks", {
 	// 			data: {
 	// 				playlists: this.$route.params.playlists
 	// 			}

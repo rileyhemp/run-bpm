@@ -76,7 +76,7 @@ app.get("/get-user-data", function (req, res) {
 	})
 })
 
-app.get("/get-saved-playlists", function (req, res) {
+app.get("/playlists", function (req, res) {
 	const db = new UserDB(DatabasePath)
 	let userID = req.query.id
 	//Fetch user playlists if they exist
@@ -85,7 +85,19 @@ app.get("/get-saved-playlists", function (req, res) {
 	}).catch(err => res.send(err))
 })
 
-app.post('/analyze-selected', (req, res) => {
+app.post('/playlists', (req, res) => {
+	let request = req.body.data
+	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata).then(response => {
+		res.statusCode = 201; res.send(response)
+	}).catch(err => res.send("Something went wrong. Error: " + err))
+})
+
+app.delete('/playlists', (req, res) => {
+	console.log(req.query.id)
+	console.log('yoyoyo')
+})
+
+app.post('/analyze-tracks', (req, res) => {
 	getPlaylistTracks(req.body.data.playlists).then(details => {
 		const trackIDs = _.chunk(getIDsFromTracks(details), 100)
 		const trackDetails = []
@@ -100,13 +112,6 @@ app.post('/analyze-selected', (req, res) => {
 			res.send(_.flatten(data), deets)
 		}).catch(err => res.send(err))
 	})
-})
-
-app.post('/create-playlist', (req, res) => {
-	let request = req.body.data
-	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata).then(response => {
-		res.statusCode = 201; res.send(response)
-	}).catch(err => res.send("Something went wrong. Error: " + err))
 })
 
 function createPlaylist(userID, playlistName, trackIDs, metadata) {

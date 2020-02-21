@@ -34,7 +34,7 @@ export default {
 					this.userPlaylists = response.data.userPlaylists;
 					this.$http
 						.get(
-							`http://localhost:3000/get-saved-playlists?id=${this.userData.id}`
+							`http://localhost:3000/playlists?id=${this.userData.id}`
 						)
 						.then(response => {
 							let parsedData = response.data.map(el => {

@@ -710,7 +710,7 @@ const features = {
 		"content-type": "application/json; charset=utf-8"
 	},
 	"config": {
-		"url": "http://localhost:3000/analyze-selected",
+		"url": "http://localhost:3000/analyze-tracks",
 		"method": "post",
 		"data": "{\"data\":{\"playlists\":[\"0kLOv8Jr3ZgyMPxzWIjJHY\"]}}",
 		"headers": {
