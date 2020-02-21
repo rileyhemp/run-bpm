@@ -29,6 +29,20 @@ class UserDB extends sqlite3.Database {
 			this.close()
 		})
 	}
+	deletePlaylist(playlistID) {
+		let sql = `DELETE FROM playlists WHERE playlist_id = '${playlistID}'`
+		return new Promise((resolve, reject) => {
+			this.run(sql, [], (err) => {
+				if (err) {
+					console.log(err)
+
+					reject(err)
+				}
+				resolve()
+			})
+			this.close()
+		})
+	}
 	getSavedPlaylists(userID) {
 		let sql = `SELECT * FROM playlists WHERE owner = ?`
 		return new Promise((resolve, reject) => {

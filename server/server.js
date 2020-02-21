@@ -88,13 +88,19 @@ app.get("/playlists", function (req, res) {
 app.post('/playlists', (req, res) => {
 	let request = req.body.data
 	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata).then(response => {
-		res.statusCode = 201; res.send(response)
+		res.status(201).send(response)
 	}).catch(err => res.send("Something went wrong. Error: " + err))
 })
 
 app.delete('/playlists', (req, res) => {
-	console.log(req.query.id)
-	console.log('yoyoyo')
+	const db = new UserDB(DatabasePath)
+	//Unfollow the playlist on spotify
+	spotifyApi.unfollowPlaylist(req.query.id).then(() => {
+		//Delete the playlist from the db
+		db.deletePlaylist(req.query.id).then(response => {
+			res.status(204).send()
+		}).catch(err => res.send(err))
+	}).catch(err => res.send(err))
 })
 
 app.post('/analyze-tracks', (req, res) => {

@@ -34,7 +34,8 @@ export default {
 				.then(response => {
 					console.log(response);
 					this.dialog = false;
-				});
+				})
+				.catch(err => console.log(err.message));
 		}
 	}
 };
