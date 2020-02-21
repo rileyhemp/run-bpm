@@ -49,19 +49,35 @@
 			</v-btn>
 			<span class="py-2 body-3">Make public</span>
 		</v-row>
-		<v-row class="mt-8">
-			<v-btn
+		<v-row>
+			<!-- <v-btn
 				text
 				:ripple="false"
 				@click="this.createPlaylistFromSelection"
 				class="plain-btn"
-			>Add another</v-btn>
+			>Add another</v-btn>-->
 			<v-spacer />
 			<v-btn
 				color="primary"
 				class="mr-4"
-				@click="createPlaylistFromSelection(); finishedWithSelection=true"
+				:disabled="loading"
+				@click="this.createPlaylistFromSelection"
 			>Done</v-btn>
+			<v-dialog v-model="confirm" persistent width="300">
+				<v-card v-if="!loading">
+					<v-card-title class="headline">Added playlist "{{playlistName}}"</v-card-title>
+					<v-card-text>Are you finished with this selection?</v-card-text>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn text @click="()=>{this.saveAndReset()}" class="plain-btn">Add another</v-btn>
+						<v-btn
+							color="green darken-1"
+							text
+							@click="()=>{this.updatePlaylists(); this.$router.push('Dashboard')}"
+						>Done</v-btn>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
 			<saved-playlists v-bind="$attrs" :isSession="true" @updatePlaylists="updatePlaylists" />
 		</v-row>
 	</v-container>
@@ -90,7 +106,7 @@ export default {
 	},
 	data: function() {
 		return {
-			loading: true,
+			loading: false,
 			audioFeaturesTemp: features.data,
 			playlistDetailsTemp: details,
 			audioFeatures: Object,
@@ -103,7 +119,8 @@ export default {
 			sliderRange: [100, 200],
 			renderKey: 1,
 			playlistName: undefined,
-			finishedWithSelection: false
+			finishedWithSelection: false,
+			confirm: false
 		};
 	},
 	computed: {
@@ -151,10 +168,11 @@ export default {
 	},
 	methods: {
 		createPlaylistFromSelection() {
-			const name =
+			let name =
 				this.playlistName != undefined
 					? this.playlistName
 					: this.defaultPlaylistName;
+			this.playlistName = name;
 			//Get array of selected track's IDs.
 			const trackIDs = getIDsFromDetails(this.selectedTracks);
 			//Collect metadata
@@ -165,7 +183,7 @@ export default {
 				tracks: this.songCount,
 				duration: this.mixDuration
 			});
-			this.isLoading = true;
+			this.loading = true;
 			//Create the playlist
 			this.$http
 				.post("http://localhost:3000/playlists", {
@@ -173,33 +191,35 @@ export default {
 						userID: this.$attrs.user.id,
 						trackIDs: trackIDs,
 						metadata: metadata,
-						name: name
+						name: this.playlistName
 					}
 				})
 				.then(() => {
-					this.updatePlaylists();
-					this.isLoading = false;
+					this.confirm = true;
+					this.loading = false;
 				})
 				.catch(err => {
 					console.log("Something went wrong", err);
-					this.isLoading = false;
+					this.loading = false;
 				});
 		},
 		updatePlaylists() {
 			this.$emit("updatePlaylists");
 		},
-		doneCheck() {
-			//Check if user is done or wants to add more playlists
-			this.finishedWithSelection
-				? this.$router.push("dashboard")
-				: this.resetScreen();
-			this.isLoading = false;
-		},
-		resetScreen() {
+		// doneCheck() {
+		// 	//Check if user is done or wants to add more playlists
+		// 	this.finishedWithSelection
+		// 		? this.$router.push("dashboard")
+		// 		: this.resetScreen();
+		// 	this.loading = false;
+		// },
+		saveAndReset() {
 			//Get the users created playlists for session
 			//Get specific list vs get all lists
 
 			//Reset the selection, slider range, and chart
+			this.updatePlaylists();
+			this.confirm = false;
 			this.playlistName = undefined;
 			this.sliderRange = [100, 200];
 			setTimeout(() => this.filterChartData(), 150);
