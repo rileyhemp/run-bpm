@@ -6,6 +6,7 @@
 			:savedPlaylists="this.savedPlaylists"
 			:user="this.userData"
 			v-bind="$attrs"
+			@updatePlaylists="updatePlaylists"
 		/>
 	</div>
 </template>
@@ -32,22 +33,23 @@ export default {
 				.then(response => {
 					this.userData = response.data.userData;
 					this.userPlaylists = response.data.userPlaylists;
-					this.$http
-						.get(
-							`http://localhost:3000/playlists?id=${this.userData.id}`
-						)
-						.then(response => {
-							let parsedData = response.data.map(el => {
-								return {
-									id: el.playlist_id,
-									tracks: JSON.parse(el.tracks),
-									metadata: JSON.parse(el.metadata)
-								};
-							});
-							this.savedPlaylists = parsedData;
-						});
+					this.updatePlaylists();
 				})
 				.catch(err => console.log(err));
+		},
+		updatePlaylists() {
+			this.$http
+				.get(`http://localhost:3000/playlists?id=${this.userData.id}`)
+				.then(response => {
+					let parsedData = response.data.map(el => {
+						return {
+							id: el.playlist_id,
+							tracks: JSON.parse(el.tracks),
+							metadata: JSON.parse(el.metadata)
+						};
+					});
+					this.savedPlaylists = parsedData;
+				});
 		}
 	},
 	//create user is authenticated function

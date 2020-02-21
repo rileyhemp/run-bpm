@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<v-list two-line v-if="!$attrs.savedPlaylists.length">
+		<v-list two-line v-if="!$attrs.savedPlaylists.length && !isSession">
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title>Nothing here yet...</v-list-item-title>
@@ -16,7 +16,7 @@
 					<v-list-item-subtitle>{{playlist.metadata.tracks}} Tracks, {{playlist.metadata.lowBPM}}–{{playlist.metadata.highBPM}}bpm</v-list-item-subtitle>
 				</v-list-item-content>
 				<v-spacer />
-				<delete-playlist :playlist="playlist.id" />
+				<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
 			</v-list-item>
 		</v-list>
 	</div>
@@ -25,8 +25,14 @@
 <script>
 import DeletePlaylist from "./DeletePlaylist";
 export default {
+	props: ["isSession"],
 	components: {
 		"delete-playlist": DeletePlaylist
+	},
+	methods: {
+		updatePlaylists() {
+			this.$emit("updatePlaylists");
+		}
 	}
 };
 </script>

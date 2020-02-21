@@ -31,11 +31,11 @@ export default {
 			this.loading = true;
 			this.$http
 				.delete(`http://localhost:3000/playlists?id=${this.playlist}`)
-				.then(response => {
-					console.log(response);
+				.then(() => {
+					this.$emit("updatePlaylists");
 					this.dialog = false;
 				})
-				.catch(err => console.log(err.message));
+				.catch(err => console.log(err));
 		}
 	}
 };

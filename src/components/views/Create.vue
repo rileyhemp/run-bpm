@@ -58,6 +58,7 @@
 			>Add another</v-btn>
 			<v-spacer />
 			<v-btn color="primary" @click="createPlaylistFromSelection(); finishedWithSelection=true">Done</v-btn>
+			<saved-playlists v-bind="$attrs" :isSession="true" @updatePlaylists="updatePlaylists" />
 		</v-row>
 	</v-container>
 </template>
@@ -68,6 +69,7 @@ import details from "@/assets/temp-details";
 import RadarChart from "../special/RadarChart";
 import LineGraph from "../special/LineGraph";
 import VueSlider from "vue-slider-component";
+import SavedPlaylists from "../special/SavedPlaylists";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
@@ -79,6 +81,7 @@ export default {
 	components: {
 		"radar-chart": RadarChart,
 		"line-graph": LineGraph,
+		"saved-playlists": SavedPlaylists,
 		VueSlider
 	},
 	data: function() {
@@ -96,8 +99,7 @@ export default {
 			sliderRange: [100, 200],
 			renderKey: 1,
 			playlistName: undefined,
-			finishedWithSelection: false,
-			defaultPlaylistName: "Running Playlist"
+			finishedWithSelection: false
 		};
 	},
 	computed: {
@@ -138,6 +140,9 @@ export default {
 		},
 		highBPM: function() {
 			return _.max(this.tempos);
+		},
+		defaultPlaylistName: function() {
+			return this.lowBPM + "-" + this.highBPM + "bpm";
 		}
 	},
 	methods: {
@@ -159,7 +164,7 @@ export default {
 			this.isLoading = true;
 			//Create the playlist
 			this.$http
-				.post("http://localhost:3000/playlist", {
+				.post("http://localhost:3000/playlists", {
 					data: {
 						userID: this.$attrs.user.id,
 						trackIDs: trackIDs,
@@ -167,13 +172,17 @@ export default {
 						name: name
 					}
 				})
-				.then(response => {
-					console.log(response);
+				.then(() => {
+					this.updatePlaylists();
+					this.isLoading = false;
 				})
 				.catch(err => {
-					this.isLoading = false;
 					console.log("Something went wrong", err);
+					this.isLoading = false;
 				});
+		},
+		updatePlaylists() {
+			this.$emit("updatePlaylists");
 		},
 		doneCheck() {
 			//Check if user is done or wants to add more playlists

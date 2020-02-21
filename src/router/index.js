@@ -5,7 +5,7 @@ import Redirect from "../components/auth/Redirect.vue";
 import Connect from "../components/containers/Connect.vue";
 import Dashboard from "../components/containers/Dashboard.vue";
 import Import from "../components/views/Import.vue";
-import Create from "../components/views/CreatePlaylist.vue"
+import Create from "../components/views/Create.vue"
 import Home from '../components/views/Home.vue'
 
 Vue.use(VueRouter);
