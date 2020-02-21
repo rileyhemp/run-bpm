@@ -1,12 +1,12 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Authentication from "../views/Authentication.vue";
-import Redirect from "../views/Redirect.vue";
-import Connect from "../views/Connect.vue";
-import Dashboard from "../views/Dashboard.vue";
-import Import from "../components/Import.vue";
-import Create from "../components/CreatePlaylist.vue"
-import Home from '../components/Home.vue'
+import Authentication from "../components/auth/Authentication.vue";
+import Redirect from "../components/auth/Redirect.vue";
+import Connect from "../components/containers/Connect.vue";
+import Dashboard from "../components/containers/Dashboard.vue";
+import Import from "../components/views/Import.vue";
+import Create from "../components/views/CreatePlaylist.vue"
+import Home from '../components/views/Home.vue'
 
 Vue.use(VueRouter);
 

@@ -63,16 +63,16 @@
 </template>
 	
 <script>
-import features from "../assets/temp-features";
-import details from "../assets/temp-details";
-import RadarChart from "../components/RadarChart";
-import LineGraph from "../components/LineGraph";
+import features from "@/assets/temp-features";
+import details from "@/assets/temp-details";
+import RadarChart from "../special/RadarChart";
+import LineGraph from "../special/LineGraph";
 import VueSlider from "vue-slider-component";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
-import msToHMS from "../scripts/msToHMS";
-import getIDsFromDetails from "../scripts/getIDsFromDetails";
+import msToHMS from "@/scripts/msToHMS";
+import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 
 export default {
 	name: "create-playlist",

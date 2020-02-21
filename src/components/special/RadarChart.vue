@@ -10,9 +10,7 @@ const margin = { top: 30, right: 50, bottom: 30, left: 50 },
 		width,
 		window.innerHeight - margin.top - margin.bottom - 20
 	);
-// import { scale } from "d3/d3.min.js";
-import RadarChart from "../scripts/radarChart";
-// import colors from "vuetify/lib/util/colors";
+import RadarChart from "@/scripts/radarChart";
 export default {
 	name: "radar-chart",
 	props: ["chartData", "chartReady"],

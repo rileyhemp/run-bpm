@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import UserAvatar from "../components/UserAvatar";
+import UserAvatar from "../special/UserAvatar";
 export default {
 	name: "Header",
 	components: {

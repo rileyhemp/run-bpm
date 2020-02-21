@@ -16,9 +16,6 @@
 					<v-list-item-subtitle>{{playlist.metadata.tracks}} Tracks, {{playlist.metadata.lowBPM}}–{{playlist.metadata.highBPM}}bpm</v-list-item-subtitle>
 				</v-list-item-content>
 				<v-spacer />
-				<v-btn icon>
-					<v-icon>mdi-pencil</v-icon>
-				</v-btn>
 				<v-dialog v-model="dialog" persistent max-width="290">
 					<template v-slot:activator="{ on }">
 						<v-btn icon v-on="on">

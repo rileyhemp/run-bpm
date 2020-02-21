@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import HeaderVue from "../components/Header.vue";
+import HeaderVue from "../views/Header.vue";
 export default {
 	name: "Dashboard",
 	components: {

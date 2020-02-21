@@ -6,7 +6,7 @@
 
 <script>
 // @ is an alias to /src
-import SpotifyLogin from "@/components/SpotifyLogin.vue";
+import SpotifyLogin from "../special/SpotifyLogin.vue";
 
 export default {
 	name: "Connect",
