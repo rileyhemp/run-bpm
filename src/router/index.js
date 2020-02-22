@@ -2,8 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Authentication from "../components/auth/Authentication.vue";
 import Redirect from "../components/auth/Redirect.vue";
-import Connect from "../components/containers/Connect.vue";
-import Dashboard from "../components/containers/Dashboard.vue";
+import Connect from "../components/views/Connect.vue";
+import Dashboard from "../components/views/Dashboard.vue";
 import Import from "../components/views/Import.vue";
 import Create from "../components/views/Create.vue"
 import Home from '../components/views/Home.vue'

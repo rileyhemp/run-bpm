@@ -11,11 +11,14 @@
 
 		<v-list two-line v-if="$attrs.savedPlaylists.length">
 			<v-list-item v-for="playlist in $attrs.savedPlaylists" :key="playlist.key">
-				<v-list-item-content>
+				<v-btn icon outlined class="mr-2">
+					<v-icon>mdi-play</v-icon>
+				</v-btn>
+				<v-list-item-content class="full-width">
 					<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
 					<v-list-item-subtitle>{{playlist.metadata.tracks}} Tracks, {{playlist.metadata.lowBPM}}–{{playlist.metadata.highBPM}}bpm</v-list-item-subtitle>
 				</v-list-item-content>
-				<v-spacer />
+				<!-- <v-spacer /> -->
 				<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
 			</v-list-item>
 		</v-list>
@@ -23,7 +26,7 @@
 </template>
 
 <script>
-import DeletePlaylist from "./DeletePlaylist";
+import DeletePlaylist from "../specialized/DeletePlaylist";
 export default {
 	props: ["isSession"],
 	components: {
@@ -39,6 +42,6 @@ export default {
 
 <style scoped>
 .full-width {
-	width: 100%;
+	flex: 1 1 100%;
 }
 </style>

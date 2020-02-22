@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import HeaderVue from "../views/Header.vue";
+import HeaderVue from "../containers/Header.vue";
 export default {
 	name: "Dashboard",
 	components: {

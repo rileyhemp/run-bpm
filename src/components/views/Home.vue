@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import AddNewButtonVue from "../special/AddNewButton.vue";
-import SavedPlaylists from "../special/SavedPlaylists";
+import AddNewButtonVue from "../specialized/AddNewButton.vue";
+import SavedPlaylists from "../containers/SavedPlaylists";
 
 export default {
 	components: {

@@ -86,10 +86,10 @@
 <script>
 import features from "@/assets/temp-features";
 import details from "@/assets/temp-details";
-import RadarChart from "../special/RadarChart";
-import LineGraph from "../special/LineGraph";
+import RadarChart from "../specialized/RadarChart";
+import LineGraph from "../specialized/LineGraph";
 import VueSlider from "vue-slider-component";
-import SavedPlaylists from "../special/SavedPlaylists";
+import SavedPlaylists from "../containers/SavedPlaylists";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
