@@ -11,7 +11,7 @@
 
 		<v-list two-line v-if="$attrs.savedPlaylists.length">
 			<v-list-item v-for="playlist in $attrs.savedPlaylists" :key="playlist.key">
-				<launch-playlist />
+				<launch-playlist v-bind="$attrs" />
 				<v-list-item-content class="full-width">
 					<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
 					<v-list-item-subtitle>{{playlist.metadata.tracks}} Tracks, {{playlist.metadata.lowBPM}}–{{playlist.metadata.highBPM}}bpm</v-list-item-subtitle>

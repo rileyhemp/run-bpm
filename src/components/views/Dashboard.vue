@@ -4,6 +4,7 @@
 		<router-view
 			:userPlaylists="this.userPlaylists"
 			:savedPlaylists="this.savedPlaylists"
+			:userDevices="this.userDevices"
 			:user="this.userData"
 			v-bind="$attrs"
 			@updatePlaylists="updatePlaylists"
@@ -23,6 +24,7 @@ export default {
 			userData: Object,
 			userPlaylists: Object,
 			savedPlaylists: Object,
+			userDevices: Object,
 			displaySaved: false
 		};
 	},
@@ -33,6 +35,7 @@ export default {
 				.then(response => {
 					this.userData = response.data.userData;
 					this.userPlaylists = response.data.userPlaylists;
+					this.userDevices = response.data.userDevices;
 					this.updatePlaylists();
 				})
 				.catch(err => console.log(err));

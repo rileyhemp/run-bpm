@@ -16,7 +16,10 @@ const scopes = [
 	"user-read-email",
 	"playlist-read-private",
 	"playlist-modify-public",
-	"playlist-modify-private"
+	"playlist-modify-private",
+	"user-read-playback-state",
+	"user-read-currently-playing",
+	"user-modify-playback-state",
 ];
 
 const spotifyApi = new SpotifyWebApi(credentials);
@@ -59,22 +62,39 @@ app.get("/validate-user", function (req, res) {
 })
 
 app.get("/get-user-data", function (req, res) {
-	let userData
-	let userPlaylists
 	spotifyApi.getMe().then(data => {
-		userData = data.body
-	}).then(() => {
+		let userData = data.body
 		spotifyApi.getUserPlaylists(userData.id).then(data => {
-			userPlaylists = data.body
-			res.send({
-				userData: userData,
-				userPlaylists: userPlaylists
-			})
-		})
-	}).catch(err => {
-		res.send(err)
-	})
+			let userPlaylists = data.body
+			spotifyApi.getMyDevices().then(data => {
+				let userDevices = data.body
+				res.send({
+					userData: userData,
+					userPlaylists: userPlaylists,
+					userDevices: userDevices
+				})
+			}).catch(err => res.send(err.message))
+		}).catch(err => res.send(err.message))
+	}).catch(err => res.send(err.message))
 })
+
+// app.get("/get-user-data", function (req, res) {
+// 	let userData
+// 	let userPlaylists
+// 	spotifyApi.getMe().then(data => {
+// 		userData = data.body
+// 	}).then(() => {
+// 		spotifyApi.getUserPlaylists(userData.id).then(data => {
+// 			userPlaylists = data.body
+// 			res.send({
+// 				userData: userData,
+// 				userPlaylists: userPlaylists
+// 			})
+// 		})
+// 	}).catch(err => {
+// 		res.send(err)
+// 	})
+// })
 
 app.get("/playlists", function (req, res) {
 	const db = new UserDB(DatabasePath)
