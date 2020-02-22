@@ -11,9 +11,7 @@
 
 		<v-list two-line v-if="$attrs.savedPlaylists.length">
 			<v-list-item v-for="playlist in $attrs.savedPlaylists" :key="playlist.key">
-				<v-btn icon outlined class="mr-2">
-					<v-icon>mdi-play</v-icon>
-				</v-btn>
+				<launch-playlist />
 				<v-list-item-content class="full-width">
 					<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
 					<v-list-item-subtitle>{{playlist.metadata.tracks}} Tracks, {{playlist.metadata.lowBPM}}–{{playlist.metadata.highBPM}}bpm</v-list-item-subtitle>
@@ -27,10 +25,12 @@
 
 <script>
 import DeletePlaylist from "../specialized/DeletePlaylist";
+import LaunchPlaylist from "../specialized/LaunchPlaylist";
 export default {
 	props: ["isSession"],
 	components: {
-		"delete-playlist": DeletePlaylist
+		"delete-playlist": DeletePlaylist,
+		"launch-playlist": LaunchPlaylist
 	},
 	methods: {
 		updatePlaylists() {
