@@ -1,13 +1,18 @@
 <template>
 	<div class="dashboard">
+		<v-overlay :value="loading" :z-index="1000">
+			<v-progress-circular indeterminate size="64"></v-progress-circular>
+		</v-overlay>
 		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" />
 		<router-view
 			:userPlaylists="this.userPlaylists"
 			:savedPlaylists="this.savedPlaylists"
 			:userDevices="this.userDevices"
 			:user="this.userData"
+			:loading="this.loading"
 			v-bind="$attrs"
 			@updatePlaylists="updatePlaylists"
+			@updateUserInfo="getUserData"
 		/>
 	</div>
 </template>
@@ -25,11 +30,14 @@ export default {
 			userPlaylists: Object,
 			savedPlaylists: Object,
 			userDevices: Object,
-			displaySaved: false
+			displaySaved: false,
+			loading: false
 		};
 	},
 	methods: {
 		getUserData() {
+			console.log("hi");
+			this.loading = true;
 			this.$http
 				.get("http://localhost:3000/get-user-data")
 				.then(response => {
@@ -37,10 +45,15 @@ export default {
 					this.userPlaylists = response.data.userPlaylists;
 					this.userDevices = response.data.userDevices;
 					this.updatePlaylists();
+					this.loading = false;
 				})
-				.catch(err => console.log(err));
+				.catch(err => {
+					this.loading = false;
+					console.log(err);
+				});
 		},
 		updatePlaylists() {
+			this.loading = true;
 			this.$http
 				.get(`http://localhost:3000/playlists?id=${this.userData.id}`)
 				.then(response => {
@@ -52,6 +65,11 @@ export default {
 						};
 					});
 					this.savedPlaylists = parsedData;
+					this.loading = false;
+				})
+				.catch(err => {
+					this.loading = false;
+					console.log(err);
 				});
 		}
 	},

@@ -1,25 +1,24 @@
 <template>
-	<v-dialog v-model="dialog" persistent max-width="290">
+	<v-dialog v-model="dialog" persistent max-width="300">
 		<template v-slot:activator="{ on }">
 			<v-btn icon outlined class="mr-2" v-on="on">
 				<v-icon>mdi-play</v-icon>
 			</v-btn>
 		</template>
 		<v-card>
-			<v-overlay :value="loading">
-				<v-progress-circular indeterminate size="64"></v-progress-circular>
-			</v-overlay>
-			<v-card-title class="headline">Select your device</v-card-title>
-			<!-- <v-card-text>This action cannot be undone</v-card-text> -->
+			<v-card-title class="headline">Select a device</v-card-title>
 			<v-card-actions>
 				<v-btn-toggle borderless>
-					<v-btn value="device1" text block class="plain-btn justify-start">
-						<v-icon class="mr-2">mdi-cellphone-android</v-icon>
-						<span>Device 1</span>
-					</v-btn>
-					<v-btn value="device1" text block class="plain-btn justify-start">
-						<v-icon class="mr-2">mdi-cellphone-android</v-icon>
-						<span>Device 1</span>
+					<v-btn
+						v-for="device in devices"
+						:key="device.key"
+						:value="device.id"
+						text
+						block
+						class="plain-btn justify-start"
+					>
+						<v-icon class="mr-2">{{getIcon(device.type)}}</v-icon>
+						<span>{{device.name}}</span>
 					</v-btn>
 				</v-btn-toggle>
 			</v-card-actions>
@@ -36,20 +35,20 @@
 export default {
 	data: function() {
 		return {
-			dialog: true,
-			loading: false
+			dialog: true
 		};
 	},
+	computed: {
+		devices: function() {
+			return this.$attrs.userDevices.devices;
+		}
+	},
 	methods: {
+		getIcon(type) {
+			return type === "Computer" ? "mdi-laptop" : null;
+		},
 		refreshDevices() {
-			this.loading = true;
-			this.$http
-				.get("http://localhost:3000/get-user-data")
-				.then(response => {
-					this.$attrs.userDevices = response.data.userDevices;
-					this.loading = false;
-				})
-				.catch(err => console.log(err));
+			this.$emit("updateUserInfo");
 		}
 	}
 };

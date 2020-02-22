@@ -2,7 +2,7 @@
 	<div class="dashboard-wrapper">
 		<add-button />
 		<v-subheader>My Playlists</v-subheader>
-		<saved-playlists v-bind="$attrs" />
+		<saved-playlists v-bind="$attrs" @updateUserInfo="updateUserInfo" />
 	</div>
 </template>
 
@@ -14,6 +14,11 @@ export default {
 	components: {
 		"add-button": AddNewButtonVue,
 		"saved-playlists": SavedPlaylists
+	},
+	methods: {
+		updateUserInfo() {
+			this.$emit("updateUserInfo");
+		}
 	}
 };
 </script>
