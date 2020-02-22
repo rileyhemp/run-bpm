@@ -4,7 +4,7 @@
 		<v-subheader>My Playlists</v-subheader>
 		<saved-playlists v-bind="$attrs" @updateUserInfo="updateUserInfo" @play="play($event)" />
 		<v-spacer />
-		<player />
+		<player :playing="playing" />
 	</div>
 </template>
 

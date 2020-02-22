@@ -1,27 +1,85 @@
 <template>
 	<div class="player px-4">
-		<v-btn :height="48" :width="48" class="player-ctrl always-transparent mx-2" icon outlined>
+		<v-btn
+			@click="previous"
+			:height="48"
+			:width="48"
+			class="player-ctrl always-transparent mx-2"
+			icon
+			outlined
+		>
 			<v-icon medium>mdi-skip-previous</v-icon>
 		</v-btn>
-		<v-btn :height="48" :width="48" class="player-ctrl always-transparent mx-2" icon outlined>
+		<v-btn
+			@click="stop"
+			:height="48"
+			:width="48"
+			class="player-ctrl always-transparent mx-2"
+			icon
+			outlined
+		>
 			<v-icon medium>mdi-stop</v-icon>
 		</v-btn>
 		<v-btn-toggle class="pause-play-group">
-			<v-btn :height="60" :width="60" class="player-ctrl mx-2" icon :ripple="false">
+			<v-btn @click="play" :height="60" :width="60" class="player-ctrl mx-2" icon :ripple="false">
 				<v-icon large>mdi-play</v-icon>
 			</v-btn>
-			<v-btn :height="48" :width="48" class="player-ctrl mx-2" icon :ripple="false">
+			<v-btn @click="pause" :height="48" :width="48" class="player-ctrl mx-2" icon :ripple="false">
 				<v-icon medium>mdi-pause</v-icon>
 			</v-btn>
 		</v-btn-toggle>
-		<v-btn :height="48" :width="48" class="player-ctrl always-transparent mx-2" icon outlined>
+		<v-btn
+			@click="next"
+			:height="48"
+			:width="48"
+			class="player-ctrl always-transparent mx-2"
+			icon
+			outlined
+		>
 			<v-icon medium>mdi-skip-next</v-icon>
 		</v-btn>
 	</div>
 </template>
 
 <script>
-export default {};
+export default {
+	props: ["playing"],
+	computed: {
+		options: function() {
+			return {
+				device_id: this.playing.deviceID,
+				context_uri: "spotify:playlist:" + this.playing.playlistID
+			};
+		}
+	},
+	methods: {
+		previous() {
+			this.$http.put("http://localhost:3000/player?action=previous", {
+				data: this.options
+			});
+		},
+		stop() {
+			this.$http.put("http://localhost:3000/player?action=stop", {
+				data: this.options
+			});
+		},
+		play() {
+			this.$http.put("http://localhost:3000/player?action=play", {
+				data: this.options
+			});
+		},
+		pause() {
+			this.$http.put("http://localhost:3000/player?action=pause", {
+				data: this.options
+			});
+		},
+		next() {
+			this.$http.put("http://localhost:3000/player?action=next", {
+				data: this.options
+			});
+		}
+	}
+};
 </script>
 
 <style scoped>

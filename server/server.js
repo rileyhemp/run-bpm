@@ -140,6 +140,15 @@ app.post('/analyze-tracks', (req, res) => {
 	})
 })
 
+app.put('/player', (req, res) => {
+	const action = req.query.action
+	const options = req.body.data
+	action === 'play' ? spotifyApi.play(options).then(res => res.send(res)).catch(err => res.send(err)) :
+		action === 'pause' || 'stop' ? spotifyApi.pause(options.device_id).then(res => res.send(res)).catch(err => res.send(err)) :
+			action === 'next' ? spotifyApi.skipToNext().then(res => res.send(res)).catch(err => res.send(err)) :
+				action === 'previous' ? spotifyApi.skipToPrevious().then(res => res.send(res)).catch(err => res.send(err)) : null
+})
+
 function createPlaylist(userID, playlistName, trackIDs, metadata) {
 	return new Promise((resolve, reject) => {
 		//Create the playlist
