@@ -36,7 +36,6 @@ export default {
 	},
 	methods: {
 		getUserData() {
-			console.log("hi");
 			this.loading = true;
 			this.$http
 				.get("http://localhost:3000/get-user-data")

@@ -2,7 +2,8 @@
 	<div class="dashboard-wrapper">
 		<add-button />
 		<v-subheader>My Playlists</v-subheader>
-		<saved-playlists v-bind="$attrs" @updateUserInfo="updateUserInfo" />
+		<saved-playlists v-bind="$attrs" @updateUserInfo="updateUserInfo" @play="play($event)" />
+		<player />
 	</div>
 </template>
 
@@ -15,9 +16,17 @@ export default {
 		"add-button": AddNewButtonVue,
 		"saved-playlists": SavedPlaylists
 	},
+	data: function() {
+		return {
+			playing: Object
+		};
+	},
 	methods: {
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
+		},
+		play(event) {
+			this.playing = event;
 		}
 	}
 };

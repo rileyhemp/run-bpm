@@ -11,7 +11,12 @@
 
 		<v-list two-line v-if="$attrs.savedPlaylists.length">
 			<v-list-item v-for="playlist in $attrs.savedPlaylists" :key="playlist.key">
-				<launch-playlist v-bind="$attrs" @updateUserInfo="updateUserInfo" />
+				<launch-playlist
+					v-bind="$attrs"
+					@updateUserInfo="updateUserInfo"
+					@play="play(playlist.id, $event)"
+					@pause="pause"
+				/>
 				<v-list-item-content class="full-width">
 					<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
 					<v-list-item-subtitle>{{playlist.metadata.tracks}} Tracks, {{playlist.metadata.lowBPM}}–{{playlist.metadata.highBPM}}bpm</v-list-item-subtitle>
@@ -27,7 +32,6 @@
 import DeletePlaylist from "../specialized/DeletePlaylist";
 import LaunchPlaylist from "../specialized/LaunchPlaylist";
 export default {
-	props: ["isSession"],
 	components: {
 		"delete-playlist": DeletePlaylist,
 		"launch-playlist": LaunchPlaylist
@@ -38,6 +42,12 @@ export default {
 		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
+		},
+		play(playlistID, deviceID) {
+			this.$emit("play", { playlistID: playlistID, deviceID: deviceID });
+		},
+		pause() {
+			this.$emit("pause");
 		}
 	}
 };
