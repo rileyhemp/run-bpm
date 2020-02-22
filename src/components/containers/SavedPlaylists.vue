@@ -19,7 +19,7 @@
 				/>
 				<v-list-item-content class="full-width">
 					<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
-					<v-list-item-subtitle>{{playlist.metadata.tracks}} Tracks, {{playlist.metadata.lowBPM}}–{{playlist.metadata.highBPM}}bpm</v-list-item-subtitle>
+					<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
 				</v-list-item-content>
 				<!-- <v-spacer /> -->
 				<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
@@ -36,6 +36,11 @@ export default {
 		"delete-playlist": DeletePlaylist,
 		"launch-playlist": LaunchPlaylist
 	},
+	data: function() {
+		return {
+			nowPlaying: null
+		};
+	},
 	methods: {
 		updatePlaylists() {
 			this.$emit("updatePlaylists");
@@ -43,8 +48,19 @@ export default {
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
 		},
+		getPlaylistInfo(playlist) {
+			return this.nowPlaying === playlist.id
+				? "Now playing..."
+				: playlist.metadata.tracks +
+						"Tracks, " +
+						playlist.metadata.lowBPM +
+						"–" +
+						playlist.metadata.highBPM +
+						"bpm";
+		},
 		play(playlistID, deviceID) {
 			this.$emit("play", { playlistID: playlistID, deviceID: deviceID });
+			this.nowPlaying = playlistID;
 		},
 		pause() {
 			this.$emit("pause");

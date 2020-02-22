@@ -2,9 +2,14 @@
 	<div class="dashboard-wrapper">
 		<add-button />
 		<v-subheader>My Playlists</v-subheader>
-		<saved-playlists v-bind="$attrs" @updateUserInfo="updateUserInfo" @play="play($event)" />
+		<saved-playlists
+			v-bind="$attrs"
+			@updateUserInfo="updateUserInfo"
+			@play="play($event)"
+			@pause="pause"
+		/>
 		<v-spacer />
-		<player :playing="playing" />
+		<player :playing="playing" :paused="paused" />
 	</div>
 </template>
 
@@ -21,7 +26,8 @@ export default {
 	},
 	data: function() {
 		return {
-			playing: Object
+			playing: Object,
+			paused: false
 		};
 	},
 	methods: {
@@ -29,7 +35,12 @@ export default {
 			this.$emit("updateUserInfo");
 		},
 		play(event) {
+			this.paused = false;
 			this.playing = event;
+			document.querySelector(".play-button").click();
+		},
+		pause() {
+			this.paused = true;
 		}
 	}
 };

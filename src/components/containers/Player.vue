@@ -10,18 +10,25 @@
 		>
 			<v-icon medium>mdi-skip-previous</v-icon>
 		</v-btn>
-		<v-btn
-			@click="stop"
-			:height="48"
-			:width="48"
-			class="player-ctrl always-transparent mx-2"
-			icon
-			outlined
-		>
-			<v-icon medium>mdi-stop</v-icon>
-		</v-btn>
 		<v-btn-toggle class="pause-play-group">
-			<v-btn @click="play" :height="60" :width="60" class="player-ctrl mx-2" icon :ripple="false">
+			<v-btn
+				@click="stop"
+				:height="48"
+				:width="48"
+				class="player-ctrl always-transparent mx-2"
+				icon
+				outlined
+			>
+				<v-icon medium>mdi-stop</v-icon>
+			</v-btn>
+			<v-btn
+				@click="play"
+				:height="60"
+				:width="60"
+				class="player-ctrl play-button mx-2"
+				icon
+				:ripple="false"
+			>
 				<v-icon large>mdi-play</v-icon>
 			</v-btn>
 			<v-btn @click="pause" :height="48" :width="48" class="player-ctrl mx-2" icon :ripple="false">
@@ -43,13 +50,25 @@
 
 <script>
 export default {
-	props: ["playing"],
+	props: ["playing", "paused"],
 	computed: {
 		options: function() {
 			return {
 				device_id: this.playing.deviceID,
 				context_uri: "spotify:playlist:" + this.playing.playlistID
 			};
+		}
+	},
+	watch: {
+		options: function() {
+			if (this.options && !this.paused) {
+				this.play();
+			}
+		},
+		paused: function() {
+			if (this.options && this.paused) {
+				this.pause();
+			}
 		}
 	},
 	methods: {
@@ -87,7 +106,7 @@ export default {
 	position: fixed;
 	bottom: 0;
 	height: 80px;
-	border-top: 1px solid black;
+	border-top: 1px solid rgba(0, 0, 0, 0.3);
 	display: flex;
 	width: 100%;
 	align-items: center;

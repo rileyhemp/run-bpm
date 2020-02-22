@@ -1,7 +1,13 @@
 <template>
 	<div class="launch-playlist">
-		<v-btn icon outlined class="mr-2" @click="active ? pause() : dialog = true">
-			<v-icon>{{ active ? 'mdi-pause' : 'mdi-play' }}</v-icon>
+		<v-btn
+			icon
+			:outlined="active ? false : true"
+			class="mr-2"
+			:class="{'disable-events': active}"
+			@click="dialog = true"
+		>
+			<v-icon>{{active ? 'mdi-volume-high' : 'mdi-play'}}</v-icon>
 		</v-btn>
 		<v-dialog v-model="dialog" persistent max-width="300">
 			<v-card>
@@ -75,5 +81,8 @@ export default {
 }
 .plain-btn:hover:before {
 	background-color: transparent;
+}
+.disable-events {
+	pointer-events: none;
 }
 </style>
