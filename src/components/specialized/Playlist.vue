@@ -1,7 +1,8 @@
 <template>
-	<div>
-		<v-list-item>
-			<v-list-item-content class="full-width" @click="dialog=true">
+	<div class="d-flex align-center mx-4 playlist" @click="dialog=true">
+		<v-img :src="playlistDetails.images[0].url" :height="50" :width="50" />
+		<v-list-item class="pr-1">
+			<v-list-item-content>
 				<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
 				<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
 			</v-list-item-content>
@@ -53,6 +54,15 @@ export default {
 	computed: {
 		devices: function() {
 			return this.$attrs.userDevices.devices;
+		},
+		playlistDetails: function() {
+			let playlist;
+			this.$attrs.userPlaylists.items.forEach(el => {
+				if (this.playlist.id === el.id) {
+					playlist = el;
+				}
+			});
+			return playlist;
 		}
 	},
 	methods: {
@@ -78,28 +88,31 @@ export default {
 			return this.nowPlaying === playlist.id
 				? "Now playing..."
 				: playlist.metadata.tracks +
-						"Tracks, " +
-						playlist.metadata.lowBPM +
-						"–" +
-						playlist.metadata.highBPM +
-						"bpm";
+						" Tracks, " +
+						playlist.metadata.duration;
 		}
 	}
 };
 </script>
 
 <style scoped>
-.v-btn-toggle {
+.playlist {
+	border-bottom: 1px solid grey;
+}
+.playlist-details {
+	padding-right: 0;
+}
+/* .v-btn-toggle {
 	flex-direction: column;
 	flex: 1;
 }
 .justify-start {
 	justify-content: start;
-}
+} */
 .plain-btn:hover:before {
 	background-color: transparent;
 }
-.disable-events {
+/* .disable-events {
 	pointer-events: none;
-}
+} */
 </style>
