@@ -1,15 +1,13 @@
 <template>
-	<div class="launch-playlist">
-		<v-btn
-			icon
-			:outlined="active ? false : true"
-			class="mr-2"
-			:class="{'disable-events': active}"
-			@click="dialog = true"
-		>
-			<v-icon>{{active ? 'mdi-volume-high' : 'mdi-play'}}</v-icon>
-		</v-btn>
-		<v-dialog v-model="dialog" persistent max-width="300">
+	<v-list-item>
+		<v-list-item-content class="full-width">
+			<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
+			<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
+		</v-list-item-content>
+		<!-- <v-spacer /> -->
+		<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
+	</v-list-item>
+	<!-- <v-dialog v-model="dialog" persistent max-width="300">
 			<v-card>
 				<v-card-title class="headline">Select a device</v-card-title>
 				<v-card-actions>
@@ -34,12 +32,17 @@
 					</v-btn>
 				</v-row>
 			</v-card>
-		</v-dialog>
-	</div>
+	</v-dialog>-->
 </template>
 
 <script>
+import DeletePlaylist from "../specialized/DeletePlaylist";
+
 export default {
+	props: ["playlist"],
+	components: {
+		"delete-playlist": DeletePlaylist
+	},
 	data: function() {
 		return {
 			dialog: false,
@@ -66,6 +69,19 @@ export default {
 		pause() {
 			this.$emit("pause");
 			this.active = false;
+		},
+		updatePlaylists() {
+			this.$emit("updatePlaylists");
+		},
+		getPlaylistInfo(playlist) {
+			return this.nowPlaying === playlist.id
+				? "Now playing..."
+				: playlist.metadata.tracks +
+						"Tracks, " +
+						playlist.metadata.lowBPM +
+						"–" +
+						playlist.metadata.highBPM +
+						"bpm";
 		}
 	}
 };

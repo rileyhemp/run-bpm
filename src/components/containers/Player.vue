@@ -10,31 +10,17 @@
 		>
 			<v-icon medium>mdi-skip-previous</v-icon>
 		</v-btn>
-		<v-btn-toggle class="pause-play-group">
-			<v-btn
-				@click="stop"
-				:height="48"
-				:width="48"
-				class="player-ctrl always-transparent mx-2"
-				icon
-				outlined
-			>
-				<v-icon medium>mdi-stop</v-icon>
-			</v-btn>
-			<v-btn
-				@click="play"
-				:height="60"
-				:width="60"
-				class="player-ctrl play-button mx-2"
-				icon
-				:ripple="false"
-			>
-				<v-icon large>mdi-play</v-icon>
-			</v-btn>
-			<v-btn @click="pause" :height="48" :width="48" class="player-ctrl mx-2" icon :ripple="false">
-				<v-icon medium>mdi-pause</v-icon>
-			</v-btn>
-		</v-btn-toggle>
+		<v-btn
+			@click="play"
+			:height="60"
+			:width="60"
+			class="player-ctrl play-button mx-2"
+			icon
+			:ripple="false"
+			outlined
+		>
+			<v-icon large>mdi-play</v-icon>
+		</v-btn>
 		<v-btn
 			@click="next"
 			:height="48"

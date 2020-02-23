@@ -10,31 +10,21 @@
 		</v-list>
 
 		<v-list two-line v-if="$attrs.savedPlaylists.length">
-			<v-list-item v-for="playlist in $attrs.savedPlaylists" :key="playlist.key">
-				<launch-playlist
-					v-bind="$attrs"
-					@updateUserInfo="updateUserInfo"
-					@play="play(playlist.id, $event)"
-					@pause="pause"
-				/>
-				<v-list-item-content class="full-width">
-					<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
-					<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
-				</v-list-item-content>
-				<!-- <v-spacer /> -->
-				<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
-			</v-list-item>
+			<playlist
+				v-for="playlist in $attrs.savedPlaylists"
+				:key="playlist.key"
+				:playlist="playlist"
+				@updatePlaylists="updatePlaylists"
+			/>
 		</v-list>
 	</div>
 </template>
 
 <script>
-import DeletePlaylist from "../specialized/DeletePlaylist";
-import LaunchPlaylist from "../specialized/LaunchPlaylist";
+import Playlist from "../specialized/Playlist";
 export default {
 	components: {
-		"delete-playlist": DeletePlaylist,
-		"launch-playlist": LaunchPlaylist
+		playlist: Playlist
 	},
 	data: function() {
 		return {
@@ -47,16 +37,6 @@ export default {
 		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
-		},
-		getPlaylistInfo(playlist) {
-			return this.nowPlaying === playlist.id
-				? "Now playing..."
-				: playlist.metadata.tracks +
-						"Tracks, " +
-						playlist.metadata.lowBPM +
-						"–" +
-						playlist.metadata.highBPM +
-						"bpm";
 		},
 		play(playlistID, deviceID) {
 			this.$emit("play", { playlistID: playlistID, deviceID: deviceID });
