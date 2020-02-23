@@ -15,6 +15,7 @@
 				:key="playlist.key"
 				:playlist="playlist"
 				@updatePlaylists="updatePlaylists"
+				v-bind="$attrs"
 			/>
 		</v-list>
 	</div>

@@ -1,13 +1,13 @@
 <template>
-	<v-list-item>
-		<v-list-item-content class="full-width">
-			<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
-			<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
-		</v-list-item-content>
-		<!-- <v-spacer /> -->
-		<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
-	</v-list-item>
-	<!-- <v-dialog v-model="dialog" persistent max-width="300">
+	<div>
+		<v-list-item>
+			<v-list-item-content class="full-width" @click="dialog=true">
+				<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
+				<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
+			</v-list-item-content>
+			<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
+		</v-list-item>
+		<v-dialog v-model="dialog" max-width="300">
 			<v-card>
 				<v-card-title class="headline">Select a device</v-card-title>
 				<v-card-actions>
@@ -32,7 +32,8 @@
 					</v-btn>
 				</v-row>
 			</v-card>
-	</v-dialog>-->
+		</v-dialog>
+	</div>
 </template>
 
 <script>
