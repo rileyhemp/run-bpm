@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import Playlist from "../specialized/Playlist";
+import Playlist from "./Playlist";
 export default {
 	components: {
 		playlist: Playlist

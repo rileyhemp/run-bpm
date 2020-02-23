@@ -134,8 +134,8 @@ app.post('/analyze-tracks', (req, res) => {
 				}).catch(err => reject(err))
 			}))
 		}
-		Promise.all(trackDetails).then(data => {
-			res.send(_.flatten(data), deets)
+		Promise.all(trackDetails).then(response => {
+			res.send(_.flatten(response)) //used to have 'deets ?' taking out, see if it breaks anything. 
 		}).catch(err => res.send(err))
 	})
 })
@@ -143,10 +143,24 @@ app.post('/analyze-tracks', (req, res) => {
 app.put('/player', (req, res) => {
 	const action = req.query.action
 	const options = req.body.data
-	action === 'play' ? spotifyApi.play(options).then(res => res.send(res)).catch(err => res.send(err)) :
-		action === 'pause' || 'stop' ? spotifyApi.pause(options.device_id).then(res => res.send(res)).catch(err => res.send(err)) :
-			action === 'next' ? spotifyApi.skipToNext().then(res => res.send(res)).catch(err => res.send(err)) :
-				action === 'previous' ? spotifyApi.skipToPrevious().then(res => res.send(res)).catch(err => res.send(err)) : null
+	action === 'play' ? spotifyApi.play(options)
+		.then(response => res.status(200).send()).catch(err => res.send(err)) :
+		action === 'pause' || 'stop' ? spotifyApi.pause(options.device_id)
+			.then(response => res.status(200).send()).catch(err => res.send(err)) :
+			action === 'next' ? spotifyApi.skipToNext()
+				.then(response => res.status(200).send()).catch(err => res.send(err)) :
+				action === 'previous' ? spotifyApi.skipToPrevious().then(res => res.status(200).send()).catch(err => res.send(err)) : null
+})
+
+app.get('/player', (req, res) => {
+	const query = req.query.q
+	console.log('working')
+	spotifyApi.getMyCurrentPlayingTrack().then(response => {
+		console.log(response.body)
+		res.send(response.body)
+	}).catch(err => {
+		res.send(err)
+	})
 })
 
 function createPlaylist(userID, playlistName, trackIDs, metadata) {
@@ -197,7 +211,6 @@ function getURIsFromIDs(IDs) {
 	})
 	return trackURIs
 }
-
 
 app.listen(3000, function () {
 	console.log("Listening on port 3000");
