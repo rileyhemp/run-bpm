@@ -1,5 +1,5 @@
 <template>
-	<div class="player-display" v-if="$attrs.currentTrack.audioFeatures">
+	<div class="player-display">
 		<div class="px-4 mb-2">
 			<div class="d-flex justify-space-between align-end">
 				<h2 class="song-title title">{{$attrs.currentTrack.id.item.name}}</h2>
@@ -36,21 +36,21 @@ export default {
 			let duration = this.msToMinAndSec(
 				this.$attrs.currentTrack.id.item.duration_ms
 			);
-			// let elapsed = this.msToMinAndSec(this.progress);
-			return duration;
-			// return elapsed + "/" + duration;
+			let elapsed = this.msToMinAndSec(this.progress);
+			// return duration;
+			return elapsed + "/" + duration;
 		}
 	},
-	// mounted: function() {
-	// 	setInterval(() => {
-	// 		if (
-	// 			this.$attrs.currentTrack.progress &&
-	// 			typeof this.$attrs.currentTrack.progress === "number"
-	// 		) {
-	// 			this.progress = this.$attrs.currentTrack.progress;
-	// 		}
-	// 	}, 100);
-	// },
+	mounted: function() {
+		setInterval(() => {
+			if (
+				this.$attrs.currentTrack.progress &&
+				typeof this.$attrs.currentTrack.progress === "number"
+			) {
+				this.progress = this.$attrs.currentTrack.progress;
+			}
+		}, 100);
+	},
 	methods: {
 		msToMinAndSec: function(ms) {
 			let minutes = Math.floor(ms / 60000);
@@ -70,6 +70,9 @@ export default {
 }
 .song-title {
 	max-width: 75%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .nowrap {
 	white-space: nowrap;
