@@ -89,7 +89,7 @@ import details from "@/assets/temp-details";
 import RadarChart from "../single_purpose/RadarChart";
 import LineGraph from "../single_purpose/LineGraph";
 import VueSlider from "vue-slider-component";
-import SavedPlaylists from "../containers/SavedPlaylists";
+import CreatedPlaylists from "../containers/CreatedPlaylists";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
@@ -101,7 +101,7 @@ export default {
 	components: {
 		"radar-chart": RadarChart,
 		"line-graph": LineGraph,
-		"saved-playlists": SavedPlaylists,
+		"saved-playlists": CreatedPlaylists,
 		VueSlider
 	},
 	data: function() {

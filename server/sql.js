@@ -43,7 +43,7 @@ class UserDB extends sqlite3.Database {
 			this.close()
 		})
 	}
-	getSavedPlaylists(userID) {
+	getCreatedPlaylists(userID) {
 		let sql = `SELECT * FROM playlists WHERE owner = ?`
 		return new Promise((resolve, reject) => {
 			this.all(sql, [userID], (err, rows) => {

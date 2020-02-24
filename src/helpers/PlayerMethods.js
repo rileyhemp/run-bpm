@@ -1,5 +1,6 @@
 export function getCurrentTrack() {
-	this.disablePlayButton = false;
+	clearInterval(this.counter)
+	this.disableButtons = false;
 	this.$http
 		.get("http://localhost:3000/player?q=current")
 		.then(response => {
@@ -27,22 +28,21 @@ export function getTrackDetails(id) {
 		});
 }
 export function initTimer(progress, duration) {
-	//Catch element for use in interval
 	const self = this;
 	//Not perfect, but due to latency progress needs to start back one second to match Spotify.
 	progress = progress - 1000;
-	let i = setInterval(() => {
+	this.counter = setInterval(() => {
 		progress = progress + 1000;
 		self.currentTrack.progress = progress;
 		if (progress >= duration) {
-			clearInterval(i);
+			clearInterval(self.counter);
 			this.getCurrentTrack();
 		}
 	}, 1000);
 }
 /* eslint indent: 0 */
 export function updatePlayState(event) {
-	this.disablePlayButton = true;
+	this.disableButtons = true;
 	let options = {};
 	if (event.device) {
 		this.userData.activeDevice = event.device;
@@ -67,7 +67,7 @@ export function updatePlayState(event) {
 		this.$http
 			.put("http://localhost:3000/player?action=pause")
 			.then(() => this.getCurrentTrack())
-			.catch(() => console.log("pause broke somewhere"));
+			.catch(error => console.log(error));
 	};
 	const previous = () => {
 		console.log("previous was called");
@@ -75,17 +75,15 @@ export function updatePlayState(event) {
 			.put("http://localhost:3000/player?action=previous", {
 				data: this.options
 			})
-			.then(() => console.log("previous"))
-			.catch(() => console.log("previous broke somewhere"));
+			.then(() => this.getCurrentTrack())
+			.catch(error => console.log(error));
 	};
 	const next = () => {
 		console.log("next was called");
 		this.$http
-			.put("http://localhost:3000/player?action=next", {
-				data: this.options
-			})
-			.then(() => console.log("next"))
-			.catch(() => console.log("next broke somewhere"));
+			.put("http://localhost:3000/player?action=next")
+			.then(() => this.getCurrentTrack())
+			.catch(error => console.log(error));
 	};
 	switch (event.state) {
 		case "play":

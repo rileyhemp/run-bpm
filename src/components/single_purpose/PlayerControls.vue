@@ -5,6 +5,7 @@
 			:height="48"
 			:width="48"
 			class="player-ctrl always-transparent mx-2"
+			:class="$attrs.disableButtons ? 'pointer-events-none' : null"
 			icon
 			outlined
 		>
@@ -15,7 +16,7 @@
 			:height="60"
 			:width="60"
 			class="player-ctrl play-button mx-2"
-			:class="$attrs.disablePlayButton ? 'pointer-events-none' : null"
+			:class="$attrs.disableButtons ? 'pointer-events-none' : null"
 			icon
 			outlined
 		>
@@ -26,6 +27,7 @@
 			:height="48"
 			:width="48"
 			class="player-ctrl always-transparent mx-2"
+			:class="$attrs.disableButtons || !$attrs.currentTrack.id ? 'pointer-events-none' : null"
 			icon
 			outlined
 		>
@@ -46,51 +48,11 @@ export default {
 			}
 			return null;
 		},
-		artist: function() {
-			if (this.nowPlaying.item) {
-				const artists = this.nowPlaying.item.artists;
-				let names = [];
-				if (artists.length > 1) {
-					console.log("got more data");
-					artists.forEach(el => {
-						names.push(el.name);
-						console.log(names);
-					});
-					return names.join(", ");
-				}
-				return artists[0].name;
-			}
-			return null;
-		},
+
 		songTitle: function() {
 			return this.nowPlaying.item ? this.nowPlaying.item.name : null;
-		},
-		timeElapsed: function() {
-			let total, elapsed;
-			if (
-				this.nowPlaying.is_playing &&
-				typeof this.progress === "number"
-			) {
-				total = this.millisToMinutesAndSeconds(
-					this.nowPlaying.item.duration_ms
-				);
-				elapsed = this.millisToMinutesAndSeconds(this.progress);
-			}
-			return elapsed && total ? elapsed + "/" + total : null;
 		}
 	},
-	// watch: {
-	// 	options: function() {
-	// 		if (this.options && !this.paused) {
-	// 			this.play();
-	// 		}
-	// 	},
-	// 	paused: function() {
-	// 		if (this.options && this.paused) {
-	// 			this.pause();
-	// 		}
-	// 	}
-	// },
 	methods: {
 		togglePlay() {
 			this.$attrs.currentTrack.isPlaying ? this.pause() : this.play();
@@ -104,10 +66,10 @@ export default {
 			this.$emit("updatePlayState", { state: "pause" });
 		},
 		previous() {
-			this.$emit("updatePlayState", "previous");
+			this.$emit("updatePlayState", { state: "previous" });
 		},
 		next() {
-			this.$emit("updatePlayState", "next");
+			this.$emit("updatePlayState", { state: "next" });
 		}
 	}
 };

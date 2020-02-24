@@ -15,13 +15,13 @@
 
 <script>
 import AddNewButtonVue from "../single_purpose/AddNewButton.vue";
-import SavedPlaylists from "../containers/SavedPlaylists";
+import CreatedPlaylists from "../containers/CreatedPlaylists";
 import Player from "../containers/Player";
 
 export default {
 	components: {
 		"add-button": AddNewButtonVue,
-		"saved-playlists": SavedPlaylists,
+		"saved-playlists": CreatedPlaylists,
 		player: Player
 	},
 	data: function() {

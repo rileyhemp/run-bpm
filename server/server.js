@@ -100,7 +100,7 @@ app.get("/playlists", function (req, res) {
 	const db = new UserDB(DatabasePath)
 	let userID = req.query.id
 	//Fetch user playlists if they exist
-	db.getSavedPlaylists(userID).then(response => {
+	db.getCreatedPlaylists(userID).then(response => {
 		res.send(response)
 	}).catch(err => res.send(err))
 })
@@ -157,6 +157,16 @@ app.put('/player', (req, res) => {
 			break;
 		case 'pause':
 			spotifyApi.pause(options)
+				.then(response => res.status(response.statusCode).send())
+				.catch(error => res.status(error.statusCode).send())
+			break;
+		case 'next':
+			spotifyApi.skipToNext()
+				.then(response => res.status(response.statusCode).send())
+				.catch(error => res.status(error.statusCode).send())
+			break;
+		case 'previous':
+			spotifyApi.skipToPrevious()
 				.then(response => res.status(response.statusCode).send())
 				.catch(error => res.status(error.statusCode).send())
 			break;

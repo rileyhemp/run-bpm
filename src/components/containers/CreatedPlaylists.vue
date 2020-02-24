@@ -1,6 +1,6 @@
 <template>
 	<div class="full-width">
-		<v-list two-line v-if="!$attrs.savedPlaylists.length && !isSession">
+		<v-list two-line v-if="!$attrs.CreatedPlaylists.length && !isSession">
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title>Nothing here yet...</v-list-item-title>
@@ -9,9 +9,9 @@
 			</v-list-item>
 		</v-list>
 
-		<v-list two-line v-if="$attrs.savedPlaylists.length">
+		<v-list two-line v-if="$attrs.CreatedPlaylists.length">
 			<playlist
-				v-for="playlist in $attrs.savedPlaylists"
+				v-for="playlist in $attrs.CreatedPlaylists"
 				:key="playlist.key"
 				:playlist="playlist"
 				@updatePlaylists="updatePlaylists"

@@ -6,12 +6,12 @@
 		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" />
 		<router-view
 			:userPlaylists="this.userPlaylists"
-			:savedPlaylists="this.savedPlaylists"
+			:CreatedPlaylists="this.CreatedPlaylists"
 			:userDevices="this.userDevices"
 			:user="this.userData"
 			:loading="this.loading"
 			:currentTrack="this.currentTrack"
-			:disablePlayButton="this.disablePlayButton"
+			:disableButtons="this.disableButtons"
 			v-bind="$attrs"
 			@updatePlaylists="updatePlaylists"
 			@updateUserInfo="getUserData"
@@ -28,7 +28,7 @@ import {
 	getTrackDetails,
 	initTimer,
 	updatePlayState
-} from "@/helpers/PlayerControls";
+} from "@/helpers/PlayerMethods";
 export default {
 	name: "Dashboard",
 	components: {
@@ -38,13 +38,13 @@ export default {
 		return {
 			userData: Object,
 			userPlaylists: Object,
-			savedPlaylists: Object,
+			CreatedPlaylists: Object,
 			userDevices: Object,
 			currentTrack: {
 				id: null,
 				isPlaying: false
 			},
-			disablePlayButton: false,
+			disableButtons: false,
 			displaySaved: false,
 			loading: false
 		};
@@ -79,7 +79,7 @@ export default {
 							metadata: JSON.parse(el.metadata)
 						};
 					});
-					this.savedPlaylists = parsedData;
+					this.CreatedPlaylists = parsedData;
 					this.loading = false;
 				})
 				.catch(err => {

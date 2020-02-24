@@ -15,7 +15,6 @@ export default {
 	},
 	methods: {
 		updatePlayState(event) {
-			console.log(event);
 			this.$emit("updatePlayState", event);
 		}
 	}
