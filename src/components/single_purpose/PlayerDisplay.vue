@@ -1,6 +1,6 @@
 <template>
 	<div class="player-display">
-		<div class="px-4 mb-2">
+		<div class="px-4 mb-2" v-if="progress">
 			<div class="d-flex justify-space-between align-end">
 				<h2 class="song-title title">{{$attrs.currentTrack.id.item.name}}</h2>
 				<span class="title nowrap">{{Math.round($attrs.currentTrack.audioFeatures.tempo) + "bpm"}}</span>
@@ -18,6 +18,7 @@ export default {
 	data: function() {
 		return {
 			progress: null
+			// key: 0
 		};
 	},
 	computed: {
@@ -43,6 +44,7 @@ export default {
 	},
 	mounted: function() {
 		setInterval(() => {
+			// this.key = this.key + 1;
 			if (
 				this.$attrs.currentTrack.progress &&
 				typeof this.$attrs.currentTrack.progress === "number"

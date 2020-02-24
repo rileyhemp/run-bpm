@@ -4,6 +4,7 @@
 			@click="previous"
 			:height="48"
 			:width="48"
+			:disabled="$attrs.currentTrack.duration === undefined"
 			class="player-ctrl always-transparent mx-2"
 			:class="$attrs.disableButtons ? 'pointer-events-none' : null"
 			icon
@@ -15,6 +16,7 @@
 			@click="togglePlay"
 			:height="60"
 			:width="60"
+			:disabled="$attrs.currentTrack.duration === undefined"
 			class="player-ctrl play-button mx-2"
 			:class="$attrs.disableButtons ? 'pointer-events-none' : null"
 			icon
@@ -26,6 +28,7 @@
 			@click="next"
 			:height="48"
 			:width="48"
+			:disabled="$attrs.currentTrack.duration === undefined"
 			class="player-ctrl always-transparent mx-2"
 			:class="$attrs.disableButtons || !$attrs.currentTrack.id ? 'pointer-events-none' : null"
 			icon

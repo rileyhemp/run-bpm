@@ -29,8 +29,8 @@ export function getTrackDetails(id) {
 }
 export function initTimer(progress, duration) {
 	const self = this;
-	//Not perfect, but due to latency progress needs to start back one second to match Spotify.
-	progress = progress - 1000;
+	//Not perfect, latency compensation
+	progress = progress - 500;
 	this.counter = setInterval(() => {
 		progress = progress + 1000;
 		self.currentTrack.progress = progress;
