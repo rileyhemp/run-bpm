@@ -17,6 +17,7 @@
 			@updateUserInfo="getUserData"
 			@updateTrack="getCurrentTrack"
 			@updatePlayState="updatePlayState"
+			@loading="loading = true"
 		/>
 	</div>
 </template>
@@ -60,7 +61,6 @@ export default {
 					this.userPlaylists = response.data.userPlaylists;
 					this.userDevices = response.data.userDevices;
 					this.updatePlaylists();
-					this.loading = false;
 				})
 				.catch(err => {
 					this.loading = false;
@@ -68,7 +68,6 @@ export default {
 				});
 		},
 		updatePlaylists() {
-			this.loading = true;
 			this.$http
 				.get(`http://localhost:3000/playlists?id=${this.userData.id}`)
 				.then(response => {

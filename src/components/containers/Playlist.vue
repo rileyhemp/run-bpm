@@ -1,12 +1,17 @@
 <template>
-	<v-row class="d-flex align-center flex-nowrap playlist mx-4" @click="dialog=true" v-ripple>
+	<v-row
+		class="d-flex align-center flex-nowrap playlist mx-4"
+		@click="dialog=true"
+		v-ripple
+		v-if="playlistDetails !=undefined"
+	>
 		<v-img :src="playlistDetails.images[0].url" :height="50" :width="50" />
 		<v-list-item class="pr-1">
 			<v-list-item-content>
 				<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
 				<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
 			</v-list-item-content>
-			<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
+			<delete-playlist :playlist="playlist.id" @updateUserInfo="updateUserInfo" />
 		</v-list-item>
 		<v-dialog v-model="dialog" max-width="300">
 			<v-card>

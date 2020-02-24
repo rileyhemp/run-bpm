@@ -2,11 +2,12 @@
 	<div class="dashboard-wrapper">
 		<add-button />
 		<v-subheader>My Playlists</v-subheader>
-		<saved-playlists
+		<created-playlists
 			v-bind="$attrs"
+			:key="$attrs.CreatedPlaylists.length"
 			@updateUserInfo="updateUserInfo"
+			@updatePlaylists="updatePlaylists"
 			@updatePlayState="updatePlayState"
-			@pause="pause"
 		/>
 		<v-spacer />
 		<player v-bind="$attrs" @updateTrack="updateTrack" @updatePlayState="updatePlayState" />
@@ -21,7 +22,7 @@ import Player from "../containers/Player";
 export default {
 	components: {
 		"add-button": AddNewButtonVue,
-		"saved-playlists": CreatedPlaylists,
+		"created-playlists": CreatedPlaylists,
 		player: Player
 	},
 	data: function() {
@@ -40,6 +41,9 @@ export default {
 		},
 		updatePlayState(event) {
 			this.$emit("updatePlayState", event);
+		},
+		updatePlaylists() {
+			this.$emit("updatePlaylists");
 		},
 		play(event) {
 			this.paused = false;

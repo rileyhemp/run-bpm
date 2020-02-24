@@ -34,8 +34,6 @@ class UserDB extends sqlite3.Database {
 		return new Promise((resolve, reject) => {
 			this.run(sql, [], (err) => {
 				if (err) {
-					console.log(err)
-
 					reject(err)
 				}
 				resolve()

@@ -92,6 +92,7 @@ app.get("/playlists", function (req, res) {
 //Add a new playlist to Run BPM's database
 app.post('/playlists', (req, res) => {
 	let request = req.body.data
+	console.log(request)
 	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata).then(response => {
 		res.status(201).send(response)
 	}).catch(err => res.send("Something went wrong. Error: " + err))
@@ -112,7 +113,6 @@ app.delete('/playlists', (req, res) => {
 //Get audio features for many tracks
 app.post('/analyze-tracks', (req, res) => {
 	getPlaylistTracks(req.body.data.playlists).then(response => {
-		console.log(response)
 		const playlistDetails = response
 		const trackDetails = []
 		const trackIDs = _.chunk(getIDsFromTracks(response), 100)

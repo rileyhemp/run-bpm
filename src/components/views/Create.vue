@@ -30,7 +30,7 @@
 			@change="this.filterChartData"
 		></vue-slider>
 		<v-row class="px-4 mt-8">
-			<v-text-field label="Title yor mix" hide-details="auto" />
+			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
 		<v-row class="mt-3">
 			<span class="mx-4 my-2 body-2">{{songCount}} Tracks {{mixDuration}}</span>
@@ -50,22 +50,18 @@
 			<span class="py-2 body-3">Make public</span>
 		</v-row>
 		<v-row>
-			<!-- <v-btn
-				text
-				:ripple="false"
-				@click="this.createPlaylistFromSelection"
-				class="plain-btn"
-			>Add another</v-btn>-->
 			<v-spacer />
 			<v-btn
 				color="primary"
 				class="mr-4"
-				:disabled="loading"
-				@click="this.createPlaylistFromSelection"
-			>Done</v-btn>
-			<v-dialog v-model="confirm" persistent width="300">
+				:disabled="loading || !playlistName"
+				@click="confirm = true;"
+			>Create</v-btn>
+			<v-dialog v-model="confirm" width="300">
 				<v-card v-if="!loading">
-					<v-card-title class="headline">Added playlist "{{playlistName}}"</v-card-title>
+					<v-card-title
+						class="subtitle-1 no-word-break"
+					>"{{playlistName}}" will be added to your Spotify library</v-card-title>
 					<v-card-text>Are you finished with this selection?</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
@@ -73,12 +69,13 @@
 						<v-btn
 							color="green darken-1"
 							text
-							@click="()=>{this.updatePlaylists(); this.$router.push('Dashboard')}"
+							@click="()=>{
+								this.createPlaylistFromSelection().then(()=>this.$router.push('Dashboard'))
+							}"
 						>Done</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
-			<saved-playlists v-bind="$attrs" @updatePlaylists="updatePlaylists" />
 		</v-row>
 	</v-container>
 </template>
@@ -89,7 +86,6 @@ import details from "@/assets/temp-details";
 import RadarChart from "../single_purpose/RadarChart";
 import LineGraph from "../single_purpose/LineGraph";
 import VueSlider from "vue-slider-component";
-import CreatedPlaylists from "../containers/CreatedPlaylists";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
@@ -101,7 +97,6 @@ export default {
 	components: {
 		"radar-chart": RadarChart,
 		"line-graph": LineGraph,
-		"saved-playlists": CreatedPlaylists,
 		VueSlider
 	},
 	data: function() {
@@ -161,58 +156,59 @@ export default {
 		},
 		highBPM: function() {
 			return _.max(this.tempos);
-		},
-		defaultPlaylistName: function() {
-			return this.lowBPM + "-" + this.highBPM + "bpm";
 		}
 	},
 	methods: {
 		createPlaylistFromSelection() {
-			let name =
-				this.playlistName != undefined
-					? this.playlistName
-					: this.defaultPlaylistName;
-			this.playlistName = name;
-			//Get array of selected track's IDs.
-			const trackIDs = getIDsFromDetails(this.selectedTracks);
-			//Collect metadata
-			const metadata = JSON.stringify({
-				name: name,
-				lowBPM: this.lowBPM,
-				highBPM: this.highBPM,
-				tracks: this.songCount,
-				duration: this.mixDuration
-			});
-			this.loading = true;
-			//Create the playlist
-			this.$http
-				.post("http://localhost:3000/playlists", {
-					data: {
-						userID: this.$attrs.user.id,
-						trackIDs: trackIDs,
-						metadata: metadata,
-						name: this.playlistName
-					}
-				})
-				.then(() => {
-					this.confirm = true;
-					this.loading = false;
-				})
-				.catch(err => {
-					console.log("Something went wrong", err);
-					this.loading = false;
+			return new Promise((resolve, reject) => {
+				//Get array of selected track's IDs.
+				const trackIDs = getIDsFromDetails(this.selectedTracks);
+				//Collect metadata
+				const metadata = JSON.stringify({
+					name: this.playlistName,
+					lowBPM: this.lowBPM,
+					highBPM: this.highBPM,
+					tracks: this.songCount,
+					duration: this.mixDuration
 				});
+				this.$emit("loading");
+				//Create the playlist
+				this.$http
+					.post("http://localhost:3000/playlists", {
+						data: {
+							userID: this.$attrs.user.id,
+							trackIDs: trackIDs,
+							metadata: metadata,
+							name: this.playlistName
+						}
+					})
+					.then(() => {
+						this.updateUserInfo();
+						//Check to see if user info has updated before resolving promise
+						let i = setInterval(() => {
+							if (!this.$attrs.loading) {
+								clearInterval(i);
+								resolve();
+							}
+						}, 20);
+					})
+					.catch(err => {
+						console.log("Something went wrong", err);
+						this.loading = false;
+						reject();
+					});
+			});
 		},
-		updatePlaylists() {
-			this.$emit("updatePlaylists");
+		updateUserInfo() {
+			this.$emit("updateUserInfo");
 		},
 		saveAndReset() {
 			//Reset the selection, slider range, and chart
-			this.updatePlaylists();
-			this.confirm = false;
-			this.playlistName = undefined;
-			this.sliderRange = [100, 200];
-			setTimeout(() => this.filterChartData(), 150);
+			this.createPlaylistFromSelection().then(() => {
+				this.playlistName = undefined;
+				this.sliderRange = [100, 200];
+				setTimeout(() => this.filterChartData(), 150);
+			});
 		},
 		initChartData() {
 			//Double tempo for tracks under 100bpm.
@@ -275,17 +271,6 @@ export default {
 			});
 		}, 100)
 	},
-	// mounted: function() {
-	//Combines audio features and track details into a single object
-	// this.audioFeatures = _.zipWith(
-	// 	this.playlistDetailsTemp,
-	// 	this.audioFeaturesTemp,
-	// 	function(a, b) {
-	// 		return { track: a.track, features: b };
-	// 	}
-	// );
-
-	// }
 	mounted: function() {
 		this.$http
 			.post("http://localhost:3000/analyze-tracks", {
@@ -307,18 +292,15 @@ export default {
 				console.log(err);
 			});
 	}
-	//Saves the created playlists locally until user is finished with track set
-	// const saved = localStorage.getItem("stashedPlaylists")
-	// 	? JSON.parse(localStorage.getItem("stashedPlaylists"))
-	// 	: [];
-	// saved.push(id);
-	// localStorage.setItem("stashedPlaylists", JSON.stringify(saved));
 };
 </script>
 
 <style scoped>
 .plain-btn:hover:before {
 	background-color: transparent;
+}
+.no-word-break {
+	word-break: keep-all;
 }
 </style>
 
