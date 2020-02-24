@@ -73,7 +73,84 @@ export default {
 				});
 		},
 		getCurrentTrack() {
-			console.log("yoyoy");
+			console.log("hi");
+			this.$emit("updateTrack");
+			this.$http
+				.get("http://localhost:3000/player?q=current")
+				.then(response => {
+					this.nowPlaying = response.data;
+					this.isPlaying = response.data.is_playing;
+					if (response.data.item.id) {
+						this.getTrackDetails(response.data.item.id);
+					}
+					if (response.data.is_playing) {
+						this.initTimer(
+							response.data.progress_ms,
+							response.data.item.duration_ms
+						);
+					}
+				})
+				.catch(err => console.log(err));
+		},
+		getTrackDetails(id) {
+			this.$http
+				.get(`http://localhost:3000/analyze-tracks?id=${id}`)
+				.then(response => {
+					this.nowPlaying.audio_features = response.data;
+				});
+		},
+		/* eslint indent: 0 */
+		updatePlayState(state) {
+			switch (state) {
+				case play:
+					play();
+					break;
+				case pause:
+					pause();
+					break;
+				case previous:
+					previous();
+					break;
+				case next:
+					next();
+					break;
+				default:
+					console.log("Play state missing");
+			}
+			const play = () => {
+				console.log("play was called");
+				this.$http
+					.put("http://localhost:3000/player?action=play", {
+						data: this.options
+					})
+					.then(() => console.log("paused"))
+					.catch(() => console.log("pause broke somewhere"));
+			};
+			const pause = () => {
+				console.log("pause was called");
+				this.$http
+					.put("http://localhost:3000/player?action=pause")
+					.then(() => console.log("paused"))
+					.catch(() => console.log("pause broke somewhere"));
+			};
+			const previous = () => {
+				console.log("previous was called");
+				this.$http
+					.put("http://localhost:3000/player?action=previous", {
+						data: this.options
+					})
+					.then(() => console.log("previous"))
+					.catch(() => console.log("previous broke somewhere"));
+			};
+			const next = () => {
+				console.log("next was called");
+				this.$http
+					.put("http://localhost:3000/player?action=next", {
+						data: this.options
+					})
+					.then(() => console.log("next"))
+					.catch(() => console.log("next broke somewhere"));
+			};
 		}
 	},
 	//create user is authenticated function
