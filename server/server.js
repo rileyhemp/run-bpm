@@ -140,6 +140,12 @@ app.post('/analyze-tracks', (req, res) => {
 	})
 })
 
+app.get('/analyze-tracks', (req, res) => {
+	spotifyApi.getAudioFeaturesForTrack(req.query.id).then(response => {
+		res.send(response.body)
+	}).catch(err => res.send(err))
+})
+
 app.put('/player', (req, res) => {
 	const action = req.query.action
 	const options = req.body.data
@@ -154,9 +160,7 @@ app.put('/player', (req, res) => {
 
 app.get('/player', (req, res) => {
 	const query = req.query.q
-	console.log('working')
 	spotifyApi.getMyCurrentPlayingTrack().then(response => {
-		console.log(response.body)
 		res.send(response.body)
 	}).catch(err => {
 		res.send(err)

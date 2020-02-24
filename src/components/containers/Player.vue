@@ -1,10 +1,16 @@
 <template>
 	<div class="player">
 		<div class="px-4 mb-2">
-			<h2 class="song-title subtitle-1">{{songTitle}}</h2>
-			<div class="d-flex justify-between align-center">
-				<strong class="song-artists subtitle-2" @click="getCurrentTrack">-{{artist}}</strong>
-				<span class="caption">{{timeElapsed}}</span>
+			<div class="d-flex justify-space-between align-end">
+				<h2 class="song-title title">{{songTitle}}</h2>
+				<span
+					v-if="nowPlaying.audio_features"
+					class="title nowrap"
+				>{{nowPlaying.audio_features ? Math.floor(nowPlaying.audio_features.tempo):null}} bpm</span>
+			</div>
+			<div class="d-flex justify-space-between align-center">
+				<strong class="song-artists subtitle-1">{{artist}}</strong>
+				<span v-show="isPlaying || isPaused" class="caption">{{timeElapsed}}</span>
 			</div>
 		</div>
 		<div class="player-controls">
@@ -46,6 +52,14 @@
 <script>
 export default {
 	props: ["playing", "paused"],
+	data: function() {
+		return {
+			nowPlaying: Object,
+			progress: Number,
+			isPaused: false,
+			isPlaying: false
+		};
+	},
 	computed: {
 		options: function() {
 			return {
@@ -74,26 +88,17 @@ export default {
 		},
 		timeElapsed: function() {
 			let total, elapsed;
-			if (this.nowPlaying.item) {
-				total = millisToMinutesAndSeconds(
+			if (
+				this.nowPlaying.is_playing &&
+				typeof this.progress === "number"
+			) {
+				total = this.millisToMinutesAndSeconds(
 					this.nowPlaying.item.duration_ms
 				);
-				elapsed = millisToMinutesAndSeconds(
-					this.nowPlaying.progress_ms
-				);
+				elapsed = this.millisToMinutesAndSeconds(this.progress);
 			}
-			return elapsed + "/" + total;
-			function millisToMinutesAndSeconds(millis) {
-				var minutes = Math.floor(millis / 60000);
-				var seconds = ((millis % 60000) / 1000).toFixed(0);
-				return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-			}
+			return elapsed && total ? elapsed + "/" + total : null;
 		}
-	},
-	data: function() {
-		return {
-			nowPlaying: Object
-		};
 	},
 	watch: {
 		options: function() {
@@ -115,11 +120,6 @@ export default {
 				})
 				.then(() => this.getCurrentTrack());
 		},
-		stop() {
-			this.$http.put("http://localhost:3000/player?action=stop", {
-				data: this.options
-			});
-		},
 		play() {
 			this.$http
 				.put("http://localhost:3000/player?action=play", {
@@ -128,9 +128,12 @@ export default {
 				.then(() => this.getCurrentTrack());
 		},
 		pause() {
-			this.$http.put("http://localhost:3000/player?action=pause", {
-				data: this.options
-			});
+			console.log("I ran");
+			this.$http
+				.put("http://localhost:3000/player?action=pause", {
+					data: this.options
+				})
+				.then(() => (this.isPaused = true));
 		},
 		next() {
 			this.$http
@@ -140,16 +143,54 @@ export default {
 				.then(() => this.getCurrentTrack());
 		},
 		getCurrentTrack() {
-			console.log("working");
 			this.$http
 				.get("http://localhost:3000/player?q=current")
 				.then(response => {
 					this.nowPlaying = response.data;
+					if (response.data.item.id) {
+						this.getTrackDetails(response.data.item.id);
+					}
+					if (response.data.is_playing) {
+						this.initTimer(
+							response.data.progress_ms,
+							response.data.item.duration_ms
+						);
+					}
 				})
 				.catch(err => console.log(err));
+		},
+		getTrackDetails(id) {
+			this.$http
+				.get(`http://localhost:3000/analyze-tracks?id=${id}`)
+				.then(response => {
+					this.nowPlaying.audio_features = response.data;
+				});
+		},
+		initTimer(progress, duration) {
+			this.isPlaying = true;
+			//Catch element for use in interval
+			const self = this;
+			//Not perfect, but due to latency progress needs to start back one second to match Spotify.
+			progress = progress - 1000;
+
+			let i = setInterval(() => {
+				progress = progress + 1000;
+				self.progress = progress;
+				if (progress >= duration) {
+					clearInterval(i);
+					this.getCurrentTrack();
+				}
+			}, 1000);
+		},
+		millisToMinutesAndSeconds: function(millis) {
+			let minutes = Math.floor(millis / 60000);
+			let seconds = ((millis % 60000) / 1000).toFixed(0);
+			return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 		}
 	},
-	mounted: function() {}
+	mounted: function() {
+		this.getCurrentTrack();
+	}
 };
 </script>
 
@@ -179,9 +220,15 @@ export default {
 	background-color: rgba(0, 0, 0, 0);
 }
 .song-artists {
-	width: 60%;
+	width: 80%;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+.song-title {
+	max-width: 75%;
+}
+.nowrap {
+	white-space: nowrap;
 }
 </style>
