@@ -37,7 +37,7 @@
 			<!-- <v-spacer /> -->
 			<!-- <v-btn flat text medium>EDIT SELECTION</v-btn> -->
 		</v-row>
-		<v-row class="pl-2 mt-2">
+		<!-- <v-row class="pl-2 mt-2">
 			<v-btn icon>
 				<v-icon :color="'primary'">mdi-image-plus</v-icon>
 			</v-btn>
@@ -48,7 +48,7 @@
 				<v-icon :color="'blue-grey lighten-2'">mdi-earth</v-icon>
 			</v-btn>
 			<span class="py-2 body-3">Make public</span>
-		</v-row>
+		</v-row>-->
 		<v-row>
 			<v-spacer />
 			<v-btn

@@ -11,7 +11,7 @@
 				<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
 				<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
 			</v-list-item-content>
-			<delete-playlist :playlist="playlist.id" @updateUserInfo="updateUserInfo" />
+			<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
 		</v-list-item>
 		<v-dialog v-model="dialog" max-width="300">
 			<v-card>
