@@ -9,7 +9,7 @@
 			@pause="pause"
 		/>
 		<v-spacer />
-		<player :playing="playing" :paused="paused" />
+		<player v-bind="$attrs" @updateTrack="updateTrack" />
 	</div>
 </template>
 
@@ -33,6 +33,10 @@ export default {
 	methods: {
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
+		},
+		updateTrack() {
+			console.log("asd");
+			this.$emit("updateTrack");
 		},
 		play(event) {
 			this.paused = false;

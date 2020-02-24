@@ -42,9 +42,6 @@ export default {
 		play(playlistID, deviceID) {
 			this.$emit("play", { playlistID: playlistID, deviceID: deviceID });
 			this.nowPlaying = playlistID;
-		},
-		pause() {
-			this.$emit("pause");
 		}
 	}
 };

@@ -13,6 +13,7 @@
 			v-bind="$attrs"
 			@updatePlaylists="updatePlaylists"
 			@updateUserInfo="getUserData"
+			@updateTrack="getCurrentTrack"
 		/>
 	</div>
 </template>
@@ -70,6 +71,9 @@ export default {
 					this.loading = false;
 					console.log(err);
 				});
+		},
+		getCurrentTrack() {
+			console.log("yoyoy");
 		}
 	},
 	//create user is authenticated function

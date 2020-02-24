@@ -1,16 +1,16 @@
 <template>
 	<div class="player">
-		<div class="px-4 mb-2">
+		<div class="px-4 mb-2" v-show="nowPlaying.audio_features && isPlaying">
 			<div class="d-flex justify-space-between align-end">
 				<h2 class="song-title title">{{songTitle}}</h2>
 				<span
-					v-if="nowPlaying.audio_features"
 					class="title nowrap"
-				>{{nowPlaying.audio_features ? Math.floor(nowPlaying.audio_features.tempo):null}} bpm</span>
+					v-if="nowPlaying.audio_features"
+				>{{nowPlaying.audio_features.tempo ? Math.floor(nowPlaying.audio_features.tempo) + "bpm" : null}}</span>
 			</div>
 			<div class="d-flex justify-space-between align-center">
 				<strong class="song-artists subtitle-1">{{artist}}</strong>
-				<span v-show="isPlaying || isPaused" class="caption">{{timeElapsed}}</span>
+				<span class="caption">{{timeElapsed}}</span>
 			</div>
 		</div>
 		<div class="player-controls">
@@ -25,7 +25,7 @@
 				<v-icon medium>mdi-skip-previous</v-icon>
 			</v-btn>
 			<v-btn
-				@click="play"
+				@click="togglePlaystate"
 				:height="60"
 				:width="60"
 				class="player-ctrl play-button mx-2"
@@ -33,7 +33,7 @@
 				:ripple="false"
 				outlined
 			>
-				<v-icon large>mdi-play</v-icon>
+				<v-icon large>{{isPlaying && !isPaused ? 'mdi-pause' : 'mdi-play'}}</v-icon>
 			</v-btn>
 			<v-btn
 				@click="next"
@@ -51,21 +51,23 @@
 
 <script>
 export default {
-	props: ["playing", "paused"],
+	// props: ["playing", "paused"],
 	data: function() {
 		return {
 			nowPlaying: Object,
 			progress: Number,
-			isPaused: false,
-			isPlaying: false
+			isPaused: false
 		};
 	},
 	computed: {
 		options: function() {
-			return {
-				device_id: this.playing.deviceID,
-				context_uri: "spotify:playlist:" + this.playing.playlistID
-			};
+			if (this.playing) {
+				return {
+					device_id: this.playing.deviceID,
+					context_uri: "spotify:playlist:" + this.playing.playlistID
+				};
+			}
+			return null;
 		},
 		artist: function() {
 			if (this.nowPlaying.item) {
@@ -98,6 +100,14 @@ export default {
 				elapsed = this.millisToMinutesAndSeconds(this.progress);
 			}
 			return elapsed && total ? elapsed + "/" + total : null;
+		},
+		isPlaying: {
+			get: function() {
+				return this.nowPlaying.is_playing ? true : false;
+			},
+			set: function(value) {
+				return value;
+			}
 		}
 	},
 	watch: {
@@ -113,12 +123,17 @@ export default {
 		}
 	},
 	methods: {
-		previous() {
-			this.$http
-				.put("http://localhost:3000/player?action=previous", {
-					data: this.options
-				})
-				.then(() => this.getCurrentTrack());
+		togglePlaystate() {
+			console.log("here");
+			if (!this.isPaused && this.isPlaying) {
+				this.isPaused = true;
+				this.pause();
+			} else if (this.isPaused && this.isPlaying) {
+				this.isPaused = false;
+			} else {
+				this.play();
+				this.isPlaying = true;
+			}
 		},
 		play() {
 			this.$http
@@ -128,12 +143,16 @@ export default {
 				.then(() => this.getCurrentTrack());
 		},
 		pause() {
-			console.log("I ran");
 			this.$http
-				.put("http://localhost:3000/player?action=pause", {
+				.put("http://localhost:3000/player?action=pause")
+				.then(res => console.log(res));
+		},
+		previous() {
+			this.$http
+				.put("http://localhost:3000/player?action=previous", {
 					data: this.options
 				})
-				.then(() => (this.isPaused = true));
+				.then(() => this.getCurrentTrack());
 		},
 		next() {
 			this.$http
@@ -143,10 +162,13 @@ export default {
 				.then(() => this.getCurrentTrack());
 		},
 		getCurrentTrack() {
+			console.log("hi");
+			this.$emit("updateTrack");
 			this.$http
 				.get("http://localhost:3000/player?q=current")
 				.then(response => {
 					this.nowPlaying = response.data;
+					this.isPlaying = response.data.is_playing;
 					if (response.data.item.id) {
 						this.getTrackDetails(response.data.item.id);
 					}
