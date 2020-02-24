@@ -15,6 +15,8 @@
 				:key="playlist.key"
 				:playlist="playlist"
 				@updatePlaylists="updatePlaylists"
+				@updateUserInfo="updateUserInfo"
+				@updatePlayState="updatePlayState"
 				v-bind="$attrs"
 			/>
 		</v-list>
@@ -39,9 +41,8 @@ export default {
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
 		},
-		play(playlistID, deviceID) {
-			this.$emit("play", { playlistID: playlistID, deviceID: deviceID });
-			this.nowPlaying = playlistID;
+		updatePlayState(event) {
+			this.$emit("updatePlayState", event);
 		}
 	}
 };

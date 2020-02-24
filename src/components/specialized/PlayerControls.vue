@@ -18,7 +18,7 @@
 			icon
 			outlined
 		>
-			<v-icon large>{{playing ? 'mdi-pause' : 'mdi-play'}}</v-icon>
+			<v-icon large>{{$attrs.currentTrack.isPlaying ? 'mdi-pause' : 'mdi-play'}}</v-icon>
 		</v-btn>
 		<v-btn
 			@click="next"
@@ -35,11 +35,6 @@
 
 <script>
 export default {
-	data: function() {
-		return {
-			playing: false
-		};
-	},
 	computed: {
 		options: function() {
 			if (this.playing) {
@@ -97,14 +92,14 @@ export default {
 	// },
 	methods: {
 		togglePlay() {
-			this.playing ? this.pause() : this.play();
-			this.playing = !this.playing;
+			this.$attrs.playing ? this.pause() : this.play();
+			this.$attrs.playing = !this.playing;
 		},
 		play() {
-			this.$emit("updatePlayState", "play");
+			this.$emit("updatePlayState", { state: "play" });
 		},
 		pause() {
-			this.$emit("updatePlayState", "pause");
+			this.$emit("updatePlayState", { state: "pause" });
 		},
 		previous() {
 			this.$emit("updatePlayState", "previous");

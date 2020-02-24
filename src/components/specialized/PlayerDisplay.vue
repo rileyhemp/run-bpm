@@ -20,22 +20,6 @@ export default {
 			let minutes = Math.floor(millis / 60000);
 			let seconds = ((millis % 60000) / 1000).toFixed(0);
 			return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-		},
-		initTimer(progress, duration) {
-			this.isPlaying = true;
-			//Catch element for use in interval
-			const self = this;
-			//Not perfect, but due to latency progress needs to start back one second to match Spotify.
-			progress = progress - 1000;
-
-			let i = setInterval(() => {
-				progress = progress + 1000;
-				self.progress = progress;
-				if (progress >= duration) {
-					clearInterval(i);
-					this.getCurrentTrack();
-				}
-			}, 1000);
 		}
 	}
 };

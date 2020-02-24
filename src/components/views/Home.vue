@@ -5,7 +5,7 @@
 		<saved-playlists
 			v-bind="$attrs"
 			@updateUserInfo="updateUserInfo"
-			@play="play($event)"
+			@updatePlayState="updatePlayState"
 			@pause="pause"
 		/>
 		<v-spacer />

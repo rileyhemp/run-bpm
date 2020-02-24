@@ -149,10 +149,19 @@ app.get('/analyze-tracks', (req, res) => {
 app.put('/player', (req, res) => {
 	const action = req.query.action
 	const options = req.body.data
-	if (action === 'pause') {
-		console.log('pause')
-		spotifyApi.pause().then(response => res.send(response.body)).catch(err => res.send(err.message))
+	switch (action) {
+		case 'play':
+			spotifyApi.play(options)
+				.then(response => res.status(response.statusCode).send())
+				.catch(error => res.status(error.statusCode).send())
+			break;
+		case 'pause':
+			spotifyApi.pause(options)
+				.then(response => res.status(response.statusCode).send())
+				.catch(error => res.status(error.statusCode).send())
+			break;
 	}
+
 })
 
 app.get('/player', (req, res) => {

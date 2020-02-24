@@ -10,6 +10,7 @@
 			:userDevices="this.userDevices"
 			:user="this.userData"
 			:loading="this.loading"
+			:currentTrack="this.currentTrack"
 			v-bind="$attrs"
 			@updatePlaylists="updatePlaylists"
 			@updateUserInfo="getUserData"
@@ -32,12 +33,17 @@ export default {
 			userPlaylists: Object,
 			savedPlaylists: Object,
 			userDevices: Object,
+			currentTrack: {
+				id: null,
+				isPlaying: false
+			},
 			displaySaved: false,
 			loading: false
 		};
 	},
 	methods: {
 		getUserData() {
+			this.getCurrentTrack();
 			this.loading = true;
 			this.$http
 				.get("http://localhost:3000/get-user-data")
@@ -74,17 +80,17 @@ export default {
 				});
 		},
 		getCurrentTrack() {
-			console.log("hi");
-			this.$emit("updateTrack");
 			this.$http
 				.get("http://localhost:3000/player?q=current")
 				.then(response => {
-					this.nowPlaying = response.data;
-					this.isPlaying = response.data.is_playing;
+					this.currentTrack.id = response.data;
+					this.currentTrack.isPlaying = response.data.is_playing;
 					if (response.data.item.id) {
 						this.getTrackDetails(response.data.item.id);
 					}
 					if (response.data.is_playing) {
+						this.currentTrack.duration =
+							response.data.item.duration_ms;
 						this.initTimer(
 							response.data.progress_ms,
 							response.data.item.duration_ms
@@ -97,25 +103,51 @@ export default {
 			this.$http
 				.get(`http://localhost:3000/analyze-tracks?id=${id}`)
 				.then(response => {
-					this.nowPlaying.audio_features = response.data;
+					this.currentTrack.audioFeatures = response.data;
 				});
+		},
+		initTimer(progress, duration) {
+			//Catch element for use in interval
+			const self = this;
+			//Not perfect, but due to latency progress needs to start back one second to match Spotify.
+			progress = progress - 1000;
+			let i = setInterval(() => {
+				progress = progress + 1000;
+				self.currentTrack.progress = progress;
+				if (progress >= duration) {
+					clearInterval(i);
+					this.getCurrentTrack();
+				}
+			}, 1000);
 		},
 		/* eslint indent: 0 */
 		updatePlayState(event) {
+			let options = {};
+			console.log(event);
+			if (event.device) {
+				this.userData.activeDevice = event.device;
+				options.device_id = event.device;
+			} else {
+				options.device_id = this.userData.activeDevice;
+			}
+			if (event.content) {
+				options.context_uri = event.content;
+			}
 			const play = () => {
-				console.log("play was called");
 				this.$http
 					.put("http://localhost:3000/player?action=play", {
-						data: this.options
+						data: {
+							...options
+						}
 					})
-					.then(() => console.log("paused"))
-					.catch(() => console.log("pause broke somewhere"));
+					.then(() => this.getCurrentTrack())
+					.catch(error => console.log(error));
 			};
 			const pause = () => {
 				console.log("pause was called");
 				this.$http
 					.put("http://localhost:3000/player?action=pause")
-					.then(() => console.log("paused"))
+					.then(() => this.getCurrentTrack())
 					.catch(() => console.log("pause broke somewhere"));
 			};
 			const previous = () => {
@@ -136,7 +168,7 @@ export default {
 					.then(() => console.log("next"))
 					.catch(() => console.log("next broke somewhere"));
 			};
-			switch (event) {
+			switch (event.state) {
 				case "play":
 					play();
 					break;
