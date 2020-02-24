@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import PlaylistCardVue from "../specialized/PlaylistCard.vue";
+import PlaylistCardVue from "../single_purpose/PlaylistCard.vue";
 export default {
 	name: "Import",
 	components: {

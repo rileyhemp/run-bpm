@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import AddNewButtonVue from "../specialized/AddNewButton.vue";
+import AddNewButtonVue from "../single_purpose/AddNewButton.vue";
 import SavedPlaylists from "../containers/SavedPlaylists";
 import Player from "../containers/Player";
 

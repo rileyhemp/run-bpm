@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import DeletePlaylist from "../specialized/DeletePlaylist";
+import DeletePlaylist from "../single_purpose/DeletePlaylist";
 
 export default {
 	props: ["playlist"],

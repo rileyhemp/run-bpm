@@ -86,8 +86,8 @@
 <script>
 import features from "@/assets/temp-features";
 import details from "@/assets/temp-details";
-import RadarChart from "../specialized/RadarChart";
-import LineGraph from "../specialized/LineGraph";
+import RadarChart from "../single_purpose/RadarChart";
+import LineGraph from "../single_purpose/LineGraph";
 import VueSlider from "vue-slider-component";
 import SavedPlaylists from "../containers/SavedPlaylists";
 import gsap from "gsap";
