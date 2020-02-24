@@ -1,5 +1,6 @@
 <template>
-	<button @click="authorizeSpotify">log in</button>
+	<v-btn color="success" rounded class="px-6">Connect with Spotify</v-btn>
+	<!-- <v-btn width="80%" :color="success" @click="authorizeSpotify">Connect with Spotify</v-btn> -->
 </template>
 
 <script>

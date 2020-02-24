@@ -70,7 +70,6 @@ export function updatePlayState(event) {
 			.catch(error => console.log(error));
 	};
 	const previous = () => {
-		console.log("previous was called");
 		this.$http
 			.put("http://localhost:3000/player?action=previous", {
 				data: this.options
@@ -79,7 +78,6 @@ export function updatePlayState(event) {
 			.catch(error => console.log(error));
 	};
 	const next = () => {
-		console.log("next was called");
 		this.$http
 			.put("http://localhost:3000/player?action=next")
 			.then(() => this.getCurrentTrack())
