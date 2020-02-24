@@ -1,5 +1,5 @@
 <template>
-	<div class="player">
+	<div class="player" v-if="$attrs.currentTrack.audioFeatures">
 		<player-display v-bind="$attrs" />
 		<player-controls v-bind="$attrs" @updatePlayState="updatePlayState" />
 	</div>

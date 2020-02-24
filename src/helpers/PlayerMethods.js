@@ -6,7 +6,7 @@ export function getCurrentTrack() {
 		.then(response => {
 			this.currentTrack.id = response.data;
 			this.currentTrack.isPlaying = response.data.is_playing;
-			if (response.data.item.id) {
+			if (response.data.item) {
 				this.getTrackDetails(response.data.item.id);
 			}
 			if (response.data.is_playing) {

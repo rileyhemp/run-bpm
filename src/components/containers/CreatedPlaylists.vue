@@ -1,6 +1,6 @@
 <template>
 	<div class="full-width">
-		<v-list two-line v-if="!$attrs.CreatedPlaylists.length && !isSession">
+		<v-list two-line v-if="!$attrs.CreatedPlaylists.length">
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title>Nothing here yet...</v-list-item-title>

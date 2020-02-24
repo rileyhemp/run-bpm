@@ -11,6 +11,7 @@ const credentials = {
 	clientSecret: "515a0f00287745c19c006ce63af4d7b6",
 	redirectUri: "http://localhost:8080/redirect"
 };
+
 const scopes = [
 	"user-read-private",
 	"user-read-email",
@@ -61,6 +62,7 @@ app.get("/validate-user", function (req, res) {
 	})
 })
 
+//Get user profile information & connected devices
 app.get("/get-user-data", function (req, res) {
 	spotifyApi.getMe().then(data => {
 		let userData = data.body
@@ -78,15 +80,16 @@ app.get("/get-user-data", function (req, res) {
 	}).catch(err => res.send(err.message))
 })
 
+//Get playlists user created with Run BPM
 app.get("/playlists", function (req, res) {
 	const db = new UserDB(DatabasePath)
 	let userID = req.query.id
-	//Fetch user playlists if they exist
 	db.getCreatedPlaylists(userID).then(response => {
 		res.send(response)
 	}).catch(err => res.send(err))
 })
 
+//Add a new playlist to Run BPM's database
 app.post('/playlists', (req, res) => {
 	let request = req.body.data
 	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata).then(response => {
@@ -94,6 +97,7 @@ app.post('/playlists', (req, res) => {
 	}).catch(err => res.send("Something went wrong. Error: " + err))
 })
 
+//Delete a playlist
 app.delete('/playlists', (req, res) => {
 	const db = new UserDB(DatabasePath)
 	//Unfollow the playlist on spotify
@@ -105,10 +109,13 @@ app.delete('/playlists', (req, res) => {
 	}).catch(err => res.send(err))
 })
 
+//Get audio features for many tracks
 app.post('/analyze-tracks', (req, res) => {
-	getPlaylistTracks(req.body.data.playlists).then(details => {
-		const trackIDs = _.chunk(getIDsFromTracks(details), 100)
+	getPlaylistTracks(req.body.data.playlists).then(response => {
+		console.log(response)
+		const playlistDetails = response
 		const trackDetails = []
+		const trackIDs = _.chunk(getIDsFromTracks(response), 100)
 		for (let i = 0; i < trackIDs.length; i++) {
 			trackDetails.push(new Promise((resolve, reject) => {
 				spotifyApi.getAudioFeaturesForTracks(trackIDs[i]).then(data => {
@@ -117,17 +124,22 @@ app.post('/analyze-tracks', (req, res) => {
 			}))
 		}
 		Promise.all(trackDetails).then(response => {
-			res.send(_.flatten(response)) //used to have 'deets ?' taking out, see if it breaks anything. 
+			res.send({
+				playlistDetails: playlistDetails,
+				audioFeatures: _.flatten(response)
+			}) //used to have 'deets ?' taking out, see if it breaks anything. 
 		}).catch(err => res.send(err))
 	})
 })
 
+//Get audio features for indevidual tracks
 app.get('/analyze-tracks', (req, res) => {
 	spotifyApi.getAudioFeaturesForTrack(req.query.id).then(response => {
 		res.send(response.body)
 	}).catch(err => res.send(err))
 })
 
+//Control playback
 app.put('/player', (req, res) => {
 	const action = req.query.action
 	const options = req.body.data
@@ -156,6 +168,7 @@ app.put('/player', (req, res) => {
 
 })
 
+//Get the currently playing track
 app.get('/player', (req, res) => {
 	const query = req.query.q
 	spotifyApi.getMyCurrentPlayingTrack().then(response => {
@@ -165,6 +178,7 @@ app.get('/player', (req, res) => {
 	})
 })
 
+//Helper functions
 function createPlaylist(userID, playlistName, trackIDs, metadata) {
 	return new Promise((resolve, reject) => {
 		//Create the playlist

@@ -78,7 +78,7 @@
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
-			<saved-playlists v-bind="$attrs" :isSession="true" @updatePlaylists="updatePlaylists" />
+			<saved-playlists v-bind="$attrs" @updatePlaylists="updatePlaylists" />
 		</v-row>
 	</v-container>
 </template>
@@ -206,17 +206,7 @@ export default {
 		updatePlaylists() {
 			this.$emit("updatePlaylists");
 		},
-		// doneCheck() {
-		// 	//Check if user is done or wants to add more playlists
-		// 	this.finishedWithSelection
-		// 		? this.$router.push("dashboard")
-		// 		: this.resetScreen();
-		// 	this.loading = false;
-		// },
 		saveAndReset() {
-			//Get the users created playlists for session
-			//Get specific list vs get all lists
-
 			//Reset the selection, slider range, and chart
 			this.updatePlaylists();
 			this.confirm = false;
@@ -285,32 +275,38 @@ export default {
 			});
 		}, 100)
 	},
-	mounted: function() {
-		//Combines audio features and track details into a single object
-		this.audioFeatures = _.zipWith(
-			this.playlistDetailsTemp,
-			this.audioFeaturesTemp,
-			function(a, b) {
-				return { track: a.track, features: b };
-			}
-		);
-		this.initChartData();
-	}
 	// mounted: function() {
-	// 	this.$http
-	// 		.post("http://localhost:3000/analyze-tracks", {
-	// 			data: {
-	// 				playlists: this.$route.params.playlists
-	// 			}
-	// 		})
-	// 		.then(response => {
-	// 			console.log(response);
-	// 			console.log(this.$route.params.playlists);
-	// 		})
-	// 		.catch(err => {
-	// 			console.log(err);
-	// 		});
+	//Combines audio features and track details into a single object
+	// this.audioFeatures = _.zipWith(
+	// 	this.playlistDetailsTemp,
+	// 	this.audioFeaturesTemp,
+	// 	function(a, b) {
+	// 		return { track: a.track, features: b };
+	// 	}
+	// );
+
 	// }
+	mounted: function() {
+		this.$http
+			.post("http://localhost:3000/analyze-tracks", {
+				data: {
+					playlists: this.$route.params.playlists
+				}
+			})
+			.then(response => {
+				this.audioFeatures = _.zipWith(
+					response.data.playlistDetails,
+					response.data.audioFeatures,
+					function(a, b) {
+						return { track: a.track, features: b };
+					}
+				);
+				this.initChartData();
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	}
 	//Saves the created playlists locally until user is finished with track set
 	// const saved = localStorage.getItem("stashedPlaylists")
 	// 	? JSON.parse(localStorage.getItem("stashedPlaylists"))
