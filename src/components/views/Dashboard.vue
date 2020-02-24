@@ -11,6 +11,7 @@
 			:user="this.userData"
 			:loading="this.loading"
 			:currentTrack="this.currentTrack"
+			:disablePlayButton="this.disablePlayButton"
 			v-bind="$attrs"
 			@updatePlaylists="updatePlaylists"
 			@updateUserInfo="getUserData"
@@ -37,6 +38,7 @@ export default {
 				id: null,
 				isPlaying: false
 			},
+			disablePlayButton: false,
 			displaySaved: false,
 			loading: false
 		};
@@ -80,6 +82,7 @@ export default {
 				});
 		},
 		getCurrentTrack() {
+			this.disablePlayButton = false;
 			this.$http
 				.get("http://localhost:3000/player?q=current")
 				.then(response => {
@@ -122,6 +125,7 @@ export default {
 		},
 		/* eslint indent: 0 */
 		updatePlayState(event) {
+			this.disablePlayButton = true;
 			let options = {};
 			console.log(event);
 			if (event.device) {

@@ -15,6 +15,7 @@
 			:height="60"
 			:width="60"
 			class="player-ctrl play-button mx-2"
+			:class="$attrs.disablePlayButton ? 'pointer-events-none' : null"
 			icon
 			outlined
 		>
@@ -92,13 +93,14 @@ export default {
 	// },
 	methods: {
 		togglePlay() {
-			this.$attrs.playing ? this.pause() : this.play();
-			this.$attrs.playing = !this.playing;
+			this.$attrs.currentTrack.isPlaying ? this.pause() : this.play();
 		},
 		play() {
+			this.$attrs.currentTrack.isPlaying = true;
 			this.$emit("updatePlayState", { state: "play" });
 		},
 		pause() {
+			this.$attrs.currentTrack.isPlaying = false;
 			this.$emit("updatePlayState", { state: "pause" });
 		},
 		previous() {
@@ -133,5 +135,8 @@ export default {
 }
 .always-transparent:before {
 	background-color: rgba(0, 0, 0, 0);
+}
+.pointer-events-none {
+	pointer-events: none;
 }
 </style>
