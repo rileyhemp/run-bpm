@@ -11,15 +11,14 @@
 			<v-icon medium>mdi-skip-previous</v-icon>
 		</v-btn>
 		<v-btn
-			@click="play"
+			@click="togglePlay"
 			:height="60"
 			:width="60"
 			class="player-ctrl play-button mx-2"
 			icon
-			:ripple="false"
 			outlined
 		>
-			<v-icon large>mdi-play</v-icon>
+			<v-icon large>{{playing ? 'mdi-pause' : 'mdi-play'}}</v-icon>
 		</v-btn>
 		<v-btn
 			@click="next"
@@ -38,9 +37,7 @@
 export default {
 	data: function() {
 		return {
-			nowPlaying: Object,
-			progress: Number,
-			isPaused: false
+			playing: false
 		};
 	},
 	computed: {
@@ -99,6 +96,10 @@ export default {
 	// 	}
 	// },
 	methods: {
+		togglePlay() {
+			this.playing ? this.pause() : this.play();
+			this.playing = !this.playing;
+		},
 		play() {
 			this.$emit("updatePlayState", "play");
 		},
@@ -124,6 +125,9 @@ export default {
 	display: flex;
 	width: 100%;
 	height: 80px;
+}
+.v-btn:before {
+	background-color: transparent;
 }
 .player-ctrl {
 	border-radius: 50px !important;

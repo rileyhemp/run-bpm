@@ -14,6 +14,7 @@
 			@updatePlaylists="updatePlaylists"
 			@updateUserInfo="getUserData"
 			@updateTrack="getCurrentTrack"
+			@updatePlayState="updatePlayState"
 		/>
 	</div>
 </template>
@@ -100,23 +101,7 @@ export default {
 				});
 		},
 		/* eslint indent: 0 */
-		updatePlayState(state) {
-			switch (state) {
-				case play:
-					play();
-					break;
-				case pause:
-					pause();
-					break;
-				case previous:
-					previous();
-					break;
-				case next:
-					next();
-					break;
-				default:
-					console.log("Play state missing");
-			}
+		updatePlayState(event) {
 			const play = () => {
 				console.log("play was called");
 				this.$http
@@ -151,6 +136,22 @@ export default {
 					.then(() => console.log("next"))
 					.catch(() => console.log("next broke somewhere"));
 			};
+			switch (event) {
+				case "play":
+					play();
+					break;
+				case "pause":
+					pause();
+					break;
+				case "previous":
+					previous();
+					break;
+				case "next":
+					next();
+					break;
+				default:
+					console.log("Play state missing");
+			}
 		}
 	},
 	//create user is authenticated function
