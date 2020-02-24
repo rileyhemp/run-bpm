@@ -78,24 +78,6 @@ app.get("/get-user-data", function (req, res) {
 	}).catch(err => res.send(err.message))
 })
 
-// app.get("/get-user-data", function (req, res) {
-// 	let userData
-// 	let userPlaylists
-// 	spotifyApi.getMe().then(data => {
-// 		userData = data.body
-// 	}).then(() => {
-// 		spotifyApi.getUserPlaylists(userData.id).then(data => {
-// 			userPlaylists = data.body
-// 			res.send({
-// 				userData: userData,
-// 				userPlaylists: userPlaylists
-// 			})
-// 		})
-// 	}).catch(err => {
-// 		res.send(err)
-// 	})
-// })
-
 app.get("/playlists", function (req, res) {
 	const db = new UserDB(DatabasePath)
 	let userID = req.query.id
