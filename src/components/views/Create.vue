@@ -1,24 +1,20 @@
 <template>
 	<v-container fluid>
 		<v-row class="pr-2">
+			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
-			<v-btn class="mr-1" icon @click="radar=false, trend=false, bars=true">
+			<v-btn class="mr-1" icon @click="(radar = false), (trend = false), (bars = true)">
 				<v-icon :color="radar || trend ? 'default' : 'primary'">mdi-chart-bar</v-icon>
 			</v-btn>
-			<v-btn class="mr-1" icon @click="radar=false, bars=false, trend=true">
+			<v-btn class="mr-1" icon @click="(radar = false), (bars = false), (trend = true)">
 				<v-icon :color="radar || bars ? 'default' : 'primary'">mdi-chart-line</v-icon>
 			</v-btn>
-			<v-btn icon @click="radar=true, bars=false, trend=false">
+			<v-btn icon @click="(radar = true), (bars = false), (trend = false)">
 				<v-icon :color="bars || trend ? 'default' : 'primary'">mdi-spider-web</v-icon>
 			</v-btn>
 		</v-row>
 		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
-		<line-graph
-			:type="bars ? 'bar' : 'trend'"
-			v-if="this.chartReady && !radar"
-			:chartData="this.chartData"
-			:key="renderKey"
-		/>
+		<line-graph :type="bars ? 'bar' : 'trend'" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
 		<vue-slider
 			:min="100"
 			:max="200"
@@ -33,11 +29,11 @@
 			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
 		<v-row class="mt-3">
-			<span class="mx-4 my-2 body-2">{{songCount}} Tracks {{mixDuration}}</span>
-			<!-- <v-spacer /> -->
-			<!-- <v-btn flat text medium>EDIT SELECTION</v-btn> -->
+			<span class="mx-4 my-2 body-2">{{ songCount }} Tracks {{ mixDuration }}</span>
+			<v-spacer />
+			<v-btn text medium>EDIT SELECTION</v-btn>
 		</v-row>
-		<!-- <v-row class="pl-2 mt-2">
+		<v-row class="pl-2 mt-2">
 			<v-btn icon>
 				<v-icon :color="'primary'">mdi-image-plus</v-icon>
 			</v-btn>
@@ -48,38 +44,43 @@
 				<v-icon :color="'blue-grey lighten-2'">mdi-earth</v-icon>
 			</v-btn>
 			<span class="py-2 body-3">Make public</span>
-		</v-row>-->
+		</v-row>
 		<v-row>
 			<v-spacer />
-			<v-btn
-				color="primary"
-				class="mr-4"
-				:disabled="loading || !playlistName"
-				@click="confirm = true;"
-			>Create</v-btn>
+			<v-btn color="primary" class="mr-4" :disabled="loading || !playlistName" @click="confirm = true">Create</v-btn>
 			<v-dialog v-model="confirm" width="300">
 				<v-card v-if="!loading">
-					<v-card-title
-						class="subtitle-1 no-word-break"
-					>"{{playlistName}}" will be added to your Spotify library</v-card-title>
+					<v-card-title class="subtitle-1 no-word-break">"{{ playlistName }}" will be added to your Spotify library</v-card-title>
 					<v-card-text>Are you finished with this selection?</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
-						<v-btn text @click="()=>{this.saveAndReset()}" class="plain-btn">Add another</v-btn>
+						<v-btn
+							text
+							@click="
+								() => {
+									this.saveAndReset();
+								}
+							"
+							class="plain-btn"
+							>Add another</v-btn
+						>
 						<v-btn
 							color="green darken-1"
 							text
-							@click="()=>{
-								this.createPlaylistFromSelection().then(()=>this.$router.push('Dashboard'))
-							}"
-						>Done</v-btn>
+							@click="
+								() => {
+									this.createPlaylistFromSelection().then(() => this.$router.push('Dashboard'));
+								}
+							"
+							>Done</v-btn
+						>
 					</v-card-actions>
 				</v-card>
 			</v-dialog>
 		</v-row>
 	</v-container>
 </template>
-	
+
 <script>
 import features from "@/assets/temp-features";
 import details from "@/assets/temp-details";
@@ -125,11 +126,7 @@ export default {
 				let track = this.audioFeatures[i];
 				let bpmSliderRangeLow = this.sliderRange[0];
 				let bpmSliderRangeHigh = this.sliderRange[1];
-				if (
-					track.features.doubletime >= bpmSliderRangeLow &&
-					track.features.doubletime <= bpmSliderRangeHigh
-				)
-					tracksArray.push(track);
+				if (track.features.doubletime >= bpmSliderRangeLow && track.features.doubletime <= bpmSliderRangeHigh) tracksArray.push(track);
 			});
 			return tracksArray;
 		},
@@ -225,10 +222,7 @@ export default {
 				let segment = {};
 				let tracks = 0;
 				this.audioFeatures.forEach(track => {
-					track.features.doubletime >= i &&
-					track.features.doubletime < i + 10
-						? tracks++
-						: null;
+					track.features.doubletime >= i && track.features.doubletime < i + 10 ? tracks++ : null;
 				});
 				segment.axis = i;
 				segment.value = tracks / this.audioFeatures.length;
@@ -245,10 +239,7 @@ export default {
 			//Filters charts in real time
 			this.chartData[0].forEach(el => {
 				const duration = 0.75;
-				if (
-					el.axis < this.sliderRange[0] ||
-					el.axis > this.sliderRange[1]
-				) {
+				if (el.axis < this.sliderRange[0] || el.axis > this.sliderRange[1]) {
 					gsap.to([el], {
 						value: 0.01,
 						duration: duration
@@ -272,25 +263,32 @@ export default {
 		}, 100)
 	},
 	mounted: function() {
-		this.$http
-			.post("http://localhost:3000/analyze-tracks", {
-				data: {
-					playlists: this.$route.params.playlists
-				}
-			})
-			.then(response => {
-				this.audioFeatures = _.zipWith(
-					response.data.playlistDetails,
-					response.data.audioFeatures,
-					function(a, b) {
-						return { track: a.track, features: b };
+		let playlists = [];
+		if (this.$route.params.playlists || localStorage.playlists) {
+			if (localStorage.playlists && !this.$route.params.playlists) {
+				console.log("heyeye");
+				playlists = JSON.parse(localStorage.playlists);
+			} else {
+				playlists = this.$route.params.playlists;
+				localStorage.setItem("playlists", JSON.stringify(playlists));
+			}
+
+			this.$http
+				.post("http://localhost:3000/analyze-tracks", {
+					data: {
+						playlists: playlists
 					}
-				);
-				this.initChartData();
-			})
-			.catch(err => {
-				console.log(err);
-			});
+				})
+				.then(response => {
+					this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
+						return { track: a.track, features: b };
+					});
+					this.initChartData();
+				})
+				.catch(err => {
+					console.log(err);
+				});
+		} else this.$router.push("Dashboard");
 	}
 };
 </script>
@@ -303,6 +301,3 @@ export default {
 	word-break: keep-all;
 }
 </style>
-
-
-
