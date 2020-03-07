@@ -36,12 +36,6 @@
 		<v-row class="pl-2 mt-2">
 			<v-file-input label="Add a photo" accept="image/*" prepend-icon="mdi-image-plus" class="mx-2 body-3 add-photo"> </v-file-input>
 		</v-row>
-		<v-row class="pl-2">
-			<v-btn icon>
-				<v-icon :color="'blue-grey lighten-2'">mdi-earth</v-icon>
-			</v-btn>
-			<span class="py-2 body-3">Make public</span>
-		</v-row>
 		<v-row>
 			<v-spacer />
 			<v-btn color="primary" class="mr-4" :disabled="loading || !playlistName" @click="confirm = true">Create</v-btn>
@@ -263,13 +257,12 @@ export default {
 		let playlists = [];
 		if (this.$route.params.playlists || localStorage.playlists) {
 			if (localStorage.playlists && !this.$route.params.playlists) {
-				console.log("heyeye");
 				playlists = JSON.parse(localStorage.playlists);
 			} else {
 				playlists = this.$route.params.playlists;
 				localStorage.setItem("playlists", JSON.stringify(playlists));
 			}
-
+			setTimeout(10);
 			this.$http
 				.post("http://localhost:3000/analyze-tracks", {
 					data: {
@@ -297,8 +290,10 @@ export default {
 .no-word-break {
 	word-break: keep-all;
 }
-.add-photo {
+</style>
+
+<style>
+.add-photo .v-input__control .v-input__slot:before {
 	border: none !important;
-	outline: none !important;
 }
 </style>

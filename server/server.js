@@ -2,9 +2,9 @@ const express = require("express");
 const app = express();
 const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
-const _ = require("lodash")
-const UserDB = require('./sql')
-const DatabasePath = __dirname + '/db/new.db'
+const _ = require("lodash");
+const UserDB = require("./sql");
+const DatabasePath = __dirname + "/db/new.db";
 
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
@@ -135,31 +135,33 @@ app.delete("/playlists", (req, res) => {
 
 //Get audio features for many tracks
 app.post("/analyze-tracks", (req, res) => {
-	getPlaylistTracks(req.body.data.playlists).then(response => {
-		const playlistDetails = response;
-		const trackDetails = [];
-		const trackIDs = _.chunk(getIDsFromTracks(response), 100);
-		for (let i = 0; i < trackIDs.length; i++) {
-			trackDetails.push(
-				new Promise((resolve, reject) => {
-					spotifyApi
-						.getAudioFeaturesForTracks(trackIDs[i])
-						.then(data => {
-							resolve(data.body.audio_features);
-						})
-						.catch(err => reject(err));
+	getPlaylistTracks(req.body.data.playlists)
+		.then(response => {
+			const playlistDetails = response;
+			const trackDetails = [];
+			const trackIDs = _.chunk(getIDsFromTracks(response), 100);
+			for (let i = 0; i < trackIDs.length; i++) {
+				trackDetails.push(
+					new Promise((resolve, reject) => {
+						spotifyApi
+							.getAudioFeaturesForTracks(trackIDs[i])
+							.then(data => {
+								resolve(data.body.audio_features);
+							})
+							.catch(err => reject(err));
+					})
+				);
+			}
+			Promise.all(trackDetails)
+				.then(response => {
+					res.send({
+						playlistDetails: playlistDetails,
+						audioFeatures: _.flatten(response)
+					}); //used to have 'deets ?' taking out, see if it breaks anything.
 				})
-			);
-		}
-		Promise.all(trackDetails)
-			.then(response => {
-				res.send({
-					playlistDetails: playlistDetails,
-					audioFeatures: _.flatten(response)
-				}); //used to have 'deets ?' taking out, see if it breaks anything.
-			})
-			.catch(err => res.send(err));
-	});
+				.catch(err => res.send(err));
+		})
+		.catch(err => res.send(err));
 });
 
 //Get audio features for indevidual tracks
@@ -181,41 +183,25 @@ app.put("/player", (req, res) => {
 			spotifyApi
 				.play(options)
 				.then(response => res.status(response.statusCode).send())
-<<<<<<< HEAD
-				.catch(error => res.status(error.statusCode).send());
-=======
-				.catch(error => res.status(error.statusCode).send(error))
->>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
+				.catch(error => res.status(error.statusCode).send(error));
 			break;
 		case "pause":
 			spotifyApi
 				.pause(options)
 				.then(response => res.status(response.statusCode).send())
-<<<<<<< HEAD
-				.catch(error => res.status(error.statusCode).send());
-=======
-				.catch(error => res.status(error.statusCode).send(error))
->>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
+				.catch(error => res.status(error.statusCode).send(error));
 			break;
 		case "next":
 			spotifyApi
 				.skipToNext()
 				.then(response => res.status(response.statusCode).send())
-<<<<<<< HEAD
-				.catch(error => res.status(error.statusCode).send());
-=======
-				.catch(error => res.status(error.statusCode).send(error))
->>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
+				.catch(error => res.status(error.statusCode).send(error));
 			break;
 		case "previous":
 			spotifyApi
 				.skipToPrevious()
 				.then(response => res.status(response.statusCode).send())
-<<<<<<< HEAD
-				.catch(error => res.status(error.statusCode).send());
-=======
-				.catch(error => res.status(error.statusCode).send(error))
->>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
+				.catch(error => res.status(error.statusCode).send(error));
 			break;
 	}
 });
@@ -300,8 +286,4 @@ function getURIsFromIDs(IDs) {
 
 app.listen(3000, function() {
 	console.log("Listening on port 3000");
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
