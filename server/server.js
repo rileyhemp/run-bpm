@@ -2,15 +2,9 @@ const express = require("express");
 const app = express();
 const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
-<<<<<<< HEAD
-const _ = require("lodash");
-const UserDB = require("./sql");
-const DatabasePath = "./server/db/new.db";
-=======
 const _ = require("lodash")
 const UserDB = require('./sql')
 const DatabasePath = __dirname + '/db/new.db'
->>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
 
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",

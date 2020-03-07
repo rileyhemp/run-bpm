@@ -34,10 +34,7 @@
 			<v-btn text medium>EDIT SELECTION</v-btn>
 		</v-row>
 		<v-row class="pl-2 mt-2">
-			<v-btn icon>
-				<v-icon :color="'primary'">mdi-image-plus</v-icon>
-			</v-btn>
-			<span class="py-2 body-3">Add a photo</span>
+			<v-file-input label="Add a photo" accept="image/*" prepend-icon="mdi-image-plus" class="mx-2 body-3 add-photo"> </v-file-input>
 		</v-row>
 		<v-row class="pl-2">
 			<v-btn icon>
@@ -299,5 +296,9 @@ export default {
 }
 .no-word-break {
 	word-break: keep-all;
+}
+.add-photo {
+	border: none !important;
+	outline: none !important;
 }
 </style>

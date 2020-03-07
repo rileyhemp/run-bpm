@@ -1,48 +1,47 @@
-const sqlite3 = require('sqlite3').verbose()
+const sqlite3 = require("sqlite3").verbose();
 
 class UserDB extends sqlite3.Database {
 	constructor(dbPath) {
-		super(dbPath)
-		this.createTable()
+		super(dbPath);
+		this.createTable();
 	}
 	createTable() {
-		const sql =
-			`CREATE TABLE IF NOT EXISTS playlists (
+		const sql = `CREATE TABLE IF NOT EXISTS playlists (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			playlist_id TEXT NOT NULL,
 			owner TEXT NOT NULL,
 			tracks TEXT NOT NULL,
 			metadata TEXT NOT NULL
-		)`
-		this.run(sql)
+		)`;
+		this.run(sql);
 	}
 	savePlaylist(playlistID, userID, trackIDs, metadata) {
-		let tracks = JSON.stringify(trackIDs)
-		let sql = `INSERT INTO playlists(playlist_id, owner, tracks, metadata) VALUES(?,?,?,?)`
+		let tracks = JSON.stringify(trackIDs);
+		let sql = `INSERT INTO playlists(playlist_id, owner, tracks, metadata) VALUES(?,?,?,?)`;
 		return new Promise((resolve, reject) => {
-			this.run(sql, [playlistID, userID, tracks, metadata], (err) => {
+			this.run(sql, [playlistID, userID, tracks, metadata], err => {
 				if (err) {
-					reject(err.message)
+					reject(err.message);
 				}
-				resolve()
-			})
-			this.close()
-		})
+				resolve();
+			});
+			this.close();
+		});
 	}
 	deletePlaylist(playlistID) {
-		let sql = `DELETE FROM playlists WHERE playlist_id = '${playlistID}'`
+		let sql = `DELETE FROM playlists WHERE playlist_id = '${playlistID}'`;
 		return new Promise((resolve, reject) => {
-			this.run(sql, [], (err) => {
+			this.run(sql, [], err => {
 				if (err) {
-					reject(err)
+					reject(err);
 				}
-				resolve()
-			})
-			this.close()
-		})
+				resolve();
+			});
+			this.close();
+		});
 	}
 	getCreatedPlaylists(userID) {
-		let sql = `SELECT * FROM playlists WHERE owner = ?`
+		let sql = `SELECT * FROM playlists WHERE owner = ?`;
 		return new Promise((resolve, reject) => {
 			this.all(sql, [userID], (err, rows) => {
 				if (err) {
@@ -51,14 +50,14 @@ class UserDB extends sqlite3.Database {
 				if (rows) {
 					resolve(rows);
 				} else {
-					resolve(null)
+					resolve(null);
 				}
 			});
-			this.close()
-		})
+			this.close();
+		});
 	}
 	getNamedPlaylists(playlistIDs) {
-		console.log(playlistIDs)
+		console.log(playlistIDs);
 	}
 	// updatePlaylists(userID, userPlaylists) {
 	// 	let sql = `UPDATE users
@@ -77,4 +76,4 @@ class UserDB extends sqlite3.Database {
 	// }
 }
 
-module.exports = UserDB
+module.exports = UserDB;
