@@ -2,9 +2,15 @@ const express = require("express");
 const app = express();
 const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
+<<<<<<< HEAD
 const _ = require("lodash");
 const UserDB = require("./sql");
 const DatabasePath = "./server/db/new.db";
+=======
+const _ = require("lodash")
+const UserDB = require('./sql')
+const DatabasePath = __dirname + '/db/new.db'
+>>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
 
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
@@ -181,25 +187,41 @@ app.put("/player", (req, res) => {
 			spotifyApi
 				.play(options)
 				.then(response => res.status(response.statusCode).send())
+<<<<<<< HEAD
 				.catch(error => res.status(error.statusCode).send());
+=======
+				.catch(error => res.status(error.statusCode).send(error))
+>>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
 			break;
 		case "pause":
 			spotifyApi
 				.pause(options)
 				.then(response => res.status(response.statusCode).send())
+<<<<<<< HEAD
 				.catch(error => res.status(error.statusCode).send());
+=======
+				.catch(error => res.status(error.statusCode).send(error))
+>>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
 			break;
 		case "next":
 			spotifyApi
 				.skipToNext()
 				.then(response => res.status(response.statusCode).send())
+<<<<<<< HEAD
 				.catch(error => res.status(error.statusCode).send());
+=======
+				.catch(error => res.status(error.statusCode).send(error))
+>>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
 			break;
 		case "previous":
 			spotifyApi
 				.skipToPrevious()
 				.then(response => res.status(response.statusCode).send())
+<<<<<<< HEAD
 				.catch(error => res.status(error.statusCode).send());
+=======
+				.catch(error => res.status(error.statusCode).send(error))
+>>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
 			break;
 	}
 });
@@ -284,4 +306,8 @@ function getURIsFromIDs(IDs) {
 
 app.listen(3000, function() {
 	console.log("Listening on port 3000");
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 8c8f09ed9cbf476a98e42ea582ebfb58c9487f4c
