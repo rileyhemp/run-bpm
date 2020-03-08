@@ -1,8 +1,10 @@
 <template>
 	<v-container class="fill-height d-flex text-center flex-column justify-center align-center px-10 home-page">
-		<h1 class="display-2 font-weight-medium">Welcome</h1>
-		<p class="subtitle-2 mt-4">Run BPM lets you create personalized playlists at any tempo</p>
+		<p class="subtitle-1 app-description">
+			Create killer running playlists in seconds. Filter your music by tempo, energy level, dancability and more.
+		</p>
 		<spotify-login />
+		<p class="caption">Requires Premium</p>
 	</v-container>
 </template>
 
@@ -37,5 +39,11 @@ export default {
 <style>
 .home-page {
 	background-image: url("../assets/runbpm-logo.png");
+	background-size: contain;
+	background-color: black;
+	background-position-y: 30%;
+}
+.app-description {
+	margin-top: 50%;
 }
 </style>
