@@ -1,19 +1,6 @@
 <template>
 	<div class="user-avatar">
-		<v-menu v-model="showMenu" :nudge-bottom="56">
-			<v-list class="text-right">
-				<v-list-item>
-					<v-list-item-title>Connected as {{ this.$attrs.user.display_name }}</v-list-item-title>
-				</v-list-item>
-				<v-list-item @click="openSpotifyProfile">
-					<v-list-item-title>View on Spotify</v-list-item-title>
-				</v-list-item>
-				<v-list-item>
-					<v-list-item-title>Logout</v-list-item-title>
-				</v-list-item>
-			</v-list>
-		</v-menu>
-		<v-btn icon @click="showMenu = !showMenu">
+		<v-btn icon @click="toggleMenu">
 			<v-avatar v-if="this.$attrs.user" color="primary" size="42px">
 				<span v-if="!this.hasAvatar" style="color:white">{{ getInitials(this.$attrs.user.display_name) }}</span>
 				<img v-if="this.hasAvatar" :src="this.hasAvatar ? this.$attrs.user.images[0].url : null" />
@@ -24,11 +11,6 @@
 
 <script>
 export default {
-	data: function() {
-		return {
-			showMenu: false
-		};
-	},
 	methods: {
 		getInitials(displayName) {
 			if (displayName) {
@@ -40,8 +22,8 @@ export default {
 				return initials;
 			}
 		},
-		openSpotifyProfile() {
-			window.open(this.$attrs.user.external_urls.spotify);
+		toggleMenu() {
+			this.$emit("toggleMenu");
 		}
 	},
 	computed: {
@@ -58,9 +40,4 @@ export default {
 };
 </script>
 
-<style>
-.v-menu__content {
-	left: unset !important;
-	right: 0px;
-}
-</style>
+<style></style>

@@ -44,7 +44,6 @@ app.get("/get-auth-url", function(req, res) {
 
 //Uses the authorization code to get access and refresh tokens
 app.get("/authorize", function(req, res) {
-	console.log(req.query);
 	spotifyApi
 		.authorizationCodeGrant(req.query.code)
 		.then(function(data) {
@@ -60,7 +59,6 @@ function accessToken(user) {
 	return new Promise((resolve, reject) => {
 		user = JSON.parse(user);
 		const api = new SpotifyWebApi(credentials);
-		console.log(user);
 		//Check if token is expired
 		if (user.expiresAt - new Date().getTime() > 0) {
 			//token is not expired
