@@ -24,12 +24,7 @@
 
 <script>
 import HeaderVue from "../containers/Header.vue";
-import {
-	getCurrentTrack,
-	getTrackDetails,
-	initTimer,
-	updatePlayState
-} from "@/helpers/PlayerMethods";
+import { getCurrentTrack, getTrackDetails, initTimer, updatePlayState } from "@/helpers/PlayerMethods";
 export default {
 	name: "Dashboard",
 	components: {
@@ -90,21 +85,6 @@ export default {
 		getTrackDetails,
 		initTimer,
 		updatePlayState
-	},
-	//create user is authenticated function
-	mounted: function() {
-		if (window.localStorage.RunBPM !== undefined) {
-			this.$http
-				.get(
-					`http://localhost:3000/validate-user?${window.localStorage.RunBPM}`
-				)
-				.then(() => {
-					this.getUserData();
-				})
-				.catch(err => console.log(err));
-		} else {
-			this.$router.push("connect");
-		}
 	}
 };
 </script>

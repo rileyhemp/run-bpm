@@ -1,52 +1,43 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Authentication from "../components/views/Authentication.vue";
-import Redirect from "../components/views/Redirect.vue";
 import Connect from "../components/views/Connect.vue";
 import Dashboard from "../components/views/Dashboard.vue";
 import Import from "../components/views/Import.vue";
-import Create from "../components/views/Create.vue"
-import Home from '../components/views/Home.vue'
+import Create from "../components/views/Create.vue";
+import Home from "../components/views/Home.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
 	{
 		path: "/",
-		name: "authentication",
-		component: Authentication
+		component: Dashboard,
+		children: [
+			{
+				path: "",
+				name: "Dashboard",
+				component: Home,
+				meta: { requiresAuth: true }
+			},
+			{
+				path: "/import",
+				name: "Import",
+				component: Import,
+				meta: { requiresAuth: true }
+			},
+			{
+				path: "/create",
+				name: "Create",
+				component: Create,
+				meta: { requiresAuth: true }
+			}
+		]
 	},
 	{
 		path: "/connect",
 		name: "connect",
 		component: Connect
-	},
-	{
-		path: "/redirect",
-		name: "redirect",
-		component: Redirect
-	},
-	{
-		path: "/dashboard",
-		component: Dashboard,
-		children: [
-			{
-				path: '',
-				name: 'Dashboard',
-				component: Home
-			},
-			{
-				path: '/import',
-				name: 'Import',
-				component: Import
-			},
-			{
-				path: '/create',
-				name: 'Create',
-				component: Create
-			}
-		]
-	},
+	}
 ];
 
 const router = new VueRouter({
@@ -54,6 +45,22 @@ const router = new VueRouter({
 	routes
 });
 
+router.beforeEach((to, from, next) => {
+	if (to.matched.some(record => record.meta.requiresAuth)) {
+		if (localStorage.RunBPM) {
+			next();
+		} else {
+			next({
+				path: "/connect"
+			});
+		}
+	} else if (to.name === "connect" && localStorage.RunBPM) {
+		next({
+			name: "Dashboard"
+		});
+	} else {
+		next();
+	}
+});
+
 export default router;
-
-

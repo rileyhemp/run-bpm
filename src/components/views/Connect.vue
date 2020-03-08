@@ -14,6 +14,22 @@ export default {
 	name: "Connect",
 	components: {
 		"spotify-login": SpotifyLogin
+	},
+	mounted: function() {
+		if (window.location.search.length > 0) {
+			this.$http
+				.get(`http://localhost:3000/authorize?${window.location.search.split("?")[1]}`)
+				.then(res => {
+					console.log(res);
+					const credentials = {
+						accessToken: res.data.body["access_token"],
+						refreshToken: res.data.body["refresh_token"],
+						expiresAt: new Date().getTime() + 3600000
+					};
+					localStorage.RunBPM = JSON.stringify(credentials);
+				})
+				.catch(err => console.log(err));
+		}
 	}
 };
 </script>

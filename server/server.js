@@ -9,7 +9,7 @@ const DatabasePath = __dirname + "/db/new.db";
 const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
 	clientSecret: "515a0f00287745c19c006ce63af4d7b6",
-	redirectUri: "http://localhost:8080/redirect"
+	redirectUri: "http://localhost:8080/connect"
 };
 
 const scopes = [
@@ -41,30 +41,14 @@ app.get("/get-auth-url", function(req, res) {
 });
 
 app.get("/authorize", function(req, res) {
+	console.log(req.query);
 	spotifyApi
 		.authorizationCodeGrant(req.query.code)
 		.then(function(data) {
-			spotifyApi.setAccessToken(data["access_token"]);
-			spotifyApi.setRefreshToken(data["refresh_token"]);
-			res.send(jwt.sign(data.body, credentials.clientSecret));
+			res.send(data);
 		})
 		.catch(function(err) {
-			res.send(err);
-		});
-});
-
-app.get("/validate-user", function(req, res) {
-	let token = jwt.verify(req.originalUrl.split("?")[1], credentials.clientSecret);
-	spotifyApi.setAccessToken(token["access_token"]);
-	spotifyApi.setRefreshToken(token["refresh_token"]);
-	spotifyApi
-		.refreshAccessToken()
-		.then(function(data) {
-			spotifyApi.setAccessToken(data.body["access_token"]);
-			res.send("ok");
-		})
-		.catch(function(err) {
-			res.send(err);
+			res.status(401).send(error);
 		});
 });
 
