@@ -1,7 +1,7 @@
 <template>
 	<v-container class="fill-height d-flex text-center flex-column justify-center align-center px-10 home-page">
 		<p class="subtitle-1 app-description">
-			Create killer running playlists in seconds. Filter your music by tempo, energy level, dancability and more.
+			Create killer running playlists in seconds. Filter your music by tempo, energy level, danceability and more.
 		</p>
 		<spotify-login />
 		<p class="caption">Requires Premium</p>
@@ -45,5 +45,6 @@ export default {
 }
 .app-description {
 	margin-top: 50%;
+	max-width: 500px;
 }
 </style>

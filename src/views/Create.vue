@@ -34,7 +34,15 @@
 			<v-btn text medium>EDIT SELECTION</v-btn>
 		</v-row>
 		<v-row class="pl-2 mt-2">
-			<v-file-input label="Add a photo" accept="image/*" prepend-icon="mdi-image-plus" class="mx-2 body-3 add-photo"> </v-file-input>
+			<v-file-input
+				label="Add a photo"
+				accept="image/*"
+				prepend-icon="mdi-image-plus"
+				show-size
+				class="mx-2 body-3 add-photo"
+				v-model="playlistImage"
+				@change="convertImage"
+			/>
 		</v-row>
 		<v-row>
 			<v-spacer />
@@ -83,6 +91,7 @@ import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
+import { toBase64 } from "../scripts/toBase64";
 
 export default {
 	name: "create-playlist",
@@ -107,7 +116,8 @@ export default {
 			renderKey: 1,
 			playlistName: undefined,
 			finishedWithSelection: false,
-			confirm: false
+			confirm: false,
+			playlistImage: null
 		};
 	},
 	computed: {
@@ -168,6 +178,7 @@ export default {
 							trackIDs: trackIDs,
 							metadata: metadata,
 							name: this.playlistName,
+							image: this.playlistImage,
 							credentials: localStorage.RunBPM
 						}
 					})
@@ -190,6 +201,10 @@ export default {
 		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
+		},
+		async convertImage() {
+			const uriString = await toBase64(this.playlistImage);
+			this.playlistImage = uriString;
 		},
 		saveAndReset() {
 			//Reset the selection, slider range, and chart
