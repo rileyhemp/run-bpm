@@ -20,13 +20,13 @@ export default {
 			this.$http
 				.get(`http://localhost:3000/authorize?${window.location.search.split("?")[1]}`)
 				.then(res => {
-					console.log(res);
 					const credentials = {
 						accessToken: res.data.body["access_token"],
 						refreshToken: res.data.body["refresh_token"],
-						expiresAt: new Date().getTime() + 3600000
+						expiresAt: new Date().getTime() + 3000000
 					};
 					localStorage.RunBPM = JSON.stringify(credentials);
+					this.$router.push("/");
 				})
 				.catch(err => console.log(err));
 		}

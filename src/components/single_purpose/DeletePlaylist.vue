@@ -28,7 +28,7 @@ export default {
 	methods: {
 		deletePlaylist() {
 			this.$http
-				.delete(`http://localhost:3000/playlists?id=${this.playlist}&user=${localStorage.RunBPM}`)
+				.delete(`http://localhost:3000/playlists?id=${this.playlist}&credentials=${localStorage.RunBPM}`)
 				.then(() => {
 					this.$emit("updatePlaylists");
 					this.dialog = false;

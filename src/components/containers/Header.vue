@@ -4,11 +4,8 @@
 		<v-spacer />
 		<v-menu v-model="showMenu" :nudge-bottom="56">
 			<v-list class="text-right">
-				<v-list-item>
-					<v-list-item-title>Connected as {{ this.$attrs.user.display_name }}</v-list-item-title>
-				</v-list-item>
 				<v-list-item @click="openSpotifyProfile">
-					<v-list-item-title>View on Spotify</v-list-item-title>
+					<v-list-item-title>Connected as {{ this.$attrs.user.display_name }}</v-list-item-title>
 				</v-list-item>
 				<v-list-item @click="logout">
 					<v-list-item-title>Logout</v-list-item-title>
