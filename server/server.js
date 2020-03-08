@@ -35,11 +35,14 @@ const allowCrossDomain = function(req, res, next) {
 app.use(allowCrossDomain);
 app.use(express.json());
 
+//Generates an authorization URL on Spotify which redirects back to the redirect URI
+//Returns an authorization code
 app.get("/get-auth-url", function(req, res) {
 	let authURL = spotifyApi.createAuthorizeURL(scopes);
 	res.send(authURL);
 });
 
+//Uses the authorization code to get access and refresh tokens
 app.get("/authorize", function(req, res) {
 	console.log(req.query);
 	spotifyApi
@@ -52,18 +55,17 @@ app.get("/authorize", function(req, res) {
 		});
 });
 
+//Helper functions to get and set access tokens for each api call.
 function accessToken(user) {
 	return new Promise((resolve, reject) => {
 		user = JSON.parse(user);
-		//Create new Spotify API
 		const api = new SpotifyWebApi(credentials);
+		console.log(user);
 		//Check if token is expired
-		if (false) {
-			//user.expiresAt - new Date().getTime() > 0
+		if (user.expiresAt - new Date().getTime() > 0) {
 			//token is not expired
 			resolve(user.accessToken);
 		} else {
-			console.log("making new access token");
 			//token is expired
 			api.setAccessToken(user.accessToken);
 			api.setRefreshToken(user.refreshToken);
@@ -75,30 +77,38 @@ function accessToken(user) {
 		}
 	});
 }
-
 function spotifyApiWithToken(token) {
 	const api = new SpotifyWebApi(credentials);
 	api.setAccessToken(token);
 	return api;
 }
 
-//Get user profile information & connected devices
+//Get user profile information, playlists, and connected devices
 app.get("/get-user-data", async function(req, res) {
 	const token = await accessToken(req.query.user);
 	const api = spotifyApiWithToken(token);
+	//Get basic account information
 	api.getMe()
 		.then(data => {
 			let userData = data.body;
+			//Use account information to get playlists
 			api.getUserPlaylists(userData.id)
 				.then(data => {
 					let userPlaylists = data.body;
+					//Get a list of active devices
 					api.getMyDevices()
 						.then(data => {
 							let userDevices = data.body;
+							//Return data to front end, including current access token
 							res.send({
 								userData: userData,
 								userPlaylists: userPlaylists,
-								userDevices: userDevices
+								userDevices: userDevices,
+								userCredentials: {
+									token: token,
+									//Access tokens technically expire after one hour, but we'll request a new one early just to be safe.
+									expiresAt: new Date().getTime() + 3000000
+								}
 							});
 						})
 						.catch(err => res.send(err.message));

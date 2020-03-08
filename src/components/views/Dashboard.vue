@@ -47,12 +47,13 @@ export default {
 	},
 	methods: {
 		getUserData() {
+			let userCredientials = JSON.parse(localStorage.RunBPM);
 			this.getCurrentTrack();
 			this.loading = true;
 			this.$http
 				.get("http://localhost:3000/get-user-data", {
 					params: {
-						user: localStorage.RunBPM
+						user: JSON.stringify(userCredientials)
 					}
 				})
 				.then(response => {
@@ -60,6 +61,9 @@ export default {
 					this.userPlaylists = response.data.userPlaylists;
 					this.userDevices = response.data.userDevices;
 					this.updatePlaylists();
+					userCredientials.accessToken = response.data.userCredentials.token;
+					userCredientials.expiresAt = response.data.userCredentials.expiresAt;
+					localStorage.RunBPM = JSON.stringify(userCredientials);
 				})
 				.catch(err => {
 					this.loading = false;
