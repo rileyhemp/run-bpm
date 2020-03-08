@@ -50,7 +50,11 @@ export default {
 			this.getCurrentTrack();
 			this.loading = true;
 			this.$http
-				.get("http://localhost:3000/get-user-data")
+				.get("http://localhost:3000/get-user-data", {
+					params: {
+						user: localStorage.RunBPM
+					}
+				})
 				.then(response => {
 					this.userData = response.data.userData;
 					this.userPlaylists = response.data.userPlaylists;
@@ -85,6 +89,11 @@ export default {
 		getTrackDetails,
 		initTimer,
 		updatePlayState
+	},
+	mounted: function() {
+		if (Object.entries(this.userData).length === 0) {
+			this.getUserData();
+		}
 	}
 };
 </script>

@@ -52,18 +52,47 @@ app.get("/authorize", function(req, res) {
 		});
 });
 
+function accessToken(user) {
+	return new Promise((resolve, reject) => {
+		user = JSON.parse(user);
+		//Create new Spotify API
+		const api = new SpotifyWebApi(credentials);
+		//Check if token is expired
+		if (false) {
+			//user.expiresAt - new Date().getTime() > 0
+			//token is not expired
+			resolve(user.accessToken);
+		} else {
+			console.log("making new access token");
+			//token is expired
+			api.setAccessToken(user.accessToken);
+			api.setRefreshToken(user.refreshToken);
+			api.refreshAccessToken()
+				.then(data => {
+					resolve(data.body["access_token"]);
+				})
+				.catch(err => reject("Could not refresh access token", err));
+		}
+	});
+}
+
+function spotifyApiWithToken(token) {
+	const api = new SpotifyWebApi(credentials);
+	api.setAccessToken(token);
+	return api;
+}
+
 //Get user profile information & connected devices
-app.get("/get-user-data", function(req, res) {
-	spotifyApi
-		.getMe()
+app.get("/get-user-data", async function(req, res) {
+	const token = await accessToken(req.query.user);
+	const api = spotifyApiWithToken(token);
+	api.getMe()
 		.then(data => {
 			let userData = data.body;
-			spotifyApi
-				.getUserPlaylists(userData.id)
+			api.getUserPlaylists(userData.id)
 				.then(data => {
 					let userPlaylists = data.body;
-					spotifyApi
-						.getMyDevices()
+					api.getMyDevices()
 						.then(data => {
 							let userDevices = data.body;
 							res.send({
