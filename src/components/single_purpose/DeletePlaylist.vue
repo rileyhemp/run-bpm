@@ -1,4 +1,4 @@
-<template >
+<template>
 	<v-dialog v-model="dialog" persistent max-width="290">
 		<template v-slot:activator="{ on }">
 			<v-btn icon v-on="on">
@@ -28,7 +28,7 @@ export default {
 	methods: {
 		deletePlaylist() {
 			this.$http
-				.delete(`http://localhost:3000/playlists?id=${this.playlist}`)
+				.delete(`http://localhost:3000/playlists?id=${this.playlist}&user=${localStorage.RunBPM}`)
 				.then(() => {
 					this.$emit("updatePlaylists");
 					this.dialog = false;

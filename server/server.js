@@ -85,7 +85,7 @@ function spotifyApiWithToken(token) {
 
 //Get user profile information, playlists, and connected devices
 app.get("/get-user-data", async function(req, res) {
-	const token = await accessToken(req.query.user);
+	const token = await accessToken(req.query.credentials);
 	const api = spotifyApiWithToken(token);
 	//Get basic account information
 	api.getMe()
@@ -130,9 +130,11 @@ app.get("/playlists", function(req, res) {
 });
 
 //Add a new playlist to Run BPM's database
-app.post("/playlists", (req, res) => {
+app.post("/playlists", async (req, res) => {
+	const token = await accessToken(req.body.data.credentials);
+	const api = spotifyApiWithToken(token);
 	let request = req.body.data;
-	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata)
+	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata, api)
 		.then(response => {
 			res.status(201).send(response);
 		})
@@ -140,11 +142,12 @@ app.post("/playlists", (req, res) => {
 });
 
 //Delete a playlist
-app.delete("/playlists", (req, res) => {
+app.delete("/playlists", async (req, res) => {
+	const token = await accessToken(req.query.credentials);
+	const api = spotifyApiWithToken(token);
 	const db = new UserDB(DatabasePath);
 	//Unfollow the playlist on spotify
-	spotifyApi
-		.unfollowPlaylist(req.query.id)
+	api.unfollowPlaylist(req.query.id)
 		.then(() => {
 			//Delete the playlist from the db
 			db.deletePlaylist(req.query.id)
@@ -157,8 +160,10 @@ app.delete("/playlists", (req, res) => {
 });
 
 //Get audio features for many tracks
-app.post("/analyze-tracks", (req, res) => {
-	getPlaylistTracks(req.body.data.playlists)
+app.post("/analyze-tracks", async (req, res) => {
+	const token = await accessToken(req.body.data.credentials);
+	const api = spotifyApiWithToken(token);
+	getPlaylistTracks(req.body.data.playlists, api)
 		.then(response => {
 			const playlistDetails = response;
 			const trackDetails = [];
@@ -166,8 +171,7 @@ app.post("/analyze-tracks", (req, res) => {
 			for (let i = 0; i < trackIDs.length; i++) {
 				trackDetails.push(
 					new Promise((resolve, reject) => {
-						spotifyApi
-							.getAudioFeaturesForTracks(trackIDs[i])
+						api.getAudioFeaturesForTracks(trackIDs[i])
 							.then(data => {
 								resolve(data.body.audio_features);
 							})
@@ -188,9 +192,10 @@ app.post("/analyze-tracks", (req, res) => {
 });
 
 //Get audio features for indevidual tracks
-app.get("/analyze-tracks", (req, res) => {
-	spotifyApi
-		.getAudioFeaturesForTrack(req.query.id)
+app.get("/analyze-tracks", async (req, res) => {
+	const token = await accessToken(req.query.credentials);
+	const api = spotifyApiWithToken(token);
+	api.getAudioFeaturesForTrack(req.query.id)
 		.then(response => {
 			res.send(response.body);
 		})
@@ -198,31 +203,29 @@ app.get("/analyze-tracks", (req, res) => {
 });
 
 //Control playback
-app.put("/player", (req, res) => {
+app.put("/player", async (req, res) => {
+	const token = await accessToken(req.query.credentials);
+	const api = spotifyApiWithToken(token);
 	const action = req.query.action;
 	const options = req.body.data;
 	switch (action) {
 		case "play":
-			spotifyApi
-				.play(options)
+			api.play(options)
 				.then(response => res.status(response.statusCode).send())
 				.catch(error => res.status(error.statusCode).send(error));
 			break;
 		case "pause":
-			spotifyApi
-				.pause(options)
+			api.pause(options)
 				.then(response => res.status(response.statusCode).send())
 				.catch(error => res.status(error.statusCode).send(error));
 			break;
 		case "next":
-			spotifyApi
-				.skipToNext()
+			api.skipToNext()
 				.then(response => res.status(response.statusCode).send())
 				.catch(error => res.status(error.statusCode).send(error));
 			break;
 		case "previous":
-			spotifyApi
-				.skipToPrevious()
+			api.skipToPrevious()
 				.then(response => res.status(response.statusCode).send())
 				.catch(error => res.status(error.statusCode).send(error));
 			break;
@@ -230,10 +233,11 @@ app.put("/player", (req, res) => {
 });
 
 //Get the currently playing track
-app.get("/player", (req, res) => {
+app.get("/player", async (req, res) => {
+	const token = await accessToken(req.query.credentials);
+	const api = spotifyApiWithToken(token);
 	const query = req.query.q;
-	spotifyApi
-		.getMyCurrentPlayingTrack()
+	api.getMyCurrentPlayingTrack()
 		.then(response => {
 			res.send(response.body);
 		})
@@ -243,16 +247,14 @@ app.get("/player", (req, res) => {
 });
 
 //Helper functions
-function createPlaylist(userID, playlistName, trackIDs, metadata) {
+function createPlaylist(userID, playlistName, trackIDs, metadata, api) {
 	return new Promise((resolve, reject) => {
 		//Create the playlist
-		spotifyApi
-			.createPlaylist(userID, playlistName)
+		api.createPlaylist(userID, playlistName)
 			.then(response => {
 				//Add tracks to the playlist
 				const playlistID = response.body.id;
-				spotifyApi
-					.addTracksToPlaylist(playlistID, getURIsFromIDs(trackIDs))
+				api.addTracksToPlaylist(playlistID, getURIsFromIDs(trackIDs))
 					.then(response => {
 						//Save the playlist to apps database
 						const db = new UserDB(DatabasePath);
@@ -268,14 +270,13 @@ function createPlaylist(userID, playlistName, trackIDs, metadata) {
 	});
 }
 
-function getPlaylistTracks(playlists) {
+function getPlaylistTracks(playlists, api) {
 	const playlistDetails = [];
 	return new Promise((resolve, reject) => {
 		for (let i = 0; i < playlists.length; i++) {
 			playlistDetails.push(
 				new Promise((resolve, reject) => {
-					spotifyApi
-						.getPlaylistTracks(playlists[i])
+					api.getPlaylistTracks(playlists[i])
 						.then(function(data) {
 							resolve(data.body.items);
 						})

@@ -1,8 +1,8 @@
 export function getCurrentTrack() {
-	clearInterval(this.counter)
+	clearInterval(this.counter);
 	this.disableButtons = false;
 	this.$http
-		.get("http://localhost:3000/player?q=current")
+		.get(`http://localhost:3000/player?q=current&credentials=${localStorage.RunBPM}`)
 		.then(response => {
 			this.currentTrack.id = response.data;
 			this.currentTrack.isPlaying = response.data.is_playing;
@@ -10,22 +10,16 @@ export function getCurrentTrack() {
 				this.getTrackDetails(response.data.item.id);
 			}
 			if (response.data.is_playing) {
-				this.currentTrack.duration =
-					response.data.item.duration_ms;
-				this.initTimer(
-					response.data.progress_ms,
-					response.data.item.duration_ms
-				);
+				this.currentTrack.duration = response.data.item.duration_ms;
+				this.initTimer(response.data.progress_ms, response.data.item.duration_ms);
 			}
 		})
 		.catch(err => console.log(err));
 }
 export function getTrackDetails(id) {
-	this.$http
-		.get(`http://localhost:3000/analyze-tracks?id=${id}`)
-		.then(response => {
-			this.currentTrack.audioFeatures = response.data;
-		});
+	this.$http.get(`http://localhost:3000/analyze-tracks?id=${id}&credentials=${localStorage.RunBPM}`).then(response => {
+		this.currentTrack.audioFeatures = response.data;
+	});
 }
 export function initTimer(progress, duration) {
 	const self = this;
@@ -55,7 +49,7 @@ export function updatePlayState(event) {
 	}
 	const play = () => {
 		this.$http
-			.put("http://localhost:3000/player?action=play", {
+			.put(`http://localhost:3000/player?action=play&credentials=${localStorage.RunBPM}`, {
 				data: {
 					...options
 				}
@@ -65,13 +59,13 @@ export function updatePlayState(event) {
 	};
 	const pause = () => {
 		this.$http
-			.put("http://localhost:3000/player?action=pause")
+			.put(`http://localhost:3000/player?action=pause&credentials=${localStorage.RunBPM}`)
 			.then(() => this.getCurrentTrack())
 			.catch(error => console.log(error));
 	};
 	const previous = () => {
 		this.$http
-			.put("http://localhost:3000/player?action=previous", {
+			.put(`http://localhost:3000/player?action=previous&credentials=${localStorage.RunBPM}`, {
 				data: this.options
 			})
 			.then(() => this.getCurrentTrack())
@@ -79,7 +73,7 @@ export function updatePlayState(event) {
 	};
 	const next = () => {
 		this.$http
-			.put("http://localhost:3000/player?action=next")
+			.put(`http://localhost:3000/player?action=next&credentials=${localStorage.RunBPM}`)
 			.then(() => this.getCurrentTrack())
 			.catch(error => console.log(error));
 	};

@@ -167,7 +167,8 @@ export default {
 							userID: this.$attrs.user.id,
 							trackIDs: trackIDs,
 							metadata: metadata,
-							name: this.playlistName
+							name: this.playlistName,
+							credentials: localStorage.RunBPM
 						}
 					})
 					.then(() => {
@@ -266,7 +267,8 @@ export default {
 			this.$http
 				.post("http://localhost:3000/analyze-tracks", {
 					data: {
-						playlists: playlists
+						playlists: playlists,
+						credentials: localStorage.RunBPM
 					}
 				})
 				.then(response => {

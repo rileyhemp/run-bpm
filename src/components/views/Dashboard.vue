@@ -53,7 +53,7 @@ export default {
 			this.$http
 				.get("http://localhost:3000/get-user-data", {
 					params: {
-						user: JSON.stringify(userCredientials)
+						credentials: localStorage.RunBPM
 					}
 				})
 				.then(response => {
@@ -72,7 +72,7 @@ export default {
 		},
 		updatePlaylists() {
 			this.$http
-				.get(`http://localhost:3000/playlists?id=${this.userData.id}`)
+				.get(`http://localhost:3000/playlists?id=${this.userData.id}&credentials=${localStorage.RunBPM}`)
 				.then(response => {
 					let parsedData = response.data.map(el => {
 						return {
