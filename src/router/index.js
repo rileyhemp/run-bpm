@@ -1,10 +1,10 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Connect from "../components/views/Connect.vue";
-import Dashboard from "../components/views/Dashboard.vue";
-import Import from "../components/views/Import.vue";
-import Create from "../components/views/Create.vue";
-import Home from "../components/views/Home.vue";
+import Connect from "../views/Connect.vue";
+import Dashboard from "../views/Dashboard.vue";
+import Import from "../views/Import.vue";
+import Create from "../views/Create.vue";
+import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
 

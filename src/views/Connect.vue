@@ -1,5 +1,5 @@
 <template>
-	<v-container class="fill-height d-flex text-center flex-column justify-center align-center px-10">
+	<v-container class="fill-height d-flex text-center flex-column justify-center align-center px-10 home-page">
 		<h1 class="display-2 font-weight-medium">Welcome</h1>
 		<p class="subtitle-2 mt-4">Run BPM lets you create personalized playlists at any tempo</p>
 		<spotify-login />
@@ -8,7 +8,7 @@
 
 <script>
 // @ is an alias to /src
-import SpotifyLogin from "../single_purpose/SpotifyLogin.vue";
+import SpotifyLogin from "../components/SpotifyLogin.vue";
 
 export default {
 	name: "Connect",
@@ -35,7 +35,7 @@ export default {
 </script>
 
 <style>
-.welcome {
-	font-size: 72px;
+.home-page {
+	background-image: url("../assets/runbpm-logo.png");
 }
 </style>

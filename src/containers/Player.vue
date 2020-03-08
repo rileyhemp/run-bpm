@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import PlayerDisplay from "../single_purpose/PlayerDisplay";
-import PlayerControls from "../single_purpose/PlayerControls";
+import PlayerDisplay from "../components/PlayerDisplay";
+import PlayerControls from "../components/PlayerControls";
 export default {
 	components: {
 		"player-display": PlayerDisplay,

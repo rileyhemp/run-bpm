@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import UserAvatar from "../single_purpose/UserAvatar";
+import UserAvatar from "../components/UserAvatar";
 export default {
 	name: "Header",
 	components: {

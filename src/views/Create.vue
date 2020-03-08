@@ -75,8 +75,8 @@
 <script>
 import features from "@/assets/temp-features";
 import details from "@/assets/temp-details";
-import RadarChart from "../single_purpose/RadarChart";
-import LineGraph from "../single_purpose/LineGraph";
+import RadarChart from "../components/RadarChart";
+import LineGraph from "../components/LineGraph";
 import VueSlider from "vue-slider-component";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";

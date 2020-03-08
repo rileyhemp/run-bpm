@@ -1,15 +1,10 @@
 <template>
-	<v-row
-		class="d-flex align-center flex-nowrap playlist mx-4"
-		@click="dialog=true"
-		v-ripple
-		v-if="playlistDetails !=undefined"
-	>
+	<v-row class="d-flex align-center flex-nowrap playlist mx-4" @click="dialog = true" v-ripple v-if="playlistDetails != undefined">
 		<v-img :src="playlistDetails.images[0].url" :height="50" :width="50" />
 		<v-list-item class="pr-1">
 			<v-list-item-content>
-				<v-list-item-title>{{playlist.metadata.name}}</v-list-item-title>
-				<v-list-item-subtitle>{{getPlaylistInfo(playlist)}}</v-list-item-subtitle>
+				<v-list-item-title>{{ playlist.metadata.name }}</v-list-item-title>
+				<v-list-item-subtitle>{{ getPlaylistInfo(playlist) }}</v-list-item-subtitle>
 			</v-list-item-content>
 			<delete-playlist :playlist="playlist.id" @updatePlaylists="updatePlaylists" />
 		</v-list-item>
@@ -27,8 +22,8 @@
 							class="plain-btn justify-start"
 							@click="play(device.id)"
 						>
-							<v-icon class="mr-2">{{getIcon(device.type)}}</v-icon>
-							<span>{{device.name}}</span>
+							<v-icon class="mr-2">{{ getIcon(device.type) }}</v-icon>
+							<span>{{ device.name }}</span>
 						</v-btn>
 					</v-btn-toggle>
 				</v-card-actions>
@@ -43,7 +38,7 @@
 </template>
 
 <script>
-import DeletePlaylist from "../single_purpose/DeletePlaylist";
+import DeletePlaylist from "../components/DeletePlaylist";
 
 export default {
 	props: ["playlist"],
@@ -90,11 +85,7 @@ export default {
 			this.$emit("updatePlaylists");
 		},
 		getPlaylistInfo(playlist) {
-			return this.nowPlaying === playlist.id
-				? "Now playing..."
-				: playlist.metadata.tracks +
-						" Tracks, " +
-						playlist.metadata.duration;
+			return this.nowPlaying === playlist.id ? "Now playing..." : playlist.metadata.tracks + " Tracks, " + playlist.metadata.duration;
 		}
 	}
 };
