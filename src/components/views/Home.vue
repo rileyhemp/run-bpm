@@ -1,6 +1,5 @@
 <template>
 	<div class="dashboard-wrapper">
-		<add-button />
 		<v-subheader>My Playlists</v-subheader>
 		<created-playlists
 			v-bind="$attrs"
@@ -9,6 +8,7 @@
 			@updatePlaylists="updatePlaylists"
 			@updatePlayState="updatePlayState"
 		/>
+		<add-button />
 		<v-spacer />
 		<player v-bind="$attrs" @updateTrack="updateTrack" @updatePlayState="updatePlayState" />
 	</div>

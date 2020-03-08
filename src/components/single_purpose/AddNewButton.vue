@@ -1,7 +1,10 @@
 <template>
-	<v-btn fab top left color="primary" medium class="ml-3 mt-1" to="/import">
-		<v-icon>mdi-plus</v-icon>
-	</v-btn>
+	<v-row class="mx-4">
+		<v-spacer />
+		<v-btn fab color="primary" medium to="/import">
+			<v-icon>mdi-plus</v-icon>
+		</v-btn>
+	</v-row>
 </template>
 
 <script>

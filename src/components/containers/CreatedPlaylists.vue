@@ -4,7 +4,7 @@
 			<v-list-item>
 				<v-list-item-content>
 					<v-list-item-title>Nothing here yet...</v-list-item-title>
-					<v-list-item-subtitle>Tap the plus to get started</v-list-item-subtitle>
+					<v-list-item-subtitle>Tap below to create a playlist</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
 		</v-list>
