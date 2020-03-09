@@ -2,12 +2,12 @@
 	<div class="player-display">
 		<div class="px-4 mb-2" v-if="progress">
 			<div class="d-flex justify-space-between align-end">
-				<h2 class="song-title title">{{$attrs.currentTrack.id.item.name}}</h2>
-				<span class="title nowrap">{{Math.round($attrs.currentTrack.audioFeatures.tempo) + "bpm"}}</span>
+				<h2 class="song-title title">{{ $attrs.currentTrack.id.item.name }}</h2>
+				<span class="title nowrap">{{ Math.round($attrs.currentTrack.audioFeatures.tempo) + "bpm" }}</span>
 			</div>
 			<div class="d-flex justify-space-between align-center">
-				<strong class="song-artists subtitle-1">{{artist}}</strong>
-				<span class="caption">{{counter}}</span>
+				<strong class="song-artists subtitle-1">{{ artist }}</strong>
+				<span class="caption">{{ counter }}</span>
 			</div>
 		</div>
 	</div>
@@ -17,8 +17,8 @@
 export default {
 	data: function() {
 		return {
-			progress: null
-			// key: 0
+			progress: null,
+			progressCheck: null
 		};
 	},
 	computed: {
@@ -34,24 +34,21 @@ export default {
 			return artists[0].name;
 		},
 		counter: function() {
-			let duration = this.msToMinAndSec(
-				this.$attrs.currentTrack.id.item.duration_ms
-			);
+			let duration = this.msToMinAndSec(this.$attrs.currentTrack.id.item.duration_ms);
 			let elapsed = this.msToMinAndSec(this.progress);
 			// return duration;
 			return elapsed + "/" + duration;
 		}
 	},
 	mounted: function() {
-		setInterval(() => {
-			// this.key = this.key + 1;
-			if (
-				this.$attrs.currentTrack.progress &&
-				typeof this.$attrs.currentTrack.progress === "number"
-			) {
+		this.progressCheck = setInterval(() => {
+			if (this.$attrs.currentTrack.progress && typeof this.$attrs.currentTrack.progress === "number") {
 				this.progress = this.$attrs.currentTrack.progress;
 			}
 		}, 100);
+	},
+	beforeDestroy: function() {
+		clearInterval(this.progressCheck);
 	},
 	methods: {
 		msToMinAndSec: function(ms) {

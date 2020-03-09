@@ -71,7 +71,6 @@
 
 <script>
 import features from "@/assets/temp-features";
-import details from "@/assets/temp-details";
 import RadarChart from "../components/RadarChart";
 import LineGraph from "../components/LineGraph";
 import VueSlider from "vue-slider-component";
@@ -90,11 +89,9 @@ export default {
 	},
 	data: function() {
 		return {
+			//features.data
 			loading: false,
-			audioFeaturesTemp: features.data,
-			playlistDetailsTemp: details,
-			audioFeatures: Object,
-			initialPlaylist: Object,
+			audioFeatures: features,
 			chartData: Array,
 			chartReady: false,
 			radar: false,
@@ -197,8 +194,7 @@ export default {
 			});
 		},
 		initChartData() {
-			//Double tempo for tracks under 100bpm.
-			//Reason: 80bpm and 160bpm line up on the same cadence and should be treated as equal.
+			//Double tempo for tracks under 100bpm (90bpm ~= 180bpm)
 			this.audioFeatures.forEach(track => {
 				track.features.tempo = Math.round(track.features.tempo);
 				track.features.tempo < 100
@@ -252,33 +248,34 @@ export default {
 		}, 100)
 	},
 	mounted: function() {
-		this.updateUserInfo();
-		let playlists = [];
-		if (this.$route.params.playlists || localStorage.playlists) {
-			if (localStorage.playlists && !this.$route.params.playlists) {
-				playlists = JSON.parse(localStorage.playlists);
-			} else {
-				playlists = this.$route.params.playlists;
-				localStorage.setItem("playlists", JSON.stringify(playlists));
-			}
-			setTimeout(10);
-			this.$http
-				.post("http://localhost:3000/analyze-tracks", {
-					data: {
-						playlists: playlists,
-						credentials: localStorage.RunBPM
-					}
-				})
-				.then(response => {
-					this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
-						return { track: a.track, features: b };
-					});
-					this.initChartData();
-				})
-				.catch(err => {
-					console.log(err);
-				});
-		} else this.$router.push("/");
+		this.initChartData();
+		// this.updateUserInfo();
+		// let playlists = [];
+		// if (this.$route.params.playlists || localStorage.playlists) {
+		// 	if (localStorage.playlists && !this.$route.params.playlists) {
+		// 		playlists = JSON.parse(localStorage.playlists);
+		// 	} else {
+		// 		playlists = this.$route.params.playlists;
+		// 		localStorage.setItem("playlists", JSON.stringify(playlists));
+		// 	}
+		// 	setTimeout(10);
+		// 	this.$http
+		// 		.post("http://localhost:3000/analyze-tracks", {
+		// 			data: {
+		// 				playlists: playlists,
+		// 				credentials: localStorage.RunBPM
+		// 			}
+		// 		})
+		// 		.then(response => {
+		// 			this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
+		// 				return { track: a.track, features: b };
+		// 			});
+		// 			this.initChartData();
+		// 		})
+		// 		.catch(err => {
+		// 			console.log(err);
+		// 		});
+		// } else this.$router.push("/");
 	}
 };
 </script>
