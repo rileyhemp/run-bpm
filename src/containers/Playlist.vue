@@ -82,6 +82,7 @@ export default {
 			this.dialog = false;
 		},
 		updatePlaylists() {
+			this.refreshDevices();
 			this.$emit("updatePlaylists");
 		},
 		getPlaylistInfo(playlist) {

@@ -66,8 +66,11 @@ export default {
 					localStorage.RunBPM = JSON.stringify(userCredientials);
 				})
 				.catch(err => {
-					this.loading = false;
-					console.log(err);
+					//If access token throws an error, the server will request a new one.
+					userCredientials.accessToken = err.response.data;
+					localStorage.RunBPM = JSON.stringify(userCredientials);
+					//Retry with new access token
+					this.getUserData();
 				});
 		},
 		updatePlaylists() {

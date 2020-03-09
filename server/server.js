@@ -4,6 +4,7 @@ const SpotifyWebApi = require("spotify-web-api-node");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const UserDB = require("./sql");
+const axios = require("axios");
 const DatabasePath = __dirname + "/db/new.db";
 
 const credentials = {
@@ -61,7 +62,6 @@ function accessToken(user) {
 		const api = new SpotifyWebApi(credentials);
 		//Check if token is expired
 		if (user.expiresAt - new Date().getTime() > 0) {
-			//token is not expired
 			resolve(user.accessToken);
 		} else {
 			//token is expired
@@ -81,7 +81,8 @@ function spotifyApiWithToken(token) {
 	return api;
 }
 
-//Get user profile information, playlists, and connected devices
+//Get user profile information, playlists, and connected devices.
+//This endpoint also validates the access token.
 app.get("/get-user-data", async function(req, res) {
 	const token = await accessToken(req.query.credentials);
 	const api = spotifyApiWithToken(token);
@@ -109,11 +110,18 @@ app.get("/get-user-data", async function(req, res) {
 								}
 							});
 						})
-						.catch(err => res.send(err.message));
+						.catch(err => res.status(err.statusCode).send(err));
 				})
-				.catch(err => res.send(err.message));
+				.catch(err => res.status(err.statusCode).send(err));
 		})
-		.catch(err => res.send(err.message));
+		.catch(async err => {
+			//If error, force reset of access token
+			let credentials = JSON.parse(req.query.credentials);
+			credentials.expiresAt = 0;
+			let newToken = await accessToken(JSON.stringify(credentials));
+			//Return new access token
+			res.status(err.statusCode).send(newToken);
+		});
 });
 
 //Get playlists user created with Run BPM
@@ -132,7 +140,7 @@ app.post("/playlists", async (req, res) => {
 	const token = await accessToken(req.body.data.credentials);
 	const api = spotifyApiWithToken(token);
 	let request = req.body.data;
-	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata, api)
+	createPlaylist(request.userID, request.name, request.trackIDs, request.metadata, api, request.image)
 		.then(response => {
 			res.status(201).send(response);
 		})
@@ -244,8 +252,7 @@ app.get("/player", async (req, res) => {
 		});
 });
 
-//Helper functions
-function createPlaylist(userID, playlistName, trackIDs, metadata, api) {
+function createPlaylist(userID, playlistName, trackIDs, metadata, api, image) {
 	return new Promise((resolve, reject) => {
 		//Create the playlist
 		api.createPlaylist(userID, playlistName)
@@ -258,7 +265,20 @@ function createPlaylist(userID, playlistName, trackIDs, metadata, api) {
 						const db = new UserDB(DatabasePath);
 						db.savePlaylist(playlistID, userID, trackIDs, metadata)
 							.then(response => {
-								resolve("Playlist added");
+								if (image) {
+									console.log("uploading image");
+									console.log(typeof image.split("base64,")[1]);
+									console.log(typeof playlistID);
+									uploadCoverImage(playlistID, image.split("base64,")[1])
+										.then(res => {
+											console.log("upload successful", res);
+											resolve();
+										})
+										.catch(err => {
+											console.log(err);
+											reject(err);
+										});
+								} else resolve();
 							})
 							.catch(err => reject(err.message));
 					})

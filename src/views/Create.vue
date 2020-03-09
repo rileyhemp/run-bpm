@@ -33,17 +33,6 @@
 			<v-spacer />
 			<v-btn text medium>EDIT SELECTION</v-btn>
 		</v-row>
-		<v-row class="pl-2 mt-2">
-			<v-file-input
-				label="Add a photo"
-				accept="image/*"
-				prepend-icon="mdi-image-plus"
-				show-size
-				class="mx-2 body-3 add-photo"
-				v-model="playlistImage"
-				@change="convertImage"
-			/>
-		</v-row>
 		<v-row>
 			<v-spacer />
 			<v-btn color="primary" class="mr-4" :disabled="loading || !playlistName" @click="confirm = true">Create</v-btn>
@@ -68,7 +57,7 @@
 							text
 							@click="
 								() => {
-									this.createPlaylistFromSelection().then(() => this.$router.push('Dashboard'));
+									this.createPlaylistFromSelection().then(() => this.$router.push('/'));
 								}
 							"
 							>Done</v-btn
@@ -91,7 +80,6 @@ import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
-import { toBase64 } from "../scripts/toBase64";
 
 export default {
 	name: "create-playlist",
@@ -116,8 +104,7 @@ export default {
 			renderKey: 1,
 			playlistName: undefined,
 			finishedWithSelection: false,
-			confirm: false,
-			playlistImage: null
+			confirm: false
 		};
 	},
 	computed: {
@@ -178,7 +165,6 @@ export default {
 							trackIDs: trackIDs,
 							metadata: metadata,
 							name: this.playlistName,
-							image: this.playlistImage,
 							credentials: localStorage.RunBPM
 						}
 					})
@@ -201,10 +187,6 @@ export default {
 		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
-		},
-		async convertImage() {
-			const uriString = await toBase64(this.playlistImage);
-			this.playlistImage = uriString;
 		},
 		saveAndReset() {
 			//Reset the selection, slider range, and chart
@@ -270,6 +252,7 @@ export default {
 		}, 100)
 	},
 	mounted: function() {
+		this.updateUserInfo();
 		let playlists = [];
 		if (this.$route.params.playlists || localStorage.playlists) {
 			if (localStorage.playlists && !this.$route.params.playlists) {
