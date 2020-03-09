@@ -127,7 +127,7 @@ app.get("/get-user-data", async function(req, res) {
 app.get("/search-playlists", async (req, res) => {
 	const token = await accessToken(req.query.credentials);
 	const api = spotifyApiWithToken(token);
-	api.searchPlaylists(req.query.q, { limit: 10, offset: 0 })
+	api.searchPlaylists(req.query.q)
 		.then(response => {
 			res.send(response);
 		})

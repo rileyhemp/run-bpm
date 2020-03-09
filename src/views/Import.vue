@@ -25,6 +25,15 @@
 				<template v-slot:label>Search playlists</template>
 			</v-text-field>
 		</v-row>
+		<v-row class="mx-1 mt-3" dense v-if="searchResults.length > 0">
+			<playlist-card
+				v-for="playlist in searchResults"
+				:key="playlist.id"
+				:playlist="playlist"
+				:selected="selected"
+				@click.native="selectPlaylist(playlist.id)"
+			/>
+		</v-row>
 	</v-container>
 </template>
 
@@ -38,7 +47,8 @@ export default {
 	data: function() {
 		return {
 			selected: [],
-			query: null
+			query: null,
+			searchResults: []
 		};
 	},
 	computed: {
@@ -66,7 +76,7 @@ export default {
 						}
 					})
 					.then(res => {
-						console.log(res);
+						this.searchResults = res.data.body.playlists.items;
 					})
 					.catch(err => console.log(err));
 			}
