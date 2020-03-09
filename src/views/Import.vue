@@ -5,6 +5,12 @@
 			<v-spacer />
 			<v-btn color="primary" :disabled="isDisabled" :to="{ name: 'Create', params: { playlists: this.selected } }">Continue</v-btn>
 		</v-row>
+		<v-row class="mt-6 mb-2 mx-2">
+			<p class="subtitle-1">Step 1 / 2</p>
+			<v-spacer />
+			<p class="subtitle-1">Select one or more playlists</p>
+		</v-row>
+		<p class="body-1 ma-2">Your playlists</p>
 		<v-row class="mx-1 mt-3" dense>
 			<playlist-card
 				v-for="playlist in this.$attrs.userPlaylists.items"
@@ -14,6 +20,7 @@
 				@click.native="selectPlaylist(playlist.id)"
 			/>
 		</v-row>
+		<p class="body-1 ma-2">Search</p>
 	</v-container>
 </template>
 
