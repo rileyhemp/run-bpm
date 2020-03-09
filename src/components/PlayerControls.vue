@@ -1,5 +1,5 @@
 <template>
-	<div class="player-controls">
+	<v-row class="player-controls">
 		<v-btn
 			@click="previous"
 			:height="48"
@@ -8,9 +8,8 @@
 			class="player-ctrl always-transparent mx-2"
 			:class="$attrs.disableButtons ? 'pointer-events-none' : null"
 			icon
-			outlined
 		>
-			<v-icon medium>mdi-skip-previous</v-icon>
+			<v-icon>mdi-skip-previous</v-icon>
 		</v-btn>
 		<v-btn
 			@click="togglePlay"
@@ -22,7 +21,7 @@
 			icon
 			outlined
 		>
-			<v-icon large>{{$attrs.currentTrack.isPlaying ? 'mdi-pause' : 'mdi-play'}}</v-icon>
+			<v-icon large>{{ $attrs.currentTrack.isPlaying ? "mdi-pause" : "mdi-play" }}</v-icon>
 		</v-btn>
 		<v-btn
 			@click="next"
@@ -36,7 +35,7 @@
 		>
 			<v-icon medium>mdi-skip-next</v-icon>
 		</v-btn>
-	</div>
+	</v-row>
 </template>
 
 <script>
@@ -57,6 +56,9 @@ export default {
 		}
 	},
 	methods: {
+		toggleShuffle() {
+			console.log("shuffled");
+		},
 		togglePlay() {
 			this.$attrs.currentTrack.isPlaying ? this.pause() : this.play();
 		},
@@ -80,13 +82,14 @@ export default {
 
 <style scoped>
 .player-controls {
-	border-top: 1px solid rgba(0, 0, 0, 0.3);
+	border-top: 1px solid rgba(255, 255, 255, 0.3);
 	align-items: center;
 	justify-content: center;
 	align-items: center;
 	display: flex;
 	width: 100%;
 	height: 80px;
+	margin: 0;
 }
 .v-btn:before {
 	background-color: transparent;
@@ -96,10 +99,9 @@ export default {
 	padding: 0;
 	min-width: 0 !important;
 	border-color: rgba(0, 0, 0, 0.12) !important;
-	color: black !important;
 }
 .always-transparent:before {
-	background-color: rgba(0, 0, 0, 0);
+	background-color: rgba(255, 255, 255, 0.9);
 }
 .pointer-events-none {
 	pointer-events: none;

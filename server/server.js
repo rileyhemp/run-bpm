@@ -259,26 +259,14 @@ function createPlaylist(userID, playlistName, trackIDs, metadata, api, image) {
 			.then(response => {
 				//Add tracks to the playlist
 				const playlistID = response.body.id;
+				api.changePlaylistDetails(playlistID, { description: "Made with Run BPM" });
 				api.addTracksToPlaylist(playlistID, getURIsFromIDs(trackIDs))
 					.then(response => {
 						//Save the playlist to apps database
 						const db = new UserDB(DatabasePath);
 						db.savePlaylist(playlistID, userID, trackIDs, metadata)
 							.then(response => {
-								if (image) {
-									console.log("uploading image");
-									console.log(typeof image.split("base64,")[1]);
-									console.log(typeof playlistID);
-									uploadCoverImage(playlistID, image.split("base64,")[1])
-										.then(res => {
-											console.log("upload successful", res);
-											resolve();
-										})
-										.catch(err => {
-											console.log(err);
-											reject(err);
-										});
-								} else resolve();
+								resolve();
 							})
 							.catch(err => reject(err.message));
 					})
