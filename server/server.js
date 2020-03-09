@@ -124,6 +124,16 @@ app.get("/get-user-data", async function(req, res) {
 		});
 });
 
+app.get("/search-playlists", async (req, res) => {
+	const token = await accessToken(req.query.credentials);
+	const api = spotifyApiWithToken(token);
+	api.searchPlaylists(req.query.q, { limit: 10, offset: 0 })
+		.then(response => {
+			res.send(response);
+		})
+		.catch(err => res.status(err.statusCode).send(err));
+});
+
 //Get playlists user created with Run BPM
 app.get("/playlists", function(req, res) {
 	const db = new UserDB(DatabasePath);

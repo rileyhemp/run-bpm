@@ -21,7 +21,7 @@
 			/>
 		</v-row>
 		<v-row class="d-flex align-center mx-1 mt-2">
-			<v-text-field class="mx-2" prepend-inner-icon="mdi-magnify">
+			<v-text-field v-model="query" class="mx-2" append-icon="mdi-magnify" @keydown="handleKeydown" @click:append="doSearch">
 				<template v-slot:label>Search playlists</template>
 			</v-text-field>
 		</v-row>
@@ -37,7 +37,8 @@ export default {
 	},
 	data: function() {
 		return {
-			selected: []
+			selected: [],
+			query: null
 		};
 	},
 	computed: {
@@ -51,6 +52,24 @@ export default {
 			this.selected.indexOf(playlist) != -1 ? this.selected.splice(this.selected.indexOf(playlist), 1) : this.selected.push(playlist);
 			//Push list to $attrs so the 'create' component can access it
 			this.$attrs.selected = this.selected;
+		},
+		handleKeydown(event) {
+			event.key === "Enter" ? this.doSearch() : null;
+		},
+		doSearch() {
+			if (this.query.length > 0) {
+				this.$http
+					.get(`http://localhost:3000/search-playlists`, {
+						params: {
+							q: this.query,
+							credentials: localStorage.RunBPM
+						}
+					})
+					.then(res => {
+						console.log(res);
+					})
+					.catch(err => console.log(err));
+			}
 		}
 	}
 };
