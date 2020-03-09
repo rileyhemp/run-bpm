@@ -20,7 +20,11 @@
 				@click.native="selectPlaylist(playlist.id)"
 			/>
 		</v-row>
-		<p class="body-1 ma-2">Search</p>
+		<v-row class="d-flex align-center mx-1 mt-2">
+			<v-text-field class="mx-2" prepend-inner-icon="mdi-magnify">
+				<template v-slot:label>Search playlists</template>
+			</v-text-field>
+		</v-row>
 	</v-container>
 </template>
 
