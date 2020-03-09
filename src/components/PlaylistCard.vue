@@ -2,7 +2,7 @@
 	<v-col cols="4">
 		<v-dialog v-model="details" width="100%">
 			<template v-slot:activator="{ on }">
-				<v-card :elevation="12" flat tile :outlined="isSelected" @click.native="selectPlaylist" :focus="isSelected">
+				<v-card :elevation="12" class="card-select" flat tile :outlined="isSelected" @click.native="selectPlaylist" :focus="isSelected">
 					<v-img
 						:src="playlist.images[0].url"
 						aspect-ratio="1"
@@ -32,33 +32,40 @@
 import PlaylistTracks from "./PlaylistTracks";
 export default {
 	name: "playlist-card",
+	props: ["playlist"],
 	components: {
 		"playlist-tracks": PlaylistTracks
 	},
-	props: ["playlist"],
 	data: function() {
 		return {
 			details: false,
 			isSelected: false,
-			tracks: Array
+			tracks: null
 		};
 	},
 	methods: {
 		selectPlaylist() {
 			this.$emit("selected");
-			this.$http
-				.get("http://localhost:3000/playlist-details", {
-					params: {
-						playlist: this.playlist.id,
-						credentials: localStorage.RunBPM
-					}
-				})
-				.then(res => {
-					this.tracks = res.data;
-					this.isSelected = !this.isSelected;
-				})
-				.catch(err => console.log(err));
+			if (this.tracks === null) {
+				this.$http
+					.get("http://localhost:3000/playlist-details", {
+						params: {
+							playlist: this.playlist.id,
+							credentials: localStorage.RunBPM
+						}
+					})
+					.then(res => {
+						this.tracks = res.data;
+						this.isSelected = !this.isSelected;
+					})
+					.catch(err => console.log(err));
+			} else this.isSelected = !this.isSelected;
 		}
 	}
 };
 </script>
+<style>
+.card-select {
+	border-color: #cf6679 !important;
+}
+</style>

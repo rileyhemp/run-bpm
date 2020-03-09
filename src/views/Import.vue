@@ -32,7 +32,7 @@
 				:key="playlist.id"
 				:playlist="playlist"
 				:selected="selected"
-				@click.native="selectPlaylist(playlist.id)"
+				@selected="selectPlaylist(playlist.id)"
 			/>
 		</v-row>
 	</v-container>
@@ -82,6 +82,9 @@ export default {
 					.catch(err => console.log(err));
 			}
 		}
+	},
+	mounted: function() {
+		this.$emit("updateUserInfo");
 	}
 };
 //

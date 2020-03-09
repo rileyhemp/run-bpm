@@ -1,18 +1,15 @@
 <template>
-	<v-card>
-		<v-card-actions class="d-flex justify-end ">
-			<v-btn fab small color="secondary" class="ma-4" @click="close"><v-icon>mdi-close</v-icon></v-btn>
-		</v-card-actions>
+	<v-card @click.native="close">
 		<v-list-item three-line>
 			<v-list-item-content>
-				<v-list-item-title class="headline mb-1">{{ playlist.name }}</v-list-item-title>
+				<v-list-item-title class="title mb-1">{{ playlist.name }}</v-list-item-title>
 				<v-list-item-subtitle>{{ playlist.description }}</v-list-item-subtitle>
 				<v-list-item-content>
-					<p class="subheader-1">{{ tracks.length }} tracks {{ mixDuration }}</p>
+					<p class="body-2">{{ tracks.length }} tracks {{ mixDuration }}</p>
 				</v-list-item-content>
 			</v-list-item-content>
 			<v-list-item-avatar tile size="80" color="grey">
-				<img :src="playlist.images[1].url" alt="Image for Spotify playlist" />
+				<img :src="playlist.images[1] ? playlist.images[1].url : playlist.images[0].url" alt="Image for Spotify playlist" />
 			</v-list-item-avatar>
 		</v-list-item>
 		<v-list two-line class="mx-2">

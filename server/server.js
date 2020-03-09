@@ -146,7 +146,7 @@ app.get("/playlists", function(req, res) {
 });
 
 app.get("/playlist-details", async (req, res) => {
-	console.log(req.query);
+	console.log("igg");
 	const token = await accessToken(req.query.credentials);
 	const api = spotifyApiWithToken(token);
 	getPlaylistTracks([req.query.playlist], api)
