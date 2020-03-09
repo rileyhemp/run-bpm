@@ -25,6 +25,7 @@
 				<template v-slot:label>Search playlists</template>
 			</v-text-field>
 		</v-row>
+		<p class="body-1 mx-2" v-if="searchResults.length > 0">More playlists</p>
 		<v-row class="mx-1 mt-3" dense v-if="searchResults.length > 0">
 			<playlist-card
 				v-for="playlist in searchResults"
