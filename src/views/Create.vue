@@ -24,10 +24,11 @@
 			:audioFeatures="audioFeatures"
 			name="BEATS PER MINUTE"
 			feature="doubletime"
-			:sliderRange="[100, 200]"
+			:range="[100, 200]"
 			:chunkSize="10"
+			:height="100"
 		/>
-		<div class="mx-2">
+		<!-- <div class="mx-2">
 			<p class="overline">BEATS PER MINUTE</p>
 			<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
 			<line-graph :type="bars ? 'bar' : 'trend'" :height="100" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
@@ -41,7 +42,7 @@
 				:marks="[sliderRange[0], sliderRange[1]]"
 				@change="this.filterChartData"
 			></vue-slider>
-		</div>
+		</div> -->
 		<v-row class="px-4 mt-8">
 			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
@@ -91,9 +92,9 @@
 <script>
 import features from "@/assets/temp-features";
 import PlaylistFilter from "../containers/PlaylistFilter";
-import RadarChart from "../components/RadarChart";
-import LineGraph from "../components/LineGraph";
-import VueSlider from "vue-slider-component";
+// import RadarChart from "../components/RadarChart";
+// import LineGraph from "../components/LineGraph";
+// import VueSlider from "vue-slider-component";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
@@ -103,10 +104,10 @@ import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 export default {
 	name: "create-playlist",
 	components: {
-		"radar-chart": RadarChart,
-		"line-graph": LineGraph,
-		"playlist-filter": PlaylistFilter,
-		VueSlider
+		// "radar-chart": RadarChart,
+		// "line-graph": LineGraph,
+		"playlist-filter": PlaylistFilter
+		// VueSlider
 	},
 	data: function() {
 		return {

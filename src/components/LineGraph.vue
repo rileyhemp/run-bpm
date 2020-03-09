@@ -31,7 +31,6 @@ export default {
 	props: ["chartData", "type", "height"],
 	data: () => ({
 		showLabels: false,
-		height: 100,
 		lineWidth: 4,
 		labelSize: 10,
 		padding: 8,
