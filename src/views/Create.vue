@@ -19,10 +19,18 @@
 			<v-spacer />
 			<p class="subtitle-1">Refine your selection</p>
 		</v-row>
+		<playlist-filter
+			v-if="mountFilters"
+			:audioFeatures="audioFeatures"
+			name="BEATS PER MINUTE"
+			feature="doubletime"
+			:sliderRange="[100, 200]"
+			:chunkSize="10"
+		/>
 		<div class="mx-2">
 			<p class="overline">BEATS PER MINUTE</p>
 			<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
-			<line-graph :type="bars ? 'bar' : 'trend'" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
+			<line-graph :type="bars ? 'bar' : 'trend'" :height="100" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
 			<vue-slider
 				:min="100"
 				:max="200"
@@ -82,6 +90,7 @@
 
 <script>
 import features from "@/assets/temp-features";
+import PlaylistFilter from "../containers/PlaylistFilter";
 import RadarChart from "../components/RadarChart";
 import LineGraph from "../components/LineGraph";
 import VueSlider from "vue-slider-component";
@@ -96,6 +105,7 @@ export default {
 	components: {
 		"radar-chart": RadarChart,
 		"line-graph": LineGraph,
+		"playlist-filter": PlaylistFilter,
 		VueSlider
 	},
 	data: function() {
@@ -112,7 +122,8 @@ export default {
 			renderKey: 1,
 			playlistName: undefined,
 			finishedWithSelection: false,
-			confirm: false
+			confirm: false,
+			mountFilters: false
 		};
 	},
 	computed: {
@@ -204,7 +215,7 @@ export default {
 				setTimeout(() => this.filterChartData(), 150);
 			});
 		},
-		initChartData() {
+		convertToDoubletime() {
 			//Double tempo for tracks under 100bpm (90bpm ~= 180bpm)
 			this.audioFeatures.forEach(track => {
 				track.features.tempo = Math.round(track.features.tempo);
@@ -212,6 +223,16 @@ export default {
 					? (track.features.doubletime = track.features.tempo * 2)
 					: (track.features.doubletime = track.features.tempo);
 			});
+			this.mountFilters = true;
+		},
+		initChartData() {
+			// //Double tempo for tracks under 100bpm (90bpm ~= 180bpm)
+			// this.audioFeatures.forEach(track => {
+			// 	track.features.tempo = Math.round(track.features.tempo);
+			// 	track.features.tempo < 100
+			// 		? (track.features.doubletime = track.features.tempo * 2)
+			// 		: (track.features.doubletime = track.features.tempo);
+			// });
 			//Group tracks that are within 5bpm of each other
 			let tempoSegments = [];
 			for (let i = 100; i < 200; i = i + 10) {
@@ -259,6 +280,7 @@ export default {
 		}, 100)
 	},
 	mounted: function() {
+		this.convertToDoubletime();
 		this.initChartData();
 		// this.updateUserInfo();
 		// let playlists = [];
@@ -297,6 +319,9 @@ export default {
 }
 .no-word-break {
 	word-break: keep-all;
+}
+.filter-container-sm {
+	height: 100px;
 }
 </style>
 

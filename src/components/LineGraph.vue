@@ -4,13 +4,13 @@
 		:value="value"
 		:labels="axis"
 		:gradient="gradient"
-		:smooth="this.type==='trend' ? 12 : 2"
+		:smooth="this.type === 'trend' ? 12 : 2"
 		:padding="padding"
-		:line-width="this.type==='trend' ? 5 : 2"
+		:line-width="this.type === 'trend' ? 5 : 2"
 		:stroke-linecap="lineCap"
 		:gradient-direction="gradientDirection"
 		:fill="fill"
-		:auto-line-width="this.type==='trend' ? false : true"
+		:auto-line-width="this.type === 'trend' ? false : true"
 		:type="this.type"
 		:height="height"
 		:show-labels="showLabels"
@@ -28,7 +28,7 @@ const gradients = [
 	["#f72047", "#ffd200", "#1feaea"]
 ];
 export default {
-	props: ["chartData", "type"],
+	props: ["chartData", "type", "height"],
 	data: () => ({
 		showLabels: false,
 		height: 100,
