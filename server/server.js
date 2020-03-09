@@ -145,6 +145,17 @@ app.get("/playlists", function(req, res) {
 		.catch(err => res.send(err));
 });
 
+app.get("/playlist-details", async (req, res) => {
+	console.log(req.query);
+	const token = await accessToken(req.query.credentials);
+	const api = spotifyApiWithToken(token);
+	getPlaylistTracks([req.query.playlist], api)
+		.then(response => {
+			res.send(response);
+		})
+		.catch(err => res.status(err.statusCode).send(err));
+});
+
 //Add a new playlist to Run BPM's database
 app.post("/playlists", async (req, res) => {
 	const token = await accessToken(req.body.data.credentials);
