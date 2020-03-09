@@ -1,30 +1,39 @@
 <template>
 	<v-container fluid>
+		<!-- <v-btn class="mr-1" icon @click="(radar = false), (trend = false), (bars = true)">
+			<v-icon :color="radar || trend ? 'default' : 'primary'">mdi-chart-bar</v-icon>
+		</v-btn>
+		<v-btn class="mr-1" icon @click="(radar = false), (bars = false), (trend = true)">
+			<v-icon :color="radar || bars ? 'default' : 'primary'">mdi-chart-line</v-icon>
+		</v-btn>
+		<v-btn icon @click="(radar = true), (bars = false), (trend = false)">
+			<v-icon :color="bars || trend ? 'default' : 'primary'">mdi-spider-web</v-icon>
+		</v-btn> -->
 		<v-row class="pr-2">
-			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
+			<v-btn text class="ml-2" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
-			<v-btn class="mr-1" icon @click="(radar = false), (trend = false), (bars = true)">
-				<v-icon :color="radar || trend ? 'default' : 'primary'">mdi-chart-bar</v-icon>
-			</v-btn>
-			<v-btn class="mr-1" icon @click="(radar = false), (bars = false), (trend = true)">
-				<v-icon :color="radar || bars ? 'default' : 'primary'">mdi-chart-line</v-icon>
-			</v-btn>
-			<v-btn icon @click="(radar = true), (bars = false), (trend = false)">
-				<v-icon :color="bars || trend ? 'default' : 'primary'">mdi-spider-web</v-icon>
-			</v-btn>
+			<v-btn color="primary" class="mr-2" :disabled="loading || !playlistName" @click="confirm = true">Create</v-btn>
 		</v-row>
-		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
-		<line-graph :type="bars ? 'bar' : 'trend'" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
-		<vue-slider
-			:min="100"
-			:max="200"
-			v-model="sliderRange"
-			tooltip="none"
-			:enable-cross="false"
-			class="px-3"
-			:marks="[sliderRange[0], sliderRange[1]]"
-			@change="this.filterChartData"
-		></vue-slider>
+		<v-row class="mt-6 mb-2 mx-2">
+			<p class="subtitle-1">Step 2 / 2</p>
+			<v-spacer />
+			<p class="subtitle-1">Refine your selection</p>
+		</v-row>
+		<div class="mx-2">
+			<p class="overline">BEATS PER MINUTE</p>
+			<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
+			<line-graph :type="bars ? 'bar' : 'trend'" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
+			<vue-slider
+				:min="100"
+				:max="200"
+				v-model="sliderRange"
+				tooltip="none"
+				class="px-3"
+				:enable-cross="false"
+				:marks="[sliderRange[0], sliderRange[1]]"
+				@change="this.filterChartData"
+			></vue-slider>
+		</div>
 		<v-row class="px-4 mt-8">
 			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
@@ -34,11 +43,13 @@
 			<v-btn text medium>EDIT SELECTION</v-btn>
 		</v-row>
 		<v-row>
-			<v-spacer />
-			<v-btn color="primary" class="mr-4" :disabled="loading || !playlistName" @click="confirm = true">Create</v-btn>
 			<v-dialog v-model="confirm" width="300">
 				<v-card v-if="!loading">
-					<v-card-title class="subtitle-1 no-word-break">"{{ playlistName }}" will be added to your Spotify library</v-card-title>
+					<v-card-actions>
+						<v-spacer />
+						<v-btn icon @click="confirm = false"><v-icon>mdi-close</v-icon></v-btn>
+					</v-card-actions>
+					<v-card-title class="subtitle-1 no-word-break">"{{ playlistName }}" will be added to your Spotify library.</v-card-title>
 					<v-card-text>Are you finished with this selection?</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
