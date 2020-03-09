@@ -1,6 +1,6 @@
 <template>
 	<v-col cols="4">
-		<v-dialog v-model="details" width="600px">
+		<v-dialog v-model="details" width="100%">
 			<template v-slot:activator="{ on }">
 				<v-card :elevation="12" flat tile :outlined="isSelected" @click.native="selectPlaylist" :focus="isSelected">
 					<v-img
