@@ -10,6 +10,7 @@
 				v-for="playlist in this.$attrs.userPlaylists.items"
 				:key="playlist.id"
 				:playlist="playlist"
+				:selected="selected"
 				@click.native="selectPlaylist(playlist.id)"
 			/>
 		</v-row>
