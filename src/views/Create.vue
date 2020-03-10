@@ -24,10 +24,11 @@
 			:tracks="audioFeatures"
 			name="BEATS PER MINUTE"
 			feature="doubletime"
+			:filters="this.filters"
 			:range="[100, 200]"
 			:chunkSize="10"
 			:height="100"
-			@filterChartData="filterChartData"
+			@filterChartData="updateFilters"
 		/>
 		<!-- <div class="mx-2">
 			<p class="overline">BEATS PER MINUTE</p>
@@ -125,7 +126,7 @@ export default {
 			finishedWithSelection: false,
 			confirm: false,
 			mountFilters: false,
-			activeFilters: {
+			filters: {
 				doubletime: { range: [100, 200] }, //tempo
 				acousticness: { range: [0, 1] },
 				danceability: { range: [0, 1] },
@@ -260,8 +261,8 @@ export default {
 			this.chartReady = true;
 			this.chartData = [tempoSegments];
 		},
-		filterChartData: function(options) {
-			this.activeFilters[options.filter].range = options.range;
+		updateFilters: function(options) {
+			this.filters[options.filter].range = options.range;
 		}
 	},
 	mounted: function() {

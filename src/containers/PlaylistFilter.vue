@@ -30,7 +30,7 @@ export default {
 		"radar-chart": RadarChart,
 		VueSlider
 	},
-	props: ["tracks", "name", "range", "feature", "chunkSize", "height"],
+	props: ["tracks", "name", "range", "feature", "chunkSize", "height", "filters"],
 	data: function() {
 		return {
 			chartData: Array,
@@ -63,37 +63,41 @@ export default {
 			this.chartReady = true;
 			this.chartData = [tempoSegments];
 		},
-		// filterChartData: _.throttle(function() {
-		// 	//Filters charts in real time
-		// 	this.chartData[0].forEach(el => {
-		// 		const duration = 0.75;
-		// 		if (el.axis < this.sliderRange[0] || el.axis > this.sliderRange[1]) {
-		// 			gsap.to([el], {
-		// 				value: 0.01,
-		// 				duration: duration
-		// 			});
-		// 			//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
-		// 			gsap.to(this, {
-		// 				renderKey: this.renderKey + 1,
-		// 				duration: duration
-		// 			});
-		// 		} else {
-		// 			gsap.to(el, {
-		// 				value: el.valueSave,
-		// 				duration: duration
-		// 			});
-		// 			gsap.to(this, {
-		// 				renderKey: this.renderKey + 1,
-		// 				duration: duration
-		// 			});
-		// 		}
-		// 	});
-		// }, 100),
-		// Throttle the real time @change data, but pick up the final value via the drag-end event.
+		animateChart: function() {
+			//Filters charts in real time
+			const filters = Object.keys(this.filters);
+			console.log(filters);
+			// this.chartData[0].forEach(el => {
+			// 	const duration = 0.75;
+			// 	let test = el;
+			// if (el.axis < this.sliderRange[0] || el.axis > this.sliderRange[1]) {
+			// 	gsap.to([el], {
+			// 		value: 0.01,
+			// 		duration: duration
+			// 	});
+			// 	//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
+			// 	gsap.to(this, {
+			// 		renderKey: this.renderKey + 1,
+			// 		duration: duration
+			// 	});
+			// } else {
+			// 	gsap.to(el, {
+			// 		value: el.valueSave,
+			// 		duration: duration
+			// 	});
+			// 	gsap.to(this, {
+			// 		renderKey: this.renderKey + 1,
+			// 		duration: duration
+			// 	});
+			// }
+			// });
+		},
+		// Throttle the @change event, but catch the final value via the drag-end event.
 		filterThrottled: _.throttle(function() {
 			this.filterChartData();
 		}, 300),
 		filterChartData: _.throttle(function() {
+			console.log(this.activeFilters.doubletime.range);
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
 				scale: this.chunkSize,
@@ -101,9 +105,9 @@ export default {
 			});
 		}, 300)
 	},
-
 	mounted: function() {
 		this.initChartData();
+		this.animateChart();
 	}
 };
 </script>
