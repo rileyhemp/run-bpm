@@ -23,6 +23,7 @@
 			<playlist-filter
 				v-for="filter in filters"
 				:key="filter.key"
+				:renderKey="renderKey"
 				:tracks="audioFeatures"
 				:name="filter.name"
 				:filter="filter.id"
@@ -152,11 +153,20 @@ export default {
 	computed: {
 		selectedTracks: function() {
 			let tracksArray = [];
-			Object.keys(this.audioFeatures).forEach(i => {
-				let track = this.audioFeatures[i];
-				let bpmSliderRangeLow = this.sliderRange[0];
-				let bpmSliderRangeHigh = this.sliderRange[1];
-				if (track.features.doubletime >= bpmSliderRangeLow && track.features.doubletime <= bpmSliderRangeHigh) tracksArray.push(track);
+			this.audioFeatures.forEach(track => {
+				if (
+					track.features.doubletime >= this.filters.doubletime.range[0] &&
+					track.features.doubletime <= this.filters.doubletime.range[1] &&
+					track.features.acousticness >= this.filters.acousticness.range[0] / 100 &&
+					track.features.acousticness <= this.filters.acousticness.range[1] / 100 &&
+					track.features.danceability >= this.filters.danceability.range[0] / 100 &&
+					track.features.danceability <= this.filters.danceability.range[1] / 100 &&
+					track.features.energy >= this.filters.energy.range[0] / 100 &&
+					track.features.energy <= this.filters.energy.range[1] / 100 &&
+					track.features.valence >= this.filters.valence.range[0] / 100 &&
+					track.features.valence <= this.filters.valence.range[1] / 100
+				)
+					tracksArray.push(track);
 			});
 			return tracksArray;
 		},
@@ -264,29 +274,35 @@ export default {
 				}
 				const segments = [];
 				//Group tracks into segments
-				for (let i = filter.range[0]; i < filter.range[1]; i = i + filter.segmentSize) {
+				for (let i = filter.defaultRange[0]; i < filter.defaultRange[1]; i = i + filter.segmentSize) {
 					let segment = {};
 					let tracks = 0;
 					//Count how many tracks are in each segment
 
-					this.audioFeatures.forEach(track => {
+					this.selectedTracks.forEach(track => {
 						track.features[el] * multiplier >= i && track.features[el] * multiplier < i + filter.segmentSize ? tracks++ : null;
 					});
 					//Axis name
-					segment.axis = i;
+					segment.axis = i + 1;
 					//Percentage of total tracks in segment
-					segment.value = tracks / this.audioFeatures.length;
-					segment.valueSave = tracks / this.audioFeatures.length;
+					segment.value = tracks / this.selectedTracks.length;
+					segment.valueSave = tracks / this.selectedTracks.length;
 					//Number of tracks in segment
 					segment.tracks = tracks;
 					segments.push(segment);
 				}
 				this.chartData = { ...this.chartData, ...{ [el]: segments } };
 				this.chartsReady = true;
+				this.renderKey++;
 			});
 		},
 		updateFilters: function(options) {
 			this.$set(this.filters[options.filter], "range", options.range);
+		}
+	},
+	watch: {
+		selectedTracks() {
+			this.initChartData();
 		}
 	},
 	mounted: function() {
