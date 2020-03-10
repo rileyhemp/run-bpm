@@ -1,14 +1,5 @@
 <template>
 	<v-container fluid>
-		<!-- <v-btn class="mr-1" icon @click="(radar = false), (trend = false), (bars = true)">
-			<v-icon :color="radar || trend ? 'default' : 'primary'">mdi-chart-bar</v-icon>
-		</v-btn>
-		<v-btn class="mr-1" icon @click="(radar = false), (bars = false), (trend = true)">
-			<v-icon :color="radar || bars ? 'default' : 'primary'">mdi-chart-line</v-icon>
-		</v-btn>
-		<v-btn icon @click="(radar = true), (bars = false), (trend = false)">
-			<v-icon :color="bars || trend ? 'default' : 'primary'">mdi-spider-web</v-icon>
-		</v-btn> -->
 		<v-row class="pr-2">
 			<v-btn text class="ml-2" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
@@ -19,9 +10,19 @@
 			<v-spacer />
 			<p class="subtitle-1">Refine your selection</p>
 		</v-row>
+		<v-row>
+			<v-spacer />
+			<v-btn class="mr-1" icon @click="bars = true">
+				<v-icon :color="!bars ? 'default' : 'primary'">mdi-chart-bar</v-icon>
+			</v-btn>
+			<v-btn class="mr-1" icon @click="bars = false">
+				<v-icon :color="bars ? 'default' : 'primary'">mdi-chart-line</v-icon>
+			</v-btn>
+		</v-row>
 		<div v-if="mountFilters">
 			<playlist-filter
 				v-for="filter in filters"
+				:bars="bars"
 				:key="filter.key"
 				:renderKey="renderKey"
 				:tracks="audioFeatures"
@@ -40,8 +41,6 @@
 		</v-row>
 		<v-row class="mt-3">
 			<span class="mx-4 my-2 body-2">{{ songCount }} Tracks {{ mixDuration }}</span>
-			<v-spacer />
-			<v-btn text medium>EDIT SELECTION</v-btn>
 		</v-row>
 		<v-row>
 			<v-dialog v-model="confirm" width="300">
@@ -98,6 +97,7 @@ export default {
 		return {
 			//features.data
 			loading: false,
+			bars: true,
 			audioFeatures: features,
 			chartData: Object,
 			chartsReady: false,
@@ -114,12 +114,12 @@ export default {
 					name: "beats per minute",
 					id: "doubletime"
 				},
-				acousticness: {
+				energy: {
 					range: [0, 100],
 					defaultRange: [0, 100],
 					segmentSize: 10,
-					name: "acousticness",
-					id: "acousticness"
+					name: "energy",
+					id: "energy"
 				},
 				danceability: {
 					range: [0, 100],
@@ -128,19 +128,19 @@ export default {
 					name: "danceability",
 					id: "danceability"
 				},
-				energy: {
-					range: [0, 100],
-					defaultRange: [0, 100],
-					segmentSize: 10,
-					name: "energy",
-					id: "energy"
-				},
 				valence: {
 					range: [0, 100],
 					defaultRange: [0, 100],
 					segmentSize: 10,
 					name: "valence",
 					id: "valence"
+				},
+				acousticness: {
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
+					name: "acousticness",
+					id: "acousticness"
 				}
 			}
 		};

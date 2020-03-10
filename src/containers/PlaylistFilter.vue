@@ -1,9 +1,16 @@
 <template>
-	<div class="mx-2 pb-4 mb-8 pt-2">
+	<div class="filter-container" :class="collapsed ? 'mx-2 py-0 mt-2' : 'mx-2 pb-4 mb-8 pt-2'">
 		<p class="overline" @click="collapse" :class="collapsed ? 'no-margin' : null">{{ name }}</p>
-		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
-		<line-graph :type="bars ? 'bar' : 'trend'" :height="height" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
+		<line-graph
+			:collapsed="collapsed"
+			:type="bars ? 'bar' : 'trend'"
+			:height="height"
+			v-if="this.chartReady"
+			:chartData="this.chartData"
+			:key="renderKey"
+		/>
 		<vue-slider
+			v-show="!this.collapsed"
 			:min="range[0]"
 			:max="range[1]"
 			v-model="sliderRange"
@@ -18,25 +25,20 @@
 
 <script>
 import LineGraph from "../components/LineGraph";
-import RadarChart from "../components/RadarChart";
 import VueSlider from "vue-slider-component";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 export default {
 	components: {
 		"line-graph": LineGraph,
-		"radar-chart": RadarChart,
 		VueSlider
 	},
-	props: ["tracks", "name", "filter", "range", "segmentSize", "filters", "chartData", "chartReady", "id", "renderKey"],
+	props: ["tracks", "name", "bars", "filter", "range", "segmentSize", "filters", "chartData", "chartReady", "id", "renderKey"],
 	data: function() {
 		return {
-			radar: false,
-			trend: false,
-			bars: true,
 			sliderRange: this.range,
-			height: 100,
-			collapsed: false
+			height: this.filter === "doubletime" ? 100 : 0,
+			collapsed: this.filter === "doubletime" ? false : true
 		};
 	},
 	methods: {
@@ -46,7 +48,7 @@ export default {
 					height: 0,
 					duration: 0.2
 				});
-				this.collapsed = true;
+				setTimeout(() => (this.collapsed = true), 175);
 			} else {
 				gsap.to(this, {
 					height: 100,
@@ -61,14 +63,6 @@ export default {
 				scale: this.segmentSize,
 				filter: this.filter
 			});
-		}
-	},
-	watch: {
-		filters: {
-			handler() {
-				this.animateChart();
-			},
-			deep: true
 		}
 	},
 	mounted: function() {}

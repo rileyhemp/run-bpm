@@ -3,6 +3,7 @@
 		class="line-graph"
 		:value="value"
 		:labels="axis"
+		:opacity="collapsed ? 0 : 1"
 		:gradient="gradient"
 		:smooth="this.type === 'trend' ? 12 : 2"
 		:padding="padding"
@@ -13,7 +14,7 @@
 		:auto-line-width="this.type === 'trend' ? false : true"
 		:type="this.type"
 		:height="height"
-		:show-labels="showLabels"
+		:show-labels="false"
 		:label-size="labelSize"
 	></v-sparkline>
 </template>
@@ -28,7 +29,7 @@ const gradients = [
 	["#f72047", "#ffd200", "#1feaea"]
 ];
 export default {
-	props: ["chartData", "type", "height"],
+	props: ["chartData", "type", "height", "collapsed"],
 	data: () => ({
 		showLabels: false,
 		lineWidth: 4,
