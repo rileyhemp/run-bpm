@@ -10,8 +10,8 @@
 			tooltip="none"
 			class="px-3"
 			:enable-cross="false"
-			:marks="[sliderRange[0], sliderRange[1]]"
-			@change="filterChartData"
+			:marks="sliderRange"
+			@drag-end="filterChartData"
 		></vue-slider>
 	</div>
 </template>
