@@ -21,6 +21,7 @@
 import LineGraph from "../components/LineGraph";
 import RadarChart from "../components/RadarChart";
 import VueSlider from "vue-slider-component";
+import { isWithinRange } from "../scripts/isWithinRange";
 import _ from "lodash";
 import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
@@ -42,12 +43,10 @@ export default {
 	},
 	methods: {
 		animateChart: function() {
-			let highVal = this.filters[this.filter][1];
-			let lowVal = this.filters[this.filter][0];
 			// Filters charts in real time
 			this.chartData.forEach(el => {
 				// const duration = 0.75;
-				if (el.axis < lowVal || el.axis > highVal) {
+				if (isWithinRange(el.axis, this)) {
 					gsap.to([el], {
 						value: 0.01,
 						duration: el.valueSave * 8,
