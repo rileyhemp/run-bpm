@@ -1,6 +1,6 @@
 <template>
-	<div class="mx-2">
-		<p class="overline">{{ name }}</p>
+	<div class="mx-2 pb-4 mb-8 pt-2">
+		<p class="overline" @click="collapse" :class="collapsed ? 'no-margin' : null">{{ name }}</p>
 		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
 		<line-graph :type="bars ? 'bar' : 'trend'" :height="height" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
 		<vue-slider
@@ -8,7 +8,7 @@
 			:max="range[1]"
 			v-model="sliderRange"
 			tooltip="none"
-			class="px-3"
+			class="px-3 no-margin"
 			:enable-cross="false"
 			:marks="sliderRange"
 			@drag-end="filterChartData"
@@ -20,8 +20,7 @@
 import LineGraph from "../components/LineGraph";
 import RadarChart from "../components/RadarChart";
 import VueSlider from "vue-slider-component";
-// import _ from "lodash";
-// import gsap from "gsap";
+import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 export default {
 	components: {
@@ -29,52 +28,33 @@ export default {
 		"radar-chart": RadarChart,
 		VueSlider
 	},
-	props: ["tracks", "name", "filter", "range", "segmentSize", "height", "filters", "chartData", "chartReady", "id", "renderKey"],
+	props: ["tracks", "name", "filter", "range", "segmentSize", "filters", "chartData", "chartReady", "id", "renderKey"],
 	data: function() {
 		return {
 			radar: false,
 			trend: false,
 			bars: true,
-			sliderRange: this.range
+			sliderRange: this.range,
+			height: 100,
+			collapsed: false
 		};
 	},
 	methods: {
-		animateChart: function() {
-			// Filters charts in real time
-			// this.chartData.forEach(el => {
-			// 	// const duration = 0.75;
-			// 	if (el.axis < this.filters[this.filter].range[0] || el.axis > this.filters[this.filter].range[1]) {
-			// 		gsap.to([el], {
-			// 			value: 0,
-			// 			duration: el.valueSave * 5,
-			// 			ease: "none"
-			// 		});
-			// 		//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
-			// 		gsap.to(this, {
-			// 			renderKey: this.renderKey + 1,
-			// 			duration: el.valueSave * 5
-			// 		});
-			// 	} else {
-			// 		gsap.to(el, {
-			// 			value: el.valueSave,
-			// 			duration: el.valueSave * 5,
-			// 			ease: "none"
-			// 		});
-			// 		gsap.to(this, {
-			// 			renderKey: this.renderKey + 1,
-			// 			duration: el.valueSave * 5
-			// 		});
-			// 	}
-			// });
+		collapse() {
+			if (!this.collapsed) {
+				gsap.to(this, {
+					height: 0,
+					duration: 0.2
+				});
+				this.collapsed = true;
+			} else {
+				gsap.to(this, {
+					height: 100,
+					duration: 0.2
+				});
+				this.collapsed = false;
+			}
 		},
-		// Throttle the @change event, but catch the final value via the drag-end event.
-		// filterThrottled: _.throttle(function() {
-		// 	this.$emit("filterChartData", {
-		// 		range: this.sliderRange,
-		// 		scale: this.segmentSize,
-		// 		filter: this.filter
-		// 	});
-		// }, 10),
 		filterChartData: function() {
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
@@ -94,3 +74,12 @@ export default {
 	mounted: function() {}
 };
 </script>
+
+<style>
+.no-margin {
+	margin: 0 !important;
+}
+.line-graph {
+	margin: 0 !important;
+}
+</style>

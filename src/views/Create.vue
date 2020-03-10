@@ -30,7 +30,6 @@
 				:filters="filters"
 				:range="[filter.defaultRange[0], filter.defaultRange[1]]"
 				:segmentSize="filter.segmentSize"
-				:height="100"
 				:chartData="chartData[filter.id]"
 				:chartReady="chartsReady"
 				@filterChartData="updateFilters"
@@ -102,10 +101,6 @@ export default {
 			audioFeatures: features,
 			chartData: Object,
 			chartsReady: false,
-			radar: false,
-			trend: false,
-			bars: true,
-			sliderRange: [100, 200],
 			renderKey: 1,
 			playlistName: undefined,
 			finishedWithSelection: false,
@@ -247,7 +242,9 @@ export default {
 			//Reset the selection, slider range, and chart
 			this.createPlaylistFromSelection().then(() => {
 				this.playlistName = undefined;
-				this.sliderRange = [100, 200];
+				Object.keys(this.filters).forEach(i => {
+					this.filters[i].range = this.filters[i].defaultRange;
+				});
 				setTimeout(() => this.filterChartData(), 150);
 			});
 		},
