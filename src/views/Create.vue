@@ -42,7 +42,7 @@
 		<v-row class="mt-3">
 			<span class="mx-4 my-2 body-2">{{ songCount }} Tracks {{ mixDuration }}</span>
 		</v-row>
-		<v-row>
+		<v-row class="d-flex flex-justify-center">
 			<radar-chart v-if="this.chartsReady" :chartData="this.chartData" :key="renderKey" />
 		</v-row>
 		<v-row>
@@ -139,13 +139,6 @@ export default {
 					segmentSize: 10,
 					name: "valence",
 					id: "valence"
-				},
-				acousticness: {
-					range: [0, 100],
-					defaultRange: [0, 100],
-					segmentSize: 10,
-					name: "acousticness",
-					id: "acousticness"
 				}
 			}
 		};
@@ -157,8 +150,6 @@ export default {
 				if (
 					track.features.doubletime >= this.filters.doubletime.range[0] &&
 					track.features.doubletime <= this.filters.doubletime.range[1] &&
-					track.features.acousticness >= this.filters.acousticness.range[0] / 100 &&
-					track.features.acousticness <= this.filters.acousticness.range[1] / 100 &&
 					track.features.danceability >= this.filters.danceability.range[0] / 100 &&
 					track.features.danceability <= this.filters.danceability.range[1] / 100 &&
 					track.features.energy >= this.filters.energy.range[0] / 100 &&
@@ -288,6 +279,9 @@ export default {
 					segment.axis = i + 1;
 					//Percentage of total tracks in segment
 					segment.value = tracks / this.selectedTracks.length;
+					if ((segment.axis = 1 & (segment.value > 0.2))) {
+						segment.value = 0.2;
+					}
 					segment.valueSave = tracks / this.selectedTracks.length;
 					//Number of tracks in segment
 					segment.tracks = tracks;

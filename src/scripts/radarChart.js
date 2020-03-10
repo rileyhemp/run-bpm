@@ -34,7 +34,6 @@ function RadarChart(id, data, options) {
 	} //if
 
 	//If the supplied maxValue is smaller than the actual one, replace by the max in the data
-	console.log(data);
 	var maxValue = Math.max(
 		cfg.maxValue,
 		d3.max(data, function(i) {

@@ -14,8 +14,8 @@ export default {
 	data: function() {
 		return {
 			chartOptions: {
-				w: width,
-				h: height,
+				w: width + 50,
+				h: height + 50,
 				margin: margin,
 				maxValue: 0.2,
 				roundStrokes: true
@@ -26,10 +26,14 @@ export default {
 				// 		colors.red.lighten2,
 				// 		colors.green.lighten2
 				// 	])
-			}
+			},
+			formattedData: []
 		};
 	},
 	mounted: function() {
+		Object.entries(this.chartData).forEach(el => {
+			this.formattedData.push(el[1]);
+		});
 		//Set graph's max value to highest value in the data set
 		let values = [];
 		this.chartData.doubletime.forEach(el => values.push(el.value));
@@ -37,7 +41,7 @@ export default {
 		this.chartOptions.maxValue = Math.max(...values);
 		//Draw the chart
 		console.log(values, "doubletime", this.chartData.doubletime, this.chartOptions);
-		RadarChart(".radarChart", this.chartData, this.chartOptions);
+		RadarChart(".radarChart", this.formattedData, this.chartOptions);
 	}
 };
 </script>
@@ -45,6 +49,10 @@ export default {
 <style>
 .radarChart {
 	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
 	cursor: default;
 	position: relative;
 	transform: translateY(-10px);
