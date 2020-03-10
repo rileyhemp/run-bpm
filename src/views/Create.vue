@@ -21,12 +21,13 @@
 		</v-row>
 		<playlist-filter
 			v-if="mountFilters"
-			:audioFeatures="audioFeatures"
+			:tracks="audioFeatures"
 			name="BEATS PER MINUTE"
 			feature="doubletime"
 			:range="[100, 200]"
 			:chunkSize="10"
 			:height="100"
+			@filterChartData="filterChartData"
 		/>
 		<!-- <div class="mx-2">
 			<p class="overline">BEATS PER MINUTE</p>
@@ -95,7 +96,6 @@ import PlaylistFilter from "../containers/PlaylistFilter";
 // import RadarChart from "../components/RadarChart";
 // import LineGraph from "../components/LineGraph";
 // import VueSlider from "vue-slider-component";
-import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
@@ -124,7 +124,14 @@ export default {
 			playlistName: undefined,
 			finishedWithSelection: false,
 			confirm: false,
-			mountFilters: false
+			mountFilters: false,
+			activeFilters: {
+				doubletime: { range: [100, 200] }, //tempo
+				acousticness: { range: [0, 1] },
+				danceability: { range: [0, 1] },
+				energy: { range: [0, 1] },
+				valence: { range: [0, 1] }
+			}
 		};
 	},
 	computed: {
@@ -253,32 +260,9 @@ export default {
 			this.chartReady = true;
 			this.chartData = [tempoSegments];
 		},
-		filterChartData: _.throttle(function() {
-			//Filters charts in real time
-			this.chartData[0].forEach(el => {
-				const duration = 0.75;
-				if (el.axis < this.sliderRange[0] || el.axis > this.sliderRange[1]) {
-					gsap.to([el], {
-						value: 0.01,
-						duration: duration
-					});
-					//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
-					gsap.to(this, {
-						renderKey: this.renderKey + 1,
-						duration: duration
-					});
-				} else {
-					gsap.to(el, {
-						value: el.valueSave,
-						duration: duration
-					});
-					gsap.to(this, {
-						renderKey: this.renderKey + 1,
-						duration: duration
-					});
-				}
-			});
-		}, 100)
+		filterChartData: function(options) {
+			this.activeFilters[options.filter].range = options.range;
+		}
 	},
 	mounted: function() {
 		this.convertToDoubletime();

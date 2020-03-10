@@ -10,8 +10,9 @@
 			tooltip="none"
 			class="px-3"
 			:enable-cross="false"
-			:marks="[range[0], range[1]]"
-			@change="this.filterChartData"
+			:marks="[sliderRange[0], sliderRange[1]]"
+			@change="filterThrottled"
+			@drag-end="filterChartData"
 		></vue-slider>
 	</div>
 </template>
@@ -20,7 +21,7 @@
 import LineGraph from "../components/LineGraph";
 import RadarChart from "../components/RadarChart";
 import VueSlider from "vue-slider-component";
-// import _ from "lodash";
+import _ from "lodash";
 // import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 export default {
@@ -29,7 +30,7 @@ export default {
 		"radar-chart": RadarChart,
 		VueSlider
 	},
-	props: ["audioFeatures", "name", "range", "feature", "chunkSize", "height"],
+	props: ["tracks", "name", "range", "feature", "chunkSize", "height"],
 	data: function() {
 		return {
 			chartData: Array,
@@ -38,8 +39,7 @@ export default {
 			radar: false,
 			trend: false,
 			bars: true,
-			sliderRange: [100, 200],
-			tracks: this.audioFeatures
+			sliderRange: [100, 200]
 		};
 	},
 	methods: {
@@ -89,13 +89,17 @@ export default {
 		// 		}
 		// 	});
 		// }, 100),
-		filterChartData() {
+		// Throttle the real time @change data, but pick up the final value via the drag-end event.
+		filterThrottled: _.throttle(function() {
+			this.filterChartData();
+		}, 300),
+		filterChartData: _.throttle(function() {
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
 				scale: this.chunkSize,
-				filter: this.filter
+				filter: this.feature
 			});
-		}
+		}, 300)
 	},
 
 	mounted: function() {
