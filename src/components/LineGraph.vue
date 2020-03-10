@@ -44,7 +44,7 @@ export default {
 		duration: 2000
 	}),
 	mounted: function() {
-		this.chartData[0].forEach(el => {
+		this.chartData.forEach(el => {
 			this.value.push(el.value);
 			this.axis.push(el.axis);
 			this.tracks.push(el.tracks);

@@ -6,10 +6,7 @@
 //eslint-disable-next-line
 const margin = { top: 30, right: 50, bottom: 30, left: 50 },
 	width = Math.min(700, window.innerWidth - 110) - margin.left - margin.right,
-	height = Math.min(
-		width,
-		window.innerHeight - margin.top - margin.bottom - 20
-	);
+	height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 import RadarChart from "@/scripts/radarChart";
 export default {
 	name: "radar-chart",
@@ -35,7 +32,7 @@ export default {
 	mounted: function() {
 		//Set graph's max value to highest value in the data set
 		let values = [];
-		this.chartData[0].forEach(el => values.push(el.value));
+		this.chartData.forEach(el => values.push(el.value));
 		this.chartOptions.maxValue = Math.max(...values);
 		//Draw the chart
 		RadarChart(".radarChart", this.chartData, this.chartOptions);

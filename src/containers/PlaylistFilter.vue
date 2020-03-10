@@ -22,7 +22,7 @@ import LineGraph from "../components/LineGraph";
 import RadarChart from "../components/RadarChart";
 import VueSlider from "vue-slider-component";
 import _ from "lodash";
-// import gsap from "gsap";
+import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 export default {
 	components: {
@@ -30,12 +30,10 @@ export default {
 		"radar-chart": RadarChart,
 		VueSlider
 	},
-	props: ["tracks", "name", "range", "feature", "chunkSize", "height", "filters"],
+	props: ["tracks", "name", "range", "filter", "chunkSize", "height", "filters", "chartData", "chartReady"],
 	data: function() {
 		return {
-			chartData: Array,
 			renderKey: 1,
-			chartReady: false,
 			radar: false,
 			trend: false,
 			bars: true,
@@ -43,54 +41,35 @@ export default {
 		};
 	},
 	methods: {
-		// initChartData() {
-		// 	//Group tracks that are within 5bpm of each other
-		// 	let tempoSegments = [];
-		// 	for (let i = this.sliderRange[0]; i < this.sliderRange[1]; i = i + this.chunkSize) {
-		// 		let segment = {};
-		// 		let tracks = 0;
-		// 		this.tracks.forEach(track => {
-		// 			track.features[this.feature] >= i && track.features[this.feature] < i + this.chunkSize ? tracks++ : null;
-		// 		});
-		// 		segment.axis = i;
-		// 		segment.value = tracks / this.tracks.length;
-		// 		segment.valueSave = tracks / this.tracks.length;
-		// 		segment.outOfRange = false;
-		// 		segment.tracks = tracks;
-		// 		tempoSegments.push(segment);
-		// 	}
-		// 	//Let the charts know the data is ready and they can render
-		// 	this.chartReady = true;
-		// 	this.chartData = [tempoSegments];
-		// },
 		animateChart: function() {
-			//Filters charts in real time
-			// const filters = Object.keys(this.filters);
-			// console.log(filters);
-			// this.chartData[0].forEach(el => {
-			// 	const duration = 0.75;
-			// 	let test = el;
-			// if (el.axis < this.sliderRange[0] || el.axis > this.sliderRange[1]) {
-			// 	gsap.to([el], {
-			// 		value: 0.01,
-			// 		duration: duration
-			// 	});
-			// 	//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
-			// 	gsap.to(this, {
-			// 		renderKey: this.renderKey + 1,
-			// 		duration: duration
-			// 	});
-			// } else {
-			// 	gsap.to(el, {
-			// 		value: el.valueSave,
-			// 		duration: duration
-			// 	});
-			// 	gsap.to(this, {
-			// 		renderKey: this.renderKey + 1,
-			// 		duration: duration
-			// 	});
-			// }
-			// });
+			let highVal = this.filters[this.filter][1];
+			let lowVal = this.filters[this.filter][0];
+			// Filters charts in real time
+			this.chartData.forEach(el => {
+				// const duration = 0.75;
+				if (el.axis < lowVal || el.axis > highVal) {
+					gsap.to([el], {
+						value: 0.01,
+						duration: el.valueSave * 8,
+						ease: "none"
+					});
+					//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
+					gsap.to(this, {
+						renderKey: this.renderKey + 1,
+						duration: el.valueSave * 8
+					});
+				} else {
+					gsap.to(el, {
+						value: el.valueSave,
+						duration: el.valueSave * 8,
+						ease: "none"
+					});
+					gsap.to(this, {
+						renderKey: this.renderKey + 1,
+						duration: el.valueSave * 8
+					});
+				}
+			});
 		},
 		// Throttle the @change event, but catch the final value via the drag-end event.
 		filterThrottled: _.throttle(function() {
@@ -100,7 +79,7 @@ export default {
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
 				scale: this.chunkSize,
-				filter: this.feature
+				filter: this.filter
 			});
 		}
 	},
@@ -113,8 +92,7 @@ export default {
 		}
 	},
 	mounted: function() {
-		// this.initChartData();
-		// this.animateChart();
+		this.animateChart();
 	}
 };
 </script>

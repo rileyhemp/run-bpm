@@ -23,28 +23,15 @@
 			v-if="mountFilters"
 			:tracks="audioFeatures"
 			name="BEATS PER MINUTE"
-			feature="doubletime"
+			filter="doubletime"
 			:filters="this.filters"
 			:range="[100, 200]"
 			:chunkSize="10"
 			:height="100"
+			:chartData="chartData['doubletime']"
+			:chartReady="chartsReady"
 			@filterChartData="updateFilters"
 		/>
-		<!-- <div class="mx-2">
-			<p class="overline">BEATS PER MINUTE</p>
-			<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
-			<line-graph :type="bars ? 'bar' : 'trend'" :height="100" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
-			<vue-slider
-				:min="100"
-				:max="200"
-				v-model="sliderRange"
-				tooltip="none"
-				class="px-3"
-				:enable-cross="false"
-				:marks="[sliderRange[0], sliderRange[1]]"
-				@change="this.filterChartData"
-			></vue-slider>
-		</div> -->
 		<v-row class="px-4 mt-8">
 			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
@@ -116,7 +103,7 @@ export default {
 			loading: false,
 			audioFeatures: features,
 			chartData: Object,
-			chartReady: false,
+			chartsReady: false,
 			radar: false,
 			trend: false,
 			bars: true,
@@ -257,7 +244,6 @@ export default {
 				const segments = [];
 				//Group tracks into segments
 				for (let i = filter.range[0]; i < filter.range[1] - 0.1; i = i + filter.segmentSize) {
-					console.log("I am working");
 					let segment = {};
 					let tracks = 0;
 					//Count how many tracks are in each segment
@@ -274,30 +260,9 @@ export default {
 					segment.tracks = tracks;
 					segments.push(segment);
 				}
-				const obj = {
-					[el]: segments
-				};
-				this.chartData = { ...this.chartData, ...obj };
+				this.chartData = { ...this.chartData, ...{ [el]: segments } };
 				this.chartsReady = true;
 			});
-			// //Group tracks that are within 5bpm of each other
-			// let segments = [];
-			// for (let i = 100; i < 200; i = i + 10) {
-			// 	let segment = {};
-			// 	let tracks = 0;
-			// 	this.audioFeatures.forEach(track => {
-			// 		track.features.doubletime >= i && track.features.doubletime < i + 10 ? tracks++ : null;
-			// 	});
-			// 	segment.axis = i;
-			// 	segment.value = tracks / this.audioFeatures.length;
-			// 	segment.valueSave = tracks / this.audioFeatures.length;
-			// 	segment.outOfRange = false;
-			// 	segment.tracks = tracks;
-			// 	segments.push(segment);
-			// }
-			// //Let the charts know the data is ready and they can render
-			// this.chartReady = true;
-			// this.chartData = [segments];
 		},
 		updateFilters: function(options) {
 			this.$set(this.filters, options.filter, options.range);
