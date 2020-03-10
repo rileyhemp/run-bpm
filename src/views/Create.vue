@@ -32,6 +32,19 @@
 			:chartReady="chartsReady"
 			@filterChartData="updateFilters"
 		/>
+		<playlist-filter
+			v-if="mountFilters"
+			:tracks="audioFeatures"
+			name="BEATS PER MINUTE"
+			filter="doubletime"
+			:filters="this.filters"
+			:range="[100, 200]"
+			:chunkSize="10"
+			:height="100"
+			:chartData="chartData['doubletime']"
+			:chartReady="chartsReady"
+			@filterChartData="updateFilters"
+		/>
 		<v-row class="px-4 mt-8">
 			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
@@ -101,8 +114,6 @@ export default {
 			radar: false,
 			trend: false,
 			bars: true,
-			sliderRange: [100, 200],
-			renderKey: 1,
 			playlistName: undefined,
 			finishedWithSelection: false,
 			confirm: false,
@@ -134,11 +145,9 @@ export default {
 	computed: {
 		selectedTracks: function() {
 			let tracksArray = [];
-			Object.keys(this.audioFeatures).forEach(i => {
-				let track = this.audioFeatures[i];
-				let bpmSliderRangeLow = this.sliderRange[0];
-				let bpmSliderRangeHigh = this.sliderRange[1];
-				if (track.features.doubletime >= bpmSliderRangeLow && track.features.doubletime <= bpmSliderRangeHigh) tracksArray.push(track);
+			this.audioFeatures.forEach(track => {
+				if (track.features.doubletime >= this.filters.doubletime[0] && track.features.doubletime <= this.filters.doubletime[1])
+					tracksArray.push(track);
 			});
 			return tracksArray;
 		},
