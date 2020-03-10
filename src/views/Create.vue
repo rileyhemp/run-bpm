@@ -43,6 +43,9 @@
 			<span class="mx-4 my-2 body-2">{{ songCount }} Tracks {{ mixDuration }}</span>
 		</v-row>
 		<v-row>
+			<radar-chart v-if="this.chartsReady" :chartData="this.chartData" :key="renderKey" />
+		</v-row>
+		<v-row>
 			<v-dialog v-model="confirm" width="300">
 				<v-card v-if="!loading">
 					<v-card-actions>
@@ -83,6 +86,7 @@
 <script>
 import features from "@/assets/temp-features";
 import PlaylistFilter from "../containers/PlaylistFilter";
+import RadarChart from "../components/RadarChart";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
@@ -91,7 +95,8 @@ import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 export default {
 	name: "create-playlist",
 	components: {
-		"playlist-filter": PlaylistFilter
+		"playlist-filter": PlaylistFilter,
+		"radar-chart": RadarChart
 	},
 	data: function() {
 		return {

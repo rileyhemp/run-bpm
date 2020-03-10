@@ -32,9 +32,11 @@ export default {
 	mounted: function() {
 		//Set graph's max value to highest value in the data set
 		let values = [];
-		this.chartData.forEach(el => values.push(el.value));
+		this.chartData.doubletime.forEach(el => values.push(el.value));
+
 		this.chartOptions.maxValue = Math.max(...values);
 		//Draw the chart
+		console.log(values, "doubletime", this.chartData.doubletime, this.chartOptions);
 		RadarChart(".radarChart", this.chartData, this.chartOptions);
 	}
 };
