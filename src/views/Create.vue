@@ -27,8 +27,7 @@
 				:name="filter.name"
 				:filter="filter.id"
 				:filters="filters"
-				:range="[filter.range[0], filter.range[1]]"
-				:sliderRange="[filter.range[0], filter.range[1]]"
+				:range="[filter.defaultRange[0], filter.defaultRange[1]]"
 				:segmentSize="filter.segmentSize"
 				:height="100"
 				:chartData="chartData[filter.id]"
@@ -114,31 +113,36 @@ export default {
 			filters: {
 				doubletime: {
 					range: [100, 200],
+					defaultRange: [100, 200],
 					segmentSize: 10,
 					name: "beats per minute",
 					id: "doubletime"
 				},
 				acousticness: {
-					range: [0, 1],
-					segmentSize: 0.1,
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
 					name: "acousticness",
 					id: "acousticness"
 				},
 				danceability: {
-					range: [0, 1],
-					segmentSize: 0.1,
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
 					name: "danceability",
 					id: "danceability"
 				},
 				energy: {
-					range: [0, 1],
-					segmentSize: 0.1,
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
 					name: "energy",
 					id: "energy"
 				},
 				valence: {
-					range: [0, 1],
-					segmentSize: 0.1,
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
 					name: "valence",
 					id: "valence"
 				}
@@ -252,15 +256,21 @@ export default {
 			//Loop through each filter
 			filters.forEach(el => {
 				const filter = this.filters[el];
+				let multiplier;
+				if (el === "doubletime") {
+					multiplier = 1;
+				} else {
+					multiplier = 100;
+				}
 				const segments = [];
 				//Group tracks into segments
-				for (let i = filter.range[0]; i < filter.range[1] - 0.1; i = i + filter.segmentSize) {
+				for (let i = filter.range[0]; i < filter.range[1]; i = i + filter.segmentSize) {
 					let segment = {};
 					let tracks = 0;
 					//Count how many tracks are in each segment
 
 					this.audioFeatures.forEach(track => {
-						track.features[el] >= i && track.features[el] < i + filter.segmentSize ? tracks++ : null;
+						track.features[el] * multiplier >= i && track.features[el] * multiplier < i + filter.segmentSize ? tracks++ : null;
 					});
 					//Axis name
 					segment.axis = i;
@@ -276,7 +286,7 @@ export default {
 			});
 		},
 		updateFilters: function(options) {
-			this.$set(this.filters, options.filter, options.range);
+			this.$set(this.filters[options.filter], "range", options.range);
 		}
 	},
 	mounted: function() {

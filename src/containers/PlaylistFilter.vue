@@ -4,8 +4,8 @@
 		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
 		<line-graph :type="bars ? 'bar' : 'trend'" :height="height" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
 		<vue-slider
-			:min="sliderRange[0]"
-			:max="sliderRange[1]"
+			:min="range[0]"
+			:max="range[1]"
 			v-model="sliderRange"
 			tooltip="none"
 			class="px-3"
@@ -30,13 +30,14 @@ export default {
 		"radar-chart": RadarChart,
 		VueSlider
 	},
-	props: ["tracks", "name", "sliderRange", "filter", "segmentSize", "height", "filters", "chartData", "chartReady"],
+	props: ["tracks", "name", "filter", "range", "segmentSize", "height", "filters", "chartData", "chartReady", "id"],
 	data: function() {
 		return {
 			renderKey: 1,
 			radar: false,
 			trend: false,
-			bars: true
+			bars: true,
+			sliderRange: this.range
 		};
 	},
 	methods: {
@@ -46,24 +47,24 @@ export default {
 				// const duration = 0.75;
 				if (el.axis < this.filters[this.filter].range[0] || el.axis > this.filters[this.filter].range[1]) {
 					gsap.to([el], {
-						value: 0.01,
-						duration: el.valueSave * 8,
+						value: 0,
+						duration: el.valueSave * 5,
 						ease: "none"
 					});
 					//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
 					gsap.to(this, {
 						renderKey: this.renderKey + 1,
-						duration: el.valueSave * 8
+						duration: el.valueSave * 5
 					});
 				} else {
 					gsap.to(el, {
 						value: el.valueSave,
-						duration: el.valueSave * 8,
+						duration: el.valueSave * 5,
 						ease: "none"
 					});
 					gsap.to(this, {
 						renderKey: this.renderKey + 1,
-						duration: el.valueSave * 8
+						duration: el.valueSave * 5
 					});
 				}
 			});
