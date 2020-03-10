@@ -19,19 +19,23 @@
 			<v-spacer />
 			<p class="subtitle-1">Refine your selection</p>
 		</v-row>
-		<playlist-filter
-			v-if="mountFilters"
-			:tracks="audioFeatures"
-			name="BEATS PER MINUTE"
-			filter="doubletime"
-			:filters="this.filters"
-			:range="[100, 200]"
-			:chunkSize="10"
-			:height="100"
-			:chartData="chartData['doubletime']"
-			:chartReady="chartsReady"
-			@filterChartData="updateFilters"
-		/>
+		<div v-if="mountFilters">
+			<playlist-filter
+				v-for="filter in filters"
+				:key="filter.key"
+				:tracks="audioFeatures"
+				:name="filter.name"
+				:filter="filter.id"
+				:filters="filters"
+				:range="[filter.range[0], filter.range[1]]"
+				:sliderRange="[filter.range[0], filter.range[1]]"
+				:segmentSize="filter.segmentSize"
+				:height="100"
+				:chartData="chartData[filter.id]"
+				:chartReady="chartsReady"
+				@filterChartData="updateFilters"
+			/>
+		</div>
 		<v-row class="px-4 mt-8">
 			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
@@ -81,9 +85,6 @@
 <script>
 import features from "@/assets/temp-features";
 import PlaylistFilter from "../containers/PlaylistFilter";
-// import RadarChart from "../components/RadarChart";
-// import LineGraph from "../components/LineGraph";
-// import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
@@ -92,10 +93,7 @@ import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 export default {
 	name: "create-playlist",
 	components: {
-		// "radar-chart": RadarChart,
-		// "line-graph": LineGraph,
 		"playlist-filter": PlaylistFilter
-		// VueSlider
 	},
 	data: function() {
 		return {
@@ -116,23 +114,33 @@ export default {
 			filters: {
 				doubletime: {
 					range: [100, 200],
-					segmentSize: 10
+					segmentSize: 10,
+					name: "beats per minute",
+					id: "doubletime"
 				},
 				acousticness: {
 					range: [0, 1],
-					segmentSize: 0.1
+					segmentSize: 0.1,
+					name: "acousticness",
+					id: "acousticness"
 				},
 				danceability: {
 					range: [0, 1],
-					segmentSize: 0.1
+					segmentSize: 0.1,
+					name: "danceability",
+					id: "danceability"
 				},
 				energy: {
 					range: [0, 1],
-					segmentSize: 0.1
+					segmentSize: 0.1,
+					name: "energy",
+					id: "energy"
 				},
 				valence: {
 					range: [0, 1],
-					segmentSize: 0.1
+					segmentSize: 0.1,
+					name: "valence",
+					id: "valence"
 				}
 			}
 		};
@@ -171,6 +179,9 @@ export default {
 		},
 		highBPM: function() {
 			return _.max(this.tempos);
+		},
+		filterArray: function() {
+			return Object.entries(this.filters);
 		}
 	},
 	methods: {
