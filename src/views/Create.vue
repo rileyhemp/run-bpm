@@ -1,3 +1,4 @@
+// eslint-disable-file
 <template>
 	<v-container fluid>
 		<v-row class="pr-2">
@@ -49,9 +50,16 @@
 						<v-spacer />
 						<v-btn icon @click="confirm = false"><v-icon>mdi-close</v-icon></v-btn>
 					</v-card-actions>
-					<v-card-title class="subtitle-1 no-word-break">"{{ playlistName }}" will be added to your Spotify library.</v-card-title>
+					<v-card-title class="subtitle-1 no-word-break">
+						Your playlist {{ playlistName }} will be added to your Spotify library.
+					</v-card-title>
+					<v-card-text>{{ songCount }} tracks {{ mixDuration }}</v-card-text>
+					<v-row class="d-flex flex-justify-start mx-7">
+						<div class="review-circle mr-2" />
+						<p class="body-1">{{ reviewCategory }}</p>
+					</v-row>
 					<v-row class="d-flex flex-justify-center">
-						<radar-chart v-if="this.chartsReady" :chartData="this.chartData" :key="renderKey" />
+						<radar-chart v-if="this.chartsReady" :chartData="this.chartData" :key="renderKey" @chartClicked="handleChartClick" />
 					</v-row>
 					<v-card-text>Are you finished with this selection?</v-card-text>
 					<v-card-actions>
@@ -111,6 +119,7 @@ export default {
 			finishedWithSelection: false,
 			confirm: false,
 			mountFilters: false,
+			reviewCategory: null,
 			filters: {
 				doubletime: {
 					range: [100, 200],
@@ -294,6 +303,20 @@ export default {
 		},
 		updateFilters: function(options) {
 			this.$set(this.filters[options.filter], "range", options.range);
+		},
+		// prettier-ignore
+		handleChartClick() {
+			console.log(event.toElement.style.fill);
+			document.querySelector(".review-circle").style.backgroundColor = event.toElement.style.fill;
+			event.toElement.style.fill === "rgb(214, 39, 40)"
+				? (this.reviewCategory = `BPM: ${this.lowBPM} - ${this.highBPM}`)
+				: event.toElement.style.fill === "rgb(44, 160, 44)"
+					? (this.reviewCategory = `Energy: ${this.filters.energy.range[0]} - ${this.filters.energy.range[1]}`)
+					: event.toElement.style.fill === "rgb(255, 127, 14)"
+						? (this.reviewCategory = `Danceability: ${this.filters.danceability.range[0]} - ${this.filters.danceability.range[1]}`)
+						: event.toElement.style.fill === "rgb(31, 119, 180)"
+							? (this.reviewCategory = `Valence: ${this.filters.valence.range[0]} - ${this.filters.valence.range[1]}`)
+							: null;
 		}
 	},
 	watch: {
@@ -302,36 +325,34 @@ export default {
 		}
 	},
 	mounted: function() {
-		this.convertToDoubletime();
-		this.initChartData();
-
-		// this.updateUserInfo();
-		// let playlists = [];
-		// if (this.$route.params.playlists || localStorage.playlists) {
-		// 	if (localStorage.playlists && !this.$route.params.playlists) {
-		// 		playlists = JSON.parse(localStorage.playlists);
-		// 	} else {
-		// 		playlists = this.$route.params.playlists;
-		// 		localStorage.setItem("playlists", JSON.stringify(playlists));
-		// 	}
-		// 	setTimeout(10);
-		// 	this.$http
-		// 		.post("http://localhost:3000/analyze-tracks", {
-		// 			data: {
-		// 				playlists: playlists,
-		// 				credentials: localStorage.RunBPM
-		// 			}
-		// 		})
-		// 		.then(response => {
-		// 			this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
-		// 				return { track: a.track, features: b };
-		// 			});
-		// 			this.initChartData();
-		// 		})
-		// 		.catch(err => {
-		// 			console.log(err);
-		// 		});
-		// } else this.$router.push("/");
+		this.updateUserInfo();
+		let playlists = [];
+		if (this.$route.params.playlists || localStorage.playlists) {
+			if (localStorage.playlists && !this.$route.params.playlists) {
+				playlists = JSON.parse(localStorage.playlists);
+			} else {
+				playlists = this.$route.params.playlists;
+				localStorage.setItem("playlists", JSON.stringify(playlists));
+			}
+			setTimeout(10);
+			this.$http
+				.post("http://localhost:3000/analyze-tracks", {
+					data: {
+						playlists: playlists,
+						credentials: localStorage.RunBPM
+					}
+				})
+				.then(response => {
+					this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
+						return { track: a.track, features: b };
+					});
+					this.convertToDoubletime();
+					this.initChartData();
+				})
+				.catch(err => {
+					console.log(err);
+				});
+		} else this.$router.push("/");
 	}
 };
 </script>
@@ -345,6 +366,12 @@ export default {
 }
 .filter-container-sm {
 	height: 100px;
+}
+.review-circle {
+	height: 25px;
+	width: 25px;
+	border-radius: 50%;
+	background-color: rgba(0, 0, 0, 0.3);
 }
 </style>
 

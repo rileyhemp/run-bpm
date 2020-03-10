@@ -312,7 +312,7 @@ function RadarChart(id, data, options) {
 			tooltip
 				.attr("x", newX)
 				.attr("y", newY)
-				.text(Format(d.value))
+				.text(Format("d.value"))
 				.transition()
 				.duration(200)
 				.style("opacity", 1);

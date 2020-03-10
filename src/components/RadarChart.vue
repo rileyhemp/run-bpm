@@ -41,6 +41,10 @@ export default {
 		this.chartOptions.maxValue = Math.max(...values);
 		//Draw the chart
 		RadarChart(".radarChart", this.formattedData, this.chartOptions);
+		let radarAreas = document.querySelectorAll(".radarArea");
+		for (let i = 0; i < radarAreas.length; i++) {
+			radarAreas[i].addEventListener("mousedown", () => this.$emit("chartClicked", event));
+		}
 	}
 };
 </script>

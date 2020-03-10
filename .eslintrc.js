@@ -9,11 +9,11 @@ module.exports = {
 
 	rules: {
 		"prettier/prettier": {
-			tabs: true
+			tabs: false
 		},
 		"no-console": "off",
 		"vue/max-attributes-per-line": [
-			2,
+			4,
 			{
 				singleline: 20,
 				multiline: {
@@ -26,7 +26,7 @@ module.exports = {
 		"vue/array-bracket-spacing": "warning",
 		"vue/arrow-spacing": "warning",
 		"vue/eqeqeq": "warning",
-		indent: ["error", "tab"],
+		indent: ["off", "tab"],
 		printWidth: 150
 	},
 
