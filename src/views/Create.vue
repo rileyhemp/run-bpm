@@ -19,32 +19,23 @@
 			<v-spacer />
 			<p class="subtitle-1">Refine your selection</p>
 		</v-row>
-		<playlist-filter
-			v-if="mountFilters"
-			:tracks="audioFeatures"
-			name="BEATS PER MINUTE"
-			filter="doubletime"
-			:filters="this.filters"
-			:range="[100, 200]"
-			:chunkSize="10"
-			:height="100"
-			:chartData="chartData['doubletime']"
-			:chartReady="chartsReady"
-			@filterChartData="updateFilters"
-		/>
-		<playlist-filter
-			v-if="mountFilters"
-			:tracks="audioFeatures"
-			name="BEATS PER MINUTE"
-			filter="doubletime"
-			:filters="this.filters"
-			:range="[100, 200]"
-			:chunkSize="10"
-			:height="100"
-			:chartData="chartData['doubletime']"
-			:chartReady="chartsReady"
-			@filterChartData="updateFilters"
-		/>
+		<div v-if="mountFilters">
+			<playlist-filter
+				v-for="filter in filters"
+				:key="filter.key"
+				:tracks="audioFeatures"
+				:name="filter.name"
+				:filter="filter.id"
+				:filters="filters"
+				:range="[filter.range[0], filter.range[1]]"
+				:sliderRange="[filter.range[0], filter.range[1]]"
+				:segmentSize="filter.segmentSize"
+				:height="100"
+				:chartData="chartData[filter.id]"
+				:chartReady="chartsReady"
+				@filterChartData="updateFilters"
+			/>
+		</div>
 		<v-row class="px-4 mt-8">
 			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
@@ -114,6 +105,8 @@ export default {
 			radar: false,
 			trend: false,
 			bars: true,
+			sliderRange: [100, 200],
+			renderKey: 1,
 			playlistName: undefined,
 			finishedWithSelection: false,
 			confirm: false,
@@ -121,23 +114,33 @@ export default {
 			filters: {
 				doubletime: {
 					range: [100, 200],
-					segmentSize: 10
+					segmentSize: 10,
+					name: "beats per minute",
+					id: "doubletime"
 				},
 				acousticness: {
 					range: [0, 1],
-					segmentSize: 0.1
+					segmentSize: 0.1,
+					name: "acousticness",
+					id: "acousticness"
 				},
 				danceability: {
 					range: [0, 1],
-					segmentSize: 0.1
+					segmentSize: 0.1,
+					name: "danceability",
+					id: "danceability"
 				},
 				energy: {
 					range: [0, 1],
-					segmentSize: 0.1
+					segmentSize: 0.1,
+					name: "energy",
+					id: "energy"
 				},
 				valence: {
 					range: [0, 1],
-					segmentSize: 0.1
+					segmentSize: 0.1,
+					name: "valence",
+					id: "valence"
 				}
 			}
 		};
@@ -145,9 +148,11 @@ export default {
 	computed: {
 		selectedTracks: function() {
 			let tracksArray = [];
-			this.audioFeatures.forEach(track => {
-				if (track.features.doubletime >= this.filters.doubletime[0] && track.features.doubletime <= this.filters.doubletime[1])
-					tracksArray.push(track);
+			Object.keys(this.audioFeatures).forEach(i => {
+				let track = this.audioFeatures[i];
+				let bpmSliderRangeLow = this.sliderRange[0];
+				let bpmSliderRangeHigh = this.sliderRange[1];
+				if (track.features.doubletime >= bpmSliderRangeLow && track.features.doubletime <= bpmSliderRangeHigh) tracksArray.push(track);
 			});
 			return tracksArray;
 		},
@@ -174,6 +179,9 @@ export default {
 		},
 		highBPM: function() {
 			return _.max(this.tempos);
+		},
+		filterArray: function() {
+			return Object.entries(this.filters);
 		}
 	},
 	methods: {

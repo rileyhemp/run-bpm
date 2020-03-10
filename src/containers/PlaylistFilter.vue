@@ -4,8 +4,8 @@
 		<radar-chart v-if="this.chartReady && radar" :chartData="this.chartData" :key="renderKey" />
 		<line-graph :type="bars ? 'bar' : 'trend'" :height="height" v-if="this.chartReady && !radar" :chartData="this.chartData" :key="renderKey" />
 		<vue-slider
-			:min="range[0]"
-			:max="range[1]"
+			:min="sliderRange[0]"
+			:max="sliderRange[1]"
 			v-model="sliderRange"
 			tooltip="none"
 			class="px-3"
@@ -30,14 +30,13 @@ export default {
 		"radar-chart": RadarChart,
 		VueSlider
 	},
-	props: ["tracks", "name", "range", "filter", "chunkSize", "height", "filters", "chartData", "chartReady"],
+	props: ["tracks", "name", "sliderRange", "filter", "segmentSize", "height", "filters", "chartData", "chartReady"],
 	data: function() {
 		return {
 			renderKey: 1,
 			radar: false,
 			trend: false,
-			bars: true,
-			sliderRange: [100, 200]
+			bars: true
 		};
 	},
 	methods: {
@@ -76,7 +75,7 @@ export default {
 		filterChartData: function() {
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
-				scale: this.chunkSize,
+				scale: this.segmentSize,
 				filter: this.filter
 			});
 		}
