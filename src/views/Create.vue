@@ -115,7 +115,7 @@ export default {
 			//features.data
 			loading: false,
 			audioFeatures: features,
-			chartData: Array,
+			chartData: Object,
 			chartReady: false,
 			radar: false,
 			trend: false,
@@ -127,11 +127,26 @@ export default {
 			confirm: false,
 			mountFilters: false,
 			filters: {
-				doubletime: { range: [100, 200] }, //tempo
-				acousticness: { range: [0, 1] },
-				danceability: { range: [0, 1] },
-				energy: { range: [0, 1] },
-				valence: { range: [0, 1] }
+				doubletime: {
+					range: [100, 200],
+					segmentSize: 10
+				},
+				acousticness: {
+					range: [0, 1],
+					segmentSize: 0.1
+				},
+				danceability: {
+					range: [0, 1],
+					segmentSize: 0.1
+				},
+				energy: {
+					range: [0, 1],
+					segmentSize: 0.1
+				},
+				valence: {
+					range: [0, 1],
+					segmentSize: 0.1
+				}
 			}
 		};
 	},
@@ -235,34 +250,57 @@ export default {
 			this.mountFilters = true;
 		},
 		initChartData() {
-			// //Double tempo for tracks under 100bpm (90bpm ~= 180bpm)
-			// this.audioFeatures.forEach(track => {
-			// 	track.features.tempo = Math.round(track.features.tempo);
-			// 	track.features.tempo < 100
-			// 		? (track.features.doubletime = track.features.tempo * 2)
-			// 		: (track.features.doubletime = track.features.tempo);
-			// });
-			//Group tracks that are within 5bpm of each other
-			let tempoSegments = [];
-			for (let i = 100; i < 200; i = i + 10) {
-				let segment = {};
-				let tracks = 0;
-				this.audioFeatures.forEach(track => {
-					track.features.doubletime >= i && track.features.doubletime < i + 10 ? tracks++ : null;
-				});
-				segment.axis = i;
-				segment.value = tracks / this.audioFeatures.length;
-				segment.valueSave = tracks / this.audioFeatures.length;
-				segment.outOfRange = false;
-				segment.tracks = tracks;
-				tempoSegments.push(segment);
-			}
-			//Let the charts know the data is ready and they can render
-			this.chartReady = true;
-			this.chartData = [tempoSegments];
+			const filters = Object.keys(this.filters);
+			//Loop through each filter
+			filters.forEach(el => {
+				const filter = this.filters[el];
+				const segments = [];
+				//Group tracks into segments
+				for (let i = filter.range[0]; i < filter.range[1] - 0.1; i = i + filter.segmentSize) {
+					console.log("I am working");
+					let segment = {};
+					let tracks = 0;
+					//Count how many tracks are in each segment
+
+					this.audioFeatures.forEach(track => {
+						track.features[el] >= i && track.features[el] < i + filter.segmentSize ? tracks++ : null;
+					});
+					//Axis name
+					segment.axis = i;
+					//Percentage of total tracks in segment
+					segment.value = tracks / this.audioFeatures.length;
+					segment.valueSave = tracks / this.audioFeatures.length;
+					//Number of tracks in segment
+					segment.tracks = tracks;
+					segments.push(segment);
+				}
+				const obj = {
+					[el]: segments
+				};
+				this.chartData = { ...this.chartData, ...obj };
+				this.chartsReady = true;
+			});
+			// //Group tracks that are within 5bpm of each other
+			// let segments = [];
+			// for (let i = 100; i < 200; i = i + 10) {
+			// 	let segment = {};
+			// 	let tracks = 0;
+			// 	this.audioFeatures.forEach(track => {
+			// 		track.features.doubletime >= i && track.features.doubletime < i + 10 ? tracks++ : null;
+			// 	});
+			// 	segment.axis = i;
+			// 	segment.value = tracks / this.audioFeatures.length;
+			// 	segment.valueSave = tracks / this.audioFeatures.length;
+			// 	segment.outOfRange = false;
+			// 	segment.tracks = tracks;
+			// 	segments.push(segment);
+			// }
+			// //Let the charts know the data is ready and they can render
+			// this.chartReady = true;
+			// this.chartData = [segments];
 		},
 		updateFilters: function(options) {
-			this.filters[options.filter].range = options.range;
+			this.$set(this.filters, options.filter, options.range);
 		}
 	},
 	mounted: function() {

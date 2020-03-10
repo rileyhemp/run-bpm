@@ -43,30 +43,30 @@ export default {
 		};
 	},
 	methods: {
-		initChartData() {
-			//Group tracks that are within 5bpm of each other
-			let tempoSegments = [];
-			for (let i = this.sliderRange[0]; i < this.sliderRange[1]; i = i + this.chunkSize) {
-				let segment = {};
-				let tracks = 0;
-				this.tracks.forEach(track => {
-					track.features[this.feature] >= i && track.features[this.feature] < i + this.chunkSize ? tracks++ : null;
-				});
-				segment.axis = i;
-				segment.value = tracks / this.tracks.length;
-				segment.valueSave = tracks / this.tracks.length;
-				segment.outOfRange = false;
-				segment.tracks = tracks;
-				tempoSegments.push(segment);
-			}
-			//Let the charts know the data is ready and they can render
-			this.chartReady = true;
-			this.chartData = [tempoSegments];
-		},
+		// initChartData() {
+		// 	//Group tracks that are within 5bpm of each other
+		// 	let tempoSegments = [];
+		// 	for (let i = this.sliderRange[0]; i < this.sliderRange[1]; i = i + this.chunkSize) {
+		// 		let segment = {};
+		// 		let tracks = 0;
+		// 		this.tracks.forEach(track => {
+		// 			track.features[this.feature] >= i && track.features[this.feature] < i + this.chunkSize ? tracks++ : null;
+		// 		});
+		// 		segment.axis = i;
+		// 		segment.value = tracks / this.tracks.length;
+		// 		segment.valueSave = tracks / this.tracks.length;
+		// 		segment.outOfRange = false;
+		// 		segment.tracks = tracks;
+		// 		tempoSegments.push(segment);
+		// 	}
+		// 	//Let the charts know the data is ready and they can render
+		// 	this.chartReady = true;
+		// 	this.chartData = [tempoSegments];
+		// },
 		animateChart: function() {
 			//Filters charts in real time
-			const filters = Object.keys(this.filters);
-			console.log(filters);
+			// const filters = Object.keys(this.filters);
+			// console.log(filters);
 			// this.chartData[0].forEach(el => {
 			// 	const duration = 0.75;
 			// 	let test = el;
@@ -96,18 +96,25 @@ export default {
 		filterThrottled: _.throttle(function() {
 			this.filterChartData();
 		}, 300),
-		filterChartData: _.throttle(function() {
-			console.log(this.activeFilters.doubletime.range);
+		filterChartData: function() {
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
 				scale: this.chunkSize,
 				filter: this.feature
 			});
-		}, 300)
+		}
+	},
+	watch: {
+		filters: {
+			handler() {
+				this.animateChart();
+			},
+			deep: true
+		}
 	},
 	mounted: function() {
-		this.initChartData();
-		this.animateChart();
+		// this.initChartData();
+		// this.animateChart();
 	}
 };
 </script>
