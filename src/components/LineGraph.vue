@@ -1,6 +1,7 @@
 <template>
 	<v-sparkline
 		class="line-graph"
+		:class="collapsed ? 'hidden' : null"
 		:value="value"
 		:labels="axis"
 		:opacity="collapsed ? 0 : 1"
@@ -58,5 +59,8 @@ export default {
 .line-graph {
 	margin-top: 40px;
 	margin-bottom: 20px;
+}
+.hidden {
+	visibility: hidden;
 }
 </style>

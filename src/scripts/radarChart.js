@@ -18,7 +18,7 @@ function RadarChart(id, data, options) {
 		wrapWidth: 60, //The number of pixels after which a label needs to be given a new line
 		opacityArea: 0.35, //The opacity of the area of the blob
 		dotRadius: 0, //The size of the colored circles of each blog
-		opacityCircles: 0.1, //The opacity of the circles of each blob
+		opacityCircles: 0.05, //The opacity of the circles of each blob
 		strokeWidth: 2, //The width of the stroke around each blob
 		roundStrokes: false, //If true the area and stroke will follow a round path (cardinal-closed)
 		color: d3.scale.category10() //Color function
@@ -114,8 +114,8 @@ function RadarChart(id, data, options) {
 		.attr("r", function(d, i) {
 			return (radius / cfg.levels) * d;
 		})
-		.style("fill", "#CDCDCD")
-		.style("stroke", "#CDCDCD")
+		.style("fill", "#a6a6a6")
+		.style("stroke", "#3d3d3d")
 		.style("transform", "rotate(36deg)")
 		.style("fill-opacity", cfg.opacityCircles)
 		.style("filter", "url(#glow)");
@@ -133,7 +133,7 @@ function RadarChart(id, data, options) {
 		})
 		.attr("dy", "0.4em")
 		.style("font-size", "10px")
-		.attr("fill", "#737373");
+		.attr("fill", "#FFFFFF");
 	// .text(function (d, i) { return Format(maxValue * d / cfg.levels); });
 	/////////////////////////////////////////////////////////
 	//////////////////// Draw the axes //////////////////////
@@ -157,7 +157,7 @@ function RadarChart(id, data, options) {
 			return rScale(maxValue) * Math.sin(angleSlice * i - Math.PI / 2);
 		})
 		.attr("class", "line")
-		.style("stroke", "rgba(255,255,255,0.3")
+		.style("stroke", "rgba(105,105,105,0.3")
 		.style("stroke-width", "2px");
 
 	//Select the odd axis only
@@ -165,21 +165,22 @@ function RadarChart(id, data, options) {
 		return i & 1 ? null : this;
 	});
 	//Append the labels at each axis
-	axis.append("text")
-		.attr("class", "legend")
-		.style("font-size", "14px")
-		.attr("text-anchor", "middle")
-		.attr("dy", "0.35em")
-		.attr("x", function(d, i) {
-			return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2);
-		})
-		.attr("y", function(d, i) {
-			return rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice * i - Math.PI / 2);
-		})
-		.text(function(d) {
-			return d;
-		})
-		.call(wrap, cfg.wrapWidth);
+	// axis.append("text")
+	// 	.attr("class", "legend")
+	// 	.style("font-size", "14px")
+	// 	.style("color", "white")
+	// 	.attr("text-anchor", "middle")
+	// 	.attr("dy", "0.35em")
+	// 	.attr("x", function(d, i) {
+	// 		return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2);
+	// 	})
+	// 	.attr("y", function(d, i) {
+	// 		return rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice * i - Math.PI / 2);
+	// 	})
+	// 	.text(function(d) {
+	// 		return d;
+	// 	})
+	// 	.call(wrap, cfg.wrapWidth);
 
 	/////////////////////////////////////////////////////////
 	///////////// Draw the radar chart blobs ////////////////

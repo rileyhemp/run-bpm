@@ -42,9 +42,6 @@
 		<v-row class="mt-3">
 			<span class="mx-4 my-2 body-2">{{ songCount }} Tracks {{ mixDuration }}</span>
 		</v-row>
-		<v-row class="d-flex flex-justify-center">
-			<radar-chart v-if="this.chartsReady" :chartData="this.chartData" :key="renderKey" />
-		</v-row>
 		<v-row>
 			<v-dialog v-model="confirm" width="300">
 				<v-card v-if="!loading">
@@ -53,6 +50,9 @@
 						<v-btn icon @click="confirm = false"><v-icon>mdi-close</v-icon></v-btn>
 					</v-card-actions>
 					<v-card-title class="subtitle-1 no-word-break">"{{ playlistName }}" will be added to your Spotify library.</v-card-title>
+					<v-row class="d-flex flex-justify-center">
+						<radar-chart v-if="this.chartsReady" :chartData="this.chartData" :key="renderKey" />
+					</v-row>
 					<v-card-text>Are you finished with this selection?</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>

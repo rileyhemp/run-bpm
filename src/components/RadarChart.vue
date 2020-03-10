@@ -40,7 +40,6 @@ export default {
 
 		this.chartOptions.maxValue = Math.max(...values);
 		//Draw the chart
-		console.log(values, "doubletime", this.chartData.doubletime, this.chartOptions);
 		RadarChart(".radarChart", this.formattedData, this.chartOptions);
 	}
 };
@@ -57,5 +56,8 @@ export default {
 	position: relative;
 	transform: translateY(-10px);
 	z-index: 0;
+}
+.legend {
+	color: white;
 }
 </style>
