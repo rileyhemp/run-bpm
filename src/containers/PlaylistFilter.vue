@@ -11,8 +11,7 @@
 			class="px-3"
 			:enable-cross="false"
 			:marks="[sliderRange[0], sliderRange[1]]"
-			@change="filterThrottled"
-			@drag-end="filterChartData"
+			@change="filterChartData"
 		></vue-slider>
 	</div>
 </template>
@@ -21,7 +20,7 @@
 import LineGraph from "../components/LineGraph";
 import RadarChart from "../components/RadarChart";
 import VueSlider from "vue-slider-component";
-import _ from "lodash";
+// import _ from "lodash";
 // import gsap from "gsap";
 import "vue-slider-component/theme/default.css";
 export default {
@@ -69,9 +68,13 @@ export default {
 			// });
 		},
 		// Throttle the @change event, but catch the final value via the drag-end event.
-		filterThrottled: _.throttle(function() {
-			this.filterChartData();
-		}, 300),
+		// filterThrottled: _.throttle(function() {
+		// 	this.$emit("filterChartData", {
+		// 		range: this.sliderRange,
+		// 		scale: this.segmentSize,
+		// 		filter: this.filter
+		// 	});
+		// }, 10),
 		filterChartData: function() {
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
@@ -88,8 +91,6 @@ export default {
 			deep: true
 		}
 	},
-	mounted: function() {
-		this.animateChart();
-	}
+	mounted: function() {}
 };
 </script>

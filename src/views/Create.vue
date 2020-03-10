@@ -87,6 +87,7 @@ import features from "@/assets/temp-features";
 import PlaylistFilter from "../containers/PlaylistFilter";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
+// import gsap from "gsap";
 import msToHMS from "@/scripts/msToHMS";
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 
@@ -308,6 +309,7 @@ export default {
 	mounted: function() {
 		this.convertToDoubletime();
 		this.initChartData();
+
 		// this.updateUserInfo();
 		// let playlists = [];
 		// if (this.$route.params.playlists || localStorage.playlists) {
