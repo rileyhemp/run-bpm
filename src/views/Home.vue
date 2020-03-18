@@ -10,20 +10,17 @@
 		/>
 		<add-button />
 		<v-spacer />
-		<player v-bind="$attrs" @updateTrack="updateTrack" @updatePlayState="updatePlayState" />
 	</div>
 </template>
 
 <script>
 import AddNewButtonVue from "../components/AddNewButton.vue";
 import CreatedPlaylists from "../containers/CreatedPlaylists";
-import Player from "../containers/Player";
 
 export default {
 	components: {
 		"add-button": AddNewButtonVue,
-		"created-playlists": CreatedPlaylists,
-		player: Player
+		"created-playlists": CreatedPlaylists
 	},
 	data: function() {
 		return {
