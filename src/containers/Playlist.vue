@@ -10,28 +10,16 @@
 		</v-list-item>
 		<v-dialog v-model="dialog" max-width="300">
 			<v-card>
-				<v-card-title class="headline">Select a device</v-card-title>
+				<v-card-title class="headline">{{ playlist.metadata.name }}</v-card-title>
 				<v-card-actions>
 					<v-btn-toggle borderless class="d-flex flex-column">
-						<v-btn
-							v-for="device in devices"
-							:key="device.key"
-							:value="device.id"
-							text
-							block
-							class="plain-btn justify-start"
-							@click="play(device.id)"
-						>
-							<v-icon class="mr-2">{{ getIcon(device.type) }}</v-icon>
-							<span>{{ device.name }}</span>
+						<v-btn text block class="plain-btn justify-start" @click="goToPlaylist">
+							<v-icon class="mr-2">mdi-cellphone</v-icon>
+
+							<span>Play on Spotify</span>
 						</v-btn>
 					</v-btn-toggle>
 				</v-card-actions>
-				<v-row class="d-flex flex-row-reverse px-4">
-					<v-btn icon @click="refreshDevices">
-						<v-icon>mdi-refresh</v-icon>
-					</v-btn>
-				</v-row>
 			</v-card>
 		</v-dialog>
 	</v-row>
@@ -66,20 +54,8 @@ export default {
 		}
 	},
 	methods: {
-		getIcon(type) {
-			return type === "Computer" ? "mdi-laptop" : "mdi-cellphone";
-		},
-		refreshDevices() {
-			this.$emit("updateUserInfo");
-		},
-		play(deviceID) {
-			this.$emit("updatePlayState", {
-				state: "play",
-				content: "spotify:playlist:" + this.playlist.id,
-				device: deviceID
-			});
-			this.active = true;
-			this.dialog = false;
+		goToPlaylist() {
+			window.open("https://open.spotify.com/playlist/" + this.playlist.id, "_blank");
 		},
 		updatePlaylists() {
 			this.refreshDevices();
