@@ -1,22 +1,22 @@
 // eslint-disable-file
 <template>
 	<v-container fluid>
-		<v-row class="pr-2">
-			<v-btn text class="ml-2" @click="() => this.$router.push('Import')">Back</v-btn>
+		<v-row class="pr-4">
+			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
 			<v-btn color="primary" class="mr-2" :disabled="loading || !playlistName" @click="confirm = true">Create</v-btn>
 		</v-row>
-		<v-row class="mt-6 mb-2 mx-2">
+		<v-row class="mt-6 mb-2 mx-4">
 			<p class="subtitle-1">Step 2 / 2</p>
 			<v-spacer />
 			<p class="subtitle-1">Refine your selection</p>
 		</v-row>
-		<v-row>
+		<v-row class="px-2">
 			<v-spacer />
-			<v-btn class="mr-1" icon @click="bars = true">
+			<v-btn class="mr-4" icon @click="bars = true">
 				<v-icon :color="!bars ? 'default' : 'primary'">mdi-chart-bar</v-icon>
 			</v-btn>
-			<v-btn class="mr-1" icon @click="bars = false">
+			<v-btn class="mr-4" icon @click="bars = false">
 				<v-icon :color="bars ? 'default' : 'primary'">mdi-chart-line</v-icon>
 			</v-btn>
 		</v-row>
@@ -35,13 +35,12 @@
 				:chartData="chartData[filter.id]"
 				:chartReady="chartsReady"
 				@filterChartData="updateFilters"
-				@filterSelf="animateFilterGraph"
 			/>
 		</div>
-		<v-row class="px-4 mt-8">
+		<v-row class="mx-4 mt-8">
 			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
 		</v-row>
-		<v-row class="mt-3">
+		<v-row class="mt-3 px-3">
 			<span class="mx-4 my-2 body-2">{{ songCount }} Tracks {{ mixDuration }}</span>
 		</v-row>
 		<v-row>
@@ -97,7 +96,6 @@ import features from "@/assets/temp-features";
 import PlaylistFilter from "../containers/PlaylistFilter";
 import RadarChart from "../components/RadarChart";
 import "vue-slider-component/theme/default.css";
-import gsap from "gsap";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
@@ -157,7 +155,6 @@ export default {
 	computed: {
 		selectedTracks: function() {
 			let tracksArray = [];
-			//Checks if a track passes all set filters and can be added to the array of selected tracks.
 			this.audioFeatures.forEach(track => {
 				if (
 					track.features.doubletime >= this.filters.doubletime.range[0] &&
@@ -246,7 +243,6 @@ export default {
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
 		},
-		//Remove this method
 		saveAndReset() {
 			//Reset the selection, slider range, and chart
 			this.createPlaylistFromSelection().then(() => {
@@ -308,37 +304,8 @@ export default {
 		updateFilters: function(options) {
 			this.$set(this.filters[options.filter], "range", options.range);
 		},
-		animateFilterGraph: _.throttle(function(options) {
-			console.log(options);
-			//Filters charts in real time
-			this.chartData[options.filter].forEach(el => {
-				console.log(el);
-				const duration = 0.75;
-				if (el.axis < options.range[0] || el.axis > options.range[1]) {
-					gsap.to([el], {
-						value: 0,
-						duration: duration
-					});
-					//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
-					gsap.to(this, {
-						renderKey: this.renderKey + 1,
-						duration: duration
-					});
-				} else {
-					gsap.to(el, {
-						value: el.valueSave,
-						duration: duration
-					});
-					gsap.to(this, {
-						renderKey: this.renderKey + 1,
-						duration: duration
-					});
-				}
-			});
-		}, 100),
 		// prettier-ignore
 		handleChartClick() {
-			//Handles click events on the radar chart
 			console.log(event.toElement.style.fill);
 			document.querySelector(".review-circle").style.backgroundColor = event.toElement.style.fill;
 			event.toElement.style.fill === "rgb(214, 39, 40)"
@@ -360,7 +327,6 @@ export default {
 	mounted: function() {
 		this.updateUserInfo();
 		let playlists = [];
-		//If the user exited a session, pull it back up. Otherwise use the imported tracks.
 		if (this.$route.params.playlists || localStorage.playlists) {
 			if (localStorage.playlists && !this.$route.params.playlists) {
 				playlists = JSON.parse(localStorage.playlists);
@@ -369,7 +335,6 @@ export default {
 				localStorage.setItem("playlists", JSON.stringify(playlists));
 			}
 			setTimeout(10);
-			//Send tracks to spotify api & return details including tempo etc
 			this.$http
 				.post("http://192.168.1.215:3000/analyze-tracks", {
 					data: {
@@ -377,7 +342,6 @@ export default {
 						credentials: localStorage.RunBPM
 					}
 				})
-				//Combine the details with the original track data
 				.then(response => {
 					this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
 						return { track: a.track, features: b };
@@ -388,7 +352,6 @@ export default {
 				.catch(err => {
 					console.log(err);
 				});
-			//If no trakcs in local storage or imported, return to home.
 		} else this.$router.push("/");
 	}
 };

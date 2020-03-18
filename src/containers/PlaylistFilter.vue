@@ -1,5 +1,5 @@
 <template>
-	<div class="filter-container" :class="collapsed ? 'mx-2 py-0 mt-2' : 'mx-2 pb-4 mb-8 pt-2'">
+	<div class="filter-container" :class="collapsed ? 'mx-4 py-0 mt-2' : 'mx-4 pb-4 mb-8 pt-2'">
 		<p class="overline" @click="collapse" :class="collapsed ? 'no-margin' : null">{{ name }}</p>
 		<line-graph
 			:collapsed="collapsed"
