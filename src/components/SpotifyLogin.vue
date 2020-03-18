@@ -8,7 +8,7 @@ export default {
 	methods: {
 		authorizeSpotify: function() {
 			this.$http
-				.get("http://localhost:3000/get-auth-url")
+				.get("http://192.168.1.215:3000/get-auth-url")
 				.then(data => {
 					console.log(data);
 					window.location.href = data.data;

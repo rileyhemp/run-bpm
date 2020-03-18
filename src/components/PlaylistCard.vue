@@ -48,7 +48,7 @@ export default {
 			this.$emit("selected");
 			if (this.tracks === null) {
 				this.$http
-					.get("http://localhost:3000/playlist-details", {
+					.get("http://192.168.1.215:3000/playlist-details", {
 						params: {
 							playlist: this.playlist.id,
 							credentials: localStorage.RunBPM

@@ -70,7 +70,7 @@ export default {
 		doSearch() {
 			if (this.query.length > 0) {
 				this.$http
-					.get(`http://localhost:3000/search-playlists`, {
+					.get(`http://192.168.1.215:3000/search-playlists`, {
 						params: {
 							q: this.query,
 							credentials: localStorage.RunBPM

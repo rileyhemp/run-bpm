@@ -2,7 +2,7 @@ export function getCurrentTrack() {
 	clearInterval(this.counter);
 	this.disableButtons = false;
 	this.$http
-		.get(`http://localhost:3000/player?q=current&credentials=${localStorage.RunBPM}`)
+		.get(`http://192.168.1.215:3000/player?q=current&credentials=${localStorage.RunBPM}`)
 		.then(response => {
 			this.currentTrack.id = response.data;
 			this.currentTrack.isPlaying = response.data.is_playing;
@@ -17,7 +17,7 @@ export function getCurrentTrack() {
 		.catch(err => console.log(err));
 }
 export function getTrackDetails(id) {
-	this.$http.get(`http://localhost:3000/analyze-tracks?id=${id}&credentials=${localStorage.RunBPM}`).then(response => {
+	this.$http.get(`http://192.168.1.215:3000/analyze-tracks?id=${id}&credentials=${localStorage.RunBPM}`).then(response => {
 		this.currentTrack.audioFeatures = response.data;
 	});
 }
@@ -49,7 +49,7 @@ export function updatePlayState(event) {
 	}
 	const play = () => {
 		this.$http
-			.put(`http://localhost:3000/player?action=play&credentials=${localStorage.RunBPM}`, {
+			.put(`http://192.168.1.215:3000/player?action=play&credentials=${localStorage.RunBPM}`, {
 				data: {
 					...options
 				}
@@ -59,13 +59,13 @@ export function updatePlayState(event) {
 	};
 	const pause = () => {
 		this.$http
-			.put(`http://localhost:3000/player?action=pause&credentials=${localStorage.RunBPM}`)
+			.put(`http://192.168.1.215:3000/player?action=pause&credentials=${localStorage.RunBPM}`)
 			.then(() => this.getCurrentTrack())
 			.catch(error => console.log(error));
 	};
 	const previous = () => {
 		this.$http
-			.put(`http://localhost:3000/player?action=previous&credentials=${localStorage.RunBPM}`, {
+			.put(`http://192.168.1.215:3000/player?action=previous&credentials=${localStorage.RunBPM}`, {
 				data: this.options
 			})
 			.then(() => this.getCurrentTrack())
@@ -73,7 +73,7 @@ export function updatePlayState(event) {
 	};
 	const next = () => {
 		this.$http
-			.put(`http://localhost:3000/player?action=next&credentials=${localStorage.RunBPM}`)
+			.put(`http://192.168.1.215:3000/player?action=next&credentials=${localStorage.RunBPM}`)
 			.then(() => this.getCurrentTrack())
 			.catch(error => console.log(error));
 	};

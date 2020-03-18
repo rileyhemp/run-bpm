@@ -214,7 +214,7 @@ export default {
 				this.$emit("loading");
 				//Create the playlist
 				this.$http
-					.post("http://localhost:3000/playlists", {
+					.post("http://192.168.1.215:3000/playlists", {
 						data: {
 							userID: this.$attrs.user.id,
 							trackIDs: trackIDs,
@@ -336,7 +336,7 @@ export default {
 			}
 			setTimeout(10);
 			this.$http
-				.post("http://localhost:3000/analyze-tracks", {
+				.post("http://192.168.1.215:3000/analyze-tracks", {
 					data: {
 						playlists: playlists,
 						credentials: localStorage.RunBPM
