@@ -35,6 +35,7 @@
 				:chartData="chartData[filter.id]"
 				:chartReady="chartsReady"
 				@filterChartData="updateFilters"
+				@filterSelf="animateFilterGraph"
 			/>
 		</div>
 		<v-row class="px-4 mt-8">
@@ -96,6 +97,7 @@ import features from "@/assets/temp-features";
 import PlaylistFilter from "../containers/PlaylistFilter";
 import RadarChart from "../components/RadarChart";
 import "vue-slider-component/theme/default.css";
+import gsap from "gsap";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
@@ -155,6 +157,7 @@ export default {
 	computed: {
 		selectedTracks: function() {
 			let tracksArray = [];
+			//Checks if a track passes all set filters and can be added to the array of selected tracks.
 			this.audioFeatures.forEach(track => {
 				if (
 					track.features.doubletime >= this.filters.doubletime.range[0] &&
@@ -243,6 +246,7 @@ export default {
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
 		},
+		//Remove this method
 		saveAndReset() {
 			//Reset the selection, slider range, and chart
 			this.createPlaylistFromSelection().then(() => {
@@ -304,8 +308,37 @@ export default {
 		updateFilters: function(options) {
 			this.$set(this.filters[options.filter], "range", options.range);
 		},
+		animateFilterGraph: _.throttle(function(options) {
+			console.log(options);
+			//Filters charts in real time
+			this.chartData[options.filter].forEach(el => {
+				console.log(el);
+				const duration = 0.75;
+				if (el.axis < options.range[0] || el.axis > options.range[1]) {
+					gsap.to([el], {
+						value: 0,
+						duration: duration
+					});
+					//Tweening the so-called 'render key' forces the graphs the refresh on each tween iteration
+					gsap.to(this, {
+						renderKey: this.renderKey + 1,
+						duration: duration
+					});
+				} else {
+					gsap.to(el, {
+						value: el.valueSave,
+						duration: duration
+					});
+					gsap.to(this, {
+						renderKey: this.renderKey + 1,
+						duration: duration
+					});
+				}
+			});
+		}, 100),
 		// prettier-ignore
 		handleChartClick() {
+			//Handles click events on the radar chart
 			console.log(event.toElement.style.fill);
 			document.querySelector(".review-circle").style.backgroundColor = event.toElement.style.fill;
 			event.toElement.style.fill === "rgb(214, 39, 40)"
@@ -327,6 +360,7 @@ export default {
 	mounted: function() {
 		this.updateUserInfo();
 		let playlists = [];
+		//If the user exited a session, pull it back up. Otherwise use the imported tracks.
 		if (this.$route.params.playlists || localStorage.playlists) {
 			if (localStorage.playlists && !this.$route.params.playlists) {
 				playlists = JSON.parse(localStorage.playlists);
@@ -335,6 +369,7 @@ export default {
 				localStorage.setItem("playlists", JSON.stringify(playlists));
 			}
 			setTimeout(10);
+			//Send tracks to spotify api & return details including tempo etc
 			this.$http
 				.post("http://192.168.1.215:3000/analyze-tracks", {
 					data: {
@@ -342,6 +377,7 @@ export default {
 						credentials: localStorage.RunBPM
 					}
 				})
+				//Combine the details with the original track data
 				.then(response => {
 					this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
 						return { track: a.track, features: b };
@@ -352,6 +388,7 @@ export default {
 				.catch(err => {
 					console.log(err);
 				});
+			//If no trakcs in local storage or imported, return to home.
 		} else this.$router.push("/");
 	}
 };

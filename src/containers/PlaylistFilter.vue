@@ -18,7 +18,7 @@
 			class="px-3 no-margin"
 			:enable-cross="false"
 			:marks="sliderRange"
-			@drag-end="filterChartData"
+			@change="filterChartData"
 		></vue-slider>
 	</div>
 </template>
@@ -27,6 +27,7 @@
 import LineGraph from "../components/LineGraph";
 import VueSlider from "vue-slider-component";
 import gsap from "gsap";
+import _ from "lodash";
 import "vue-slider-component/theme/default.css";
 export default {
 	components: {
@@ -37,6 +38,7 @@ export default {
 	data: function() {
 		return {
 			sliderRange: this.range,
+			//Start with all filters collapsed except for tempo
 			height: this.filter === "doubletime" ? 100 : 0,
 			collapsed: this.filter === "doubletime" ? false : true
 		};
@@ -57,13 +59,14 @@ export default {
 				this.collapsed = false;
 			}
 		},
-		filterChartData: function() {
+		filterChartData: _.throttle(function() {
+			//Emit event saying what changed, the scale it was using, and what the new values are.
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
 				scale: this.segmentSize,
 				filter: this.filter
 			});
-		}
+		}, 50)
 	},
 	mounted: function() {}
 };
