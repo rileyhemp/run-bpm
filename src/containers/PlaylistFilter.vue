@@ -13,6 +13,7 @@
 			v-show="!this.collapsed"
 			:min="range[0]"
 			:max="range[1]"
+			:dotSize="24"
 			v-model="sliderRange"
 			tooltip="none"
 			class="px-3 no-margin"
@@ -28,7 +29,7 @@ import LineGraph from "../components/LineGraph";
 import VueSlider from "vue-slider-component";
 import gsap from "gsap";
 import _ from "lodash";
-import "vue-slider-component/theme/default.css";
+import "vue-slider-component/theme/material.css";
 export default {
 	components: {
 		"line-graph": LineGraph,

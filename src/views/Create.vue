@@ -4,21 +4,15 @@
 		<v-row class="pr-4">
 			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
-			<v-btn color="primary" class="mr-2" :disabled="loading || !playlistName" @click="confirm = true">Create</v-btn>
+			<v-btn color="primary" class="mr-2" :disabled="loading" @click="confirm = true">Create</v-btn>
 		</v-row>
 		<v-row class="mt-6 mb-2 mx-4">
 			<p class="subtitle-1">Step 2 / 2</p>
 			<v-spacer />
 			<p class="subtitle-1">Refine your selection</p>
 		</v-row>
-		<v-row class="px-2">
-			<v-spacer />
-			<v-btn class="mr-4" icon @click="bars = true">
-				<v-icon :color="!bars ? 'default' : 'primary'">mdi-chart-bar</v-icon>
-			</v-btn>
-			<v-btn class="mr-4" icon @click="bars = false">
-				<v-icon :color="bars ? 'default' : 'primary'">mdi-chart-line</v-icon>
-			</v-btn>
+		<v-row class="mt-3 px-3">
+			<span class="mx-4 my-2 body-2">Selected: {{ songCount }} Tracks, {{ mixDuration }}</span>
 		</v-row>
 		<div v-if="mountFilters">
 			<playlist-filter
@@ -37,30 +31,54 @@
 				@filterChartData="updateFilters"
 			/>
 		</div>
-		<v-row class="mx-4 mt-8">
-			<v-text-field label="Title yor mix" hide-details="auto" v-model="playlistName" />
-		</v-row>
-		<v-row class="mt-3 px-3">
-			<span class="mx-4 my-2 body-2">{{ songCount }} Tracks {{ mixDuration }}</span>
-		</v-row>
 		<v-row>
 			<v-dialog v-model="confirm" width="300">
-				<v-card v-if="!loading">
+				<v-card v-if="!loading && !createNewPlaylist && !addToPlaylist" class="pb-8">
 					<v-card-actions>
 						<v-spacer />
-						<v-btn icon @click="confirm = false"><v-icon>mdi-close</v-icon></v-btn>
+						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
+					</v-card-actions>
+					<v-card-title class="subtitle-1 no-word-break">
+						What would you like to do?
+					</v-card-title>
+					<v-row class="mx-6 pb-8">
+						<b-btn text class="py-2" @click="createNewPlaylist = true">Create a new playlist</b-btn>
+						<b-btn text class="py-2" @click="addToPlaylist = true">Add selection to existing playlist</b-btn>
+					</v-row>
+				</v-card>
+				<v-card v-if="addToPlaylist" class="pb-8">
+					<v-card-actions>
+						<v-spacer />
+						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
+					</v-card-actions>
+					<v-card-title class="subtitle-1 no-word-break">
+						Add to existing playlist
+					</v-card-title>
+					<v-btn v-for="playlist in this.$attrs.userPlaylists.items" :key="playlist.id">{{ playlist.name }}</v-btn>
+					<!-- <p>{{ this.$attrs.userPlaylists.items[0].name }}</p> -->
+					<user-playlist v-for="playlist in this.$attrs.userPlaylists.items" :key="playlist.id">{{ playlist.name }}</user-playlist>
+				</v-card>
+				<v-card v-if="createNewPlaylist" class="pb-8">
+					<v-card-actions>
+						<v-spacer />
+						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
+					</v-card-actions>
+					<v-card-title class="subtitle-1 no-word-break">
+						Create playlist
+					</v-card-title>
+					<v-row class="mx-4 pb-8">
+						<v-text-field v-if="confirm" autofocus label="Enter a name" hide-details="auto" v-model="playlistName" />
+					</v-row>
+				</v-card>
+				<v-card v-if="!loading && playlistName">
+					<v-card-actions>
+						<v-spacer />
+						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
 					</v-card-actions>
 					<v-card-title class="subtitle-1 no-word-break">
 						Your playlist {{ playlistName }} will be added to your Spotify library.
 					</v-card-title>
 					<v-card-text>{{ songCount }} tracks {{ mixDuration }}</v-card-text>
-					<v-row class="d-flex flex-justify-start mx-7">
-						<div class="review-circle mr-2" />
-						<p class="body-1">{{ reviewCategory }}</p>
-					</v-row>
-					<v-row class="d-flex flex-justify-center">
-						<radar-chart v-if="this.chartsReady" :chartData="this.chartData" :key="renderKey" @chartClicked="handleChartClick" />
-					</v-row>
 					<v-card-text>Are you finished with this selection?</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
@@ -94,17 +112,17 @@
 <script>
 import features from "@/assets/temp-features";
 import PlaylistFilter from "../containers/PlaylistFilter";
-import RadarChart from "../components/RadarChart";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
+import Playlist from "../containers/Playlist";
 
 export default {
 	name: "create-playlist",
 	components: {
 		"playlist-filter": PlaylistFilter,
-		"radar-chart": RadarChart
+		"user-playlist": Playlist
 	},
 	data: function() {
 		return {
@@ -116,6 +134,8 @@ export default {
 			chartsReady: false,
 			renderKey: 1,
 			playlistName: undefined,
+			createNewPlaylist: false,
+			addToPlaylist: false,
 			finishedWithSelection: false,
 			confirm: false,
 			mountFilters: false,
@@ -199,6 +219,10 @@ export default {
 		}
 	},
 	methods: {
+		closeModal() {
+			this.confirm = false;
+			this.createNewPlaylist = false;
+		},
 		createPlaylistFromSelection() {
 			return new Promise((resolve, reject) => {
 				//Get array of selected track's IDs.
