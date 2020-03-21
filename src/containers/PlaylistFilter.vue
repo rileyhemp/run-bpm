@@ -1,6 +1,16 @@
 <template>
 	<div class="filter-container" :class="collapsed ? 'mx-4 py-0 mt-2' : 'mx-4 pb-4 mb-8 pt-2'">
-		<p class="overline" @click="collapse" :class="collapsed ? 'no-margin' : null">{{ name }}</p>
+		<p class="overline" :class="collapsed ? 'no-margin' : null">
+			{{ name }}
+			<v-tooltip right v-model="tooltip" v-show="name === 'valence'">
+				<template v-slot:activator="{}" class="mr-4">
+					<v-btn icon v-show="name === 'valence'" @click="tooltip = !tooltip">
+						<v-icon>mdi-help-circle-outline</v-icon>
+					</v-btn>
+				</template>
+				<span>Describes the musical positiveness conveyed by a track. </span>
+			</v-tooltip>
+		</p>
 		<line-graph
 			:collapsed="collapsed"
 			:type="bars ? 'bar' : 'trend'"
@@ -40,8 +50,9 @@ export default {
 		return {
 			sliderRange: this.range,
 			//Start with all filters collapsed except for tempo
-			height: this.filter === "doubletime" ? 100 : 0,
-			collapsed: this.filter === "doubletime" ? false : true
+			height: this.filter === "doubletime" ? 100 : 50,
+			collapsed: false,
+			tooltip: false
 		};
 	},
 	methods: {

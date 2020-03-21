@@ -6,14 +6,16 @@
 			<v-spacer />
 			<v-btn color="primary" class="mr-2" :disabled="loading" @click="confirm = true">Create</v-btn>
 		</v-row>
-		<v-row class="mt-6 mb-2 mx-4">
+		<v-row class="mt-6 mx-4">
 			<p class="subtitle-1">Step 2 / 2</p>
 			<v-spacer />
 			<p class="subtitle-1">Refine your selection</p>
 		</v-row>
-		<v-row class="mt-3 px-3">
+		<v-row class="px-3">
+			<span class="mx-4 body-2">Use the sliders below to refine your selection. When you are finished, click create.</span>
 			<span class="mx-4 my-2 body-2">Selected: {{ songCount }} Tracks, {{ mixDuration }}</span>
 		</v-row>
+		<v-row class="px-3"> </v-row>
 		<div v-if="mountFilters">
 			<playlist-filter
 				v-for="filter in filters"
@@ -304,7 +306,6 @@ export default {
 					let segment = {};
 					let tracks = 0;
 					//Count how many tracks are in each segment
-
 					this.selectedTracks.forEach(track => {
 						track.features[el] * multiplier >= i && track.features[el] * multiplier < i + filter.segmentSize ? tracks++ : null;
 					});
@@ -351,6 +352,7 @@ export default {
 	mounted: function() {
 		this.updateUserInfo();
 		let playlists = [];
+		//Checks for tracks in params (coming from import) or in localstorage (incase of refresh)
 		if (this.$route.params.playlists || localStorage.playlists) {
 			if (localStorage.playlists && !this.$route.params.playlists) {
 				playlists = JSON.parse(localStorage.playlists);
@@ -359,6 +361,7 @@ export default {
 				localStorage.setItem("playlists", JSON.stringify(playlists));
 			}
 			setTimeout(10);
+			//Gets audio features for selected tracks
 			this.$http
 				.post("http://192.168.1.215:3000/analyze-tracks", {
 					data: {
@@ -367,6 +370,7 @@ export default {
 					}
 				})
 				.then(response => {
+					//Creates one array with both audio features and track details
 					this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
 						return { track: a.track, features: b };
 					});
