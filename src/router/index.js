@@ -4,6 +4,7 @@ import Connect from "../views/Connect.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Import from "../views/Import.vue";
 import Create from "../views/Create.vue";
+import Save from "../views/Save.vue";
 import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
@@ -30,6 +31,12 @@ const routes = [
 				name: "Create",
 				component: Create,
 				meta: { requiresAuth: true }
+			},
+			{
+				path: "/save",
+				name: "Save",
+				component: Save,
+				meta: { requiresAuth: true }
 			}
 		]
 	},
@@ -52,7 +59,13 @@ router.beforeEach((to, from, next) => {
 				next({
 					name: "Dashboard"
 				});
-			} else next();
+			}
+			// else if (to.name === "Save" && from.name !== "Create") {
+			// 	next({
+			// 		name: "Dashboard"
+			// 	});
+			// }
+			else next();
 		} else {
 			next({
 				path: "/connect"

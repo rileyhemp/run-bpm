@@ -2,44 +2,43 @@
 <template>
 	<v-container fluid>
 		<v-row class="pr-4">
-			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
-			<v-spacer />
-			<v-btn color="primary" class="mr-2" :disabled="loading" @click="confirm = true">Create</v-btn>
+			<v-btn text class="ml-4" @click="() => this.$router.push('Create')">Back</v-btn>
 		</v-row>
 		<v-row class="mt-6 mx-4">
-			<p class="subtitle-1">Step 2 / 2</p>
+			<p class="subtitle-1">Step 3 / 3</p>
 			<v-spacer />
-			<p class="subtitle-1">Filter tracks</p>
+			<p class="subtitle-1">Review and save</p>
 		</v-row>
-		<v-row class="px-3">
-			<span class="mx-4 body-2">Drag the sliders to refine your selection. When you're finished, tap create.</span>
-			<span class="mx-4 my-2 subtitle-1">Selected: {{ songCount }} Tracks, {{ mixDuration }}</span>
+		<v-row class="mx-4 ">
+			<span class="subtitle-1">What would you like to do?</span>
+			<v-btn
+				class="my-2"
+				:color="createNewPlaylist ? 'primary' : 'default'"
+				@click="
+					createNewPlaylist = true;
+					addToPlaylist = false;
+				"
+				block
+				>Create a new playlist</v-btn
+			>
+			<v-btn
+				class="my-2"
+				:color="addToPlaylist ? 'primary' : 'default'"
+				@click="
+					addToPlaylist = true;
+					createNewPlaylist = false;
+				"
+				block
+				>Add to an existing playlist</v-btn
+			>
 		</v-row>
-		<v-row class="px-3"> </v-row>
-		<div v-if="mountFilters">
-			<playlist-filter
-				v-for="filter in filters"
-				:showMoreFilters="showMoreFilters"
-				:bars="bars"
-				:key="filter.key"
-				:renderKey="renderKey"
-				:tracks="audioFeatures"
-				:name="filter.name"
-				:filter="filter.id"
-				:filters="filters"
-				:range="[filter.defaultRange[0], filter.defaultRange[1]]"
-				:segmentSize="filter.segmentSize"
-				:chartData="chartData[filter.id]"
-				:chartReady="chartsReady"
-				@filterChartData="updateFilters"
-			/>
-		</div>
+		<v-row v-if="createNewPlaylist" class="mx-4 pb-8 pt-4">
+			<v-text-field autofocus label="Enter a name" hide-details="auto" v-model="playlistName" />
+		</v-row>
+		<v-row class="mx-4" v-if="createNewPlaylist"><v-btn color="primary" class="mr-2" @click="confirm = true" block>Create</v-btn> </v-row>
 		<v-row>
-			<v-btn text class="ml-4 plain-btn" @click="showMoreFilters = !showMoreFilters">{{
-				!showMoreFilters ? "More filters" : "Show less"
-			}}</v-btn>
 			<v-dialog v-model="confirm" width="300">
-				<v-card v-if="!loading && !createNewPlaylist && !addToPlaylist" class="pb-8">
+				<v-card v-if="!loading" class="pb-8">
 					<v-card-actions>
 						<v-spacer />
 						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
@@ -117,7 +116,6 @@
 
 <script>
 import features from "@/assets/temp-features";
-import PlaylistFilter from "../containers/PlaylistFilter";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
@@ -127,12 +125,10 @@ import Playlist from "../containers/Playlist";
 export default {
 	name: "create-playlist",
 	components: {
-		"playlist-filter": PlaylistFilter,
 		"user-playlist": Playlist
 	},
 	data: function() {
 		return {
-			//features.data
 			loading: false,
 			bars: true,
 			audioFeatures: features,
@@ -140,51 +136,13 @@ export default {
 			chartsReady: false,
 			renderKey: 1,
 			playlistName: undefined,
-			createNewPlaylist: false,
+			createNewPlaylist: true,
 			addToPlaylist: false,
 			finishedWithSelection: false,
 			showMoreFilters: false,
 			confirm: false,
 			mountFilters: false,
-			reviewCategory: null,
-			filters: {
-				doubletime: {
-					//Beats per minute
-					range: [100, 200], //Current selected range
-					defaultRange: [100, 200], //Starting range selection
-					segmentSize: 10, //E.g 10bpm per block. Lowering this creates a more granular selection
-					name: "beats per minute",
-					id: "doubletime"
-				},
-				energy: {
-					range: [0, 100],
-					defaultRange: [0, 100],
-					segmentSize: 10,
-					name: "energy",
-					id: "energy"
-				},
-				instrumentalness: {
-					range: [0, 100],
-					defaultRange: [0, 100],
-					segmentSize: 10,
-					name: "instrumentalness",
-					id: "instrumentalness"
-				},
-				danceability: {
-					range: [0, 100],
-					defaultRange: [0, 100],
-					segmentSize: 10,
-					name: "danceability",
-					id: "danceability"
-				},
-				valence: {
-					range: [0, 100],
-					defaultRange: [0, 100],
-					segmentSize: 10,
-					name: "valence",
-					id: "valence"
-				}
-			}
+			reviewCategory: null
 		};
 	},
 	computed: {
@@ -401,26 +359,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.plain-btn:hover:before {
-	background-color: transparent;
-}
-.no-word-break {
-	word-break: keep-all;
-}
-.filter-container-sm {
-	height: 100px;
-}
-.review-circle {
-	height: 25px;
-	width: 25px;
-	border-radius: 50%;
-	background-color: rgba(0, 0, 0, 0.3);
-}
-</style>
-
-<style>
-.add-photo .v-input__control .v-input__slot:before {
-	border: none !important;
-}
-</style>
+<style scoped></style>
