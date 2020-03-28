@@ -163,6 +163,13 @@ export default {
 					name: "energy",
 					id: "energy"
 				},
+				instrumentalness: {
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
+					name: "instrumentalness",
+					id: "instrumentalness"
+				},
 				danceability: {
 					range: [0, 100],
 					defaultRange: [0, 100],
@@ -187,6 +194,8 @@ export default {
 				if (
 					track.features.doubletime >= this.filters.doubletime.range[0] &&
 					track.features.doubletime <= this.filters.doubletime.range[1] &&
+					track.features.instrumentalness >= this.filters.instrumentalness.range[0] / 100 &&
+					track.features.instrumentalness <= this.filters.instrumentalness.range[1] / 100 &&
 					track.features.danceability >= this.filters.danceability.range[0] / 100 &&
 					track.features.danceability <= this.filters.danceability.range[1] / 100 &&
 					track.features.energy >= this.filters.energy.range[0] / 100 &&

@@ -53,8 +53,7 @@ export default {
 	data: function() {
 		return {
 			sliderRange: this.range,
-			//Start with all filters collapsed except for tempo
-			height: this.filter === "doubletime" ? 100 : 50,
+			height: this.filter === "doubletime" ? 100 : 50, //Makes bpm chart taller then the others
 			collapsed: false,
 			tooltip: false
 		};
