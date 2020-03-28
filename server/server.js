@@ -275,24 +275,57 @@ app.get("/player", async (req, res) => {
 function createPlaylist(userID, playlistName, trackIDs, metadata, api, image) {
 	return new Promise((resolve, reject) => {
 		//Create the playlist
-		api.createPlaylist(userID, playlistName)
-			.then(response => {
-				//Add tracks to the playlist
-				const playlistID = response.body.id;
-				api.changePlaylistDetails(playlistID, { description: "Made with Run BPM" });
-				api.addTracksToPlaylist(playlistID, getURIsFromIDs(trackIDs))
-					.then(response => {
-						//Save the playlist to apps database
-						const db = new UserDB(DatabasePath);
-						db.savePlaylist(playlistID, userID, trackIDs, metadata)
-							.then(response => {
+		api.createPlaylist(userID, playlistName).then(response => {
+			//Get the new playlists' ID
+			const playlistID = response.body.id;
+
+			//Break the track IDs into arrays of 100.
+			chunkedTrackIDs = _.chunk(getURIsFromIDs(trackIDs), 100);
+
+			//Create array to catch the promises if uploading multiple chunks
+			const addedTracks = [];
+
+			//Add playlist description
+			api.changePlaylistDetails(playlistID, { description: "Made with Run BPM" });
+
+			//Add tracks to playlist
+			for (let i = 0; i < chunkedTrackIDs.length; i++) {
+				addedTracks.push(
+					new Promise((resolve, reject) => {
+						api.addTracksToPlaylist(playlistID, chunkedTrackIDs[i])
+							.then(data => {
 								resolve();
 							})
-							.catch(err => reject(err.message));
+							.catch(err => reject(err));
 					})
-					.catch(err => reject(err.message));
-			})
-			.catch(err => reject(err.message));
+				);
+			}
+			Promise.all(addedTracks)
+				.then(response => {
+					//Save the playlist to apps database
+					const db = new UserDB(DatabasePath);
+					db.savePlaylist(playlistID, userID, trackIDs, metadata)
+						.then(response => {
+							resolve();
+						})
+						.catch(err => reject(err.message));
+				})
+				.catch(err => reject(err.message));
+
+			// 	api.addTracksToPlaylist(playlistID, getURIsFromIDs(trackIDs))
+			// 		.then(response => {
+			// 			//Save the playlist to apps database
+			// 			const db = new UserDB(DatabasePath);
+			// 			db.savePlaylist(playlistID, userID, trackIDs, metadata)
+			// 				.then(response => {
+			// 					resolve();
+			// 				})
+			// 				.catch(err => reject(err.message));
+			// 		})
+			// 		.catch(err => reject(err.message));
+			// })
+			// .catch(err => reject(err.message));
+		});
 	});
 }
 

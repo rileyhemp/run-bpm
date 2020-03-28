@@ -170,6 +170,7 @@ export default {
 				const metadata = JSON.stringify(this.playlistMetadata);
 				//Get array of selected track's IDs.
 				const trackIDs = getIDsFromDetails(this.playlistTracks);
+				console.log(trackIDs);
 				this.$emit("loading");
 				// Create the playlist
 				this.$http
@@ -182,7 +183,8 @@ export default {
 							credentials: localStorage.RunBPM
 						}
 					})
-					.then(() => {
+					.then(res => {
+						console.log(res);
 						this.updateUserInfo();
 						//Check to see if user info has updated before resolving promise
 						let i = setInterval(() => {
