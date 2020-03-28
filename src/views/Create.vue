@@ -13,7 +13,7 @@
 		</v-row>
 		<v-row class="px-3">
 			<span class="mx-4 body-2">Use the sliders below to refine your selection. When you are finished, click create.</span>
-			<span class="mx-4 my-2 body-2">Selected: {{ songCount }} Tracks, {{ mixDuration }}</span>
+			<span class="mx-4 my-2 subtitle-1">Selected: {{ songCount }} Tracks, {{ mixDuration }}</span>
 		</v-row>
 		<v-row class="px-3"> </v-row>
 		<div v-if="mountFilters">
@@ -35,6 +35,9 @@
 			/>
 		</div>
 		<v-row>
+			<v-btn text class="ml-4 plain-btn" @click="showMoreFilters = !showMoreFilters">{{
+				!showMoreFilters ? "More filters" : "Show less"
+			}}</v-btn>
 			<v-dialog v-model="confirm" width="300">
 				<v-card v-if="!loading && !createNewPlaylist && !addToPlaylist" class="pb-8">
 					<v-card-actions>

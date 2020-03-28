@@ -6,14 +6,14 @@
 	>
 		<p class="overline" :class="collapsed ? 'no-margin' : null">
 			{{ name }}
-			<v-tooltip right v-model="tooltip" v-show="name === 'valence'">
-				<template v-slot:activator="{}" class="mr-4">
-					<v-btn icon v-show="name === 'valence'" @click="tooltip = !tooltip">
-						<v-icon>mdi-help-circle-outline</v-icon>
-					</v-btn>
-				</template>
-				<span>Describes the musical positiveness conveyed by a track. </span>
-			</v-tooltip>
+
+			<v-btn icon v-show="name === 'valence'" v-if="!tooltip" @click="tooltip = true">
+				<v-icon>mdi-help-circle-outline</v-icon>
+			</v-btn>
+			<span v-if="tooltip" class="overline"
+				>: Describes the musical positiveness conveyed by a track.
+				<span @click="tooltip = false" style="text-decoration: underline">Close</span></span
+			>
 		</p>
 		<line-graph
 			:collapsed="collapsed"
