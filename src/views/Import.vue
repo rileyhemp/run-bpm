@@ -10,16 +10,6 @@
 			<v-spacer />
 			<p class="subtitle-1">Select one or more playlists</p>
 		</v-row>
-		<p class="body-1 ma-2">Your playlists</p>
-		<v-row class="mx-1 mt-3" dense>
-			<playlist-card
-				v-for="playlist in this.$attrs.userPlaylists.items"
-				:key="playlist.id"
-				:playlist="playlist"
-				:selected="selected"
-				@click.native="selectPlaylist(playlist.id)"
-			/>
-		</v-row>
 		<v-row class="d-flex align-center mx-1 mt-2">
 			<v-text-field v-model="query" class="mx-2" append-icon="mdi-magnify" @keydown="handleKeydown" @click:append="doSearch">
 				<template v-slot:label>Search playlists</template>
@@ -33,6 +23,16 @@
 				:playlist="playlist"
 				:selected="selected"
 				@selected="selectPlaylist(playlist.id)"
+			/>
+		</v-row>
+		<p class="body-1 ma-2">Your playlists</p>
+		<v-row class="mx-1 mt-3" dense>
+			<playlist-card
+				v-for="playlist in this.$attrs.userPlaylists.items"
+				:key="playlist.id"
+				:playlist="playlist"
+				:selected="selected"
+				@click.native="selectPlaylist(playlist.id)"
 			/>
 		</v-row>
 	</v-container>

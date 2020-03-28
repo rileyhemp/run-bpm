@@ -1,15 +1,15 @@
 // eslint-disable-file
 <template>
 	<v-container fluid>
-		<v-row class="pr-4">
+		<v-row>
 			<v-btn text class="ml-4" @click="() => this.$router.push('Create')">Back</v-btn>
 		</v-row>
-		<v-row class="mt-6 mx-4">
+		<v-row class="mt-6 px-4">
 			<p class="subtitle-1">Step 3 / 3</p>
 			<v-spacer />
 			<p class="subtitle-1">Review and save</p>
 		</v-row>
-		<v-row class="mx-4 ">
+		<v-row class="px-4 ">
 			<span class="subtitle-1">What would you like to do?</span>
 			<v-btn
 				class="my-2"
@@ -32,10 +32,23 @@
 				>Add to an existing playlist</v-btn
 			>
 		</v-row>
-		<v-row v-if="createNewPlaylist" class="mx-4 pb-8 pt-4">
+		<v-row v-if="createNewPlaylist" class="px-4 pb-8 pt-4">
 			<v-text-field autofocus label="Enter a name" hide-details="auto" v-model="playlistName" />
 		</v-row>
-		<v-row class="mx-4" v-if="createNewPlaylist"><v-btn color="primary" class="mr-2" @click="confirm = true" block>Create</v-btn> </v-row>
+		<v-row class="px-4" v-if="createNewPlaylist"
+			><v-btn
+				color="primary"
+				class="mr-2"
+				@click="
+					() => {
+						this.createPlaylistFromSelection().then(() => this.$router.push('/'));
+					}
+				"
+				block
+				>Create</v-btn
+			>
+		</v-row>
+
 		<v-row>
 			<v-dialog v-model="confirm" width="300">
 				<v-card v-if="!loading" class="pb-8">
@@ -83,7 +96,6 @@
 					<v-card-title class="subtitle-1 no-word-break">
 						Your playlist {{ playlistName }} will be added to your Spotify library.
 					</v-card-title>
-					<v-card-text>{{ songCount }} tracks {{ mixDuration }}</v-card-text>
 					<v-card-text>Are you finished with this selection?</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
@@ -117,13 +129,12 @@
 <script>
 import features from "@/assets/temp-features";
 import "vue-slider-component/theme/default.css";
-import _ from "lodash";
-import msToHMS from "@/scripts/msToHMS";
+// import _ from "lodash";
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 import Playlist from "../containers/Playlist";
 
 export default {
-	name: "create-playlist",
+	name: "save-playlist",
 	components: {
 		"user-playlist": Playlist
 	},
@@ -142,57 +153,10 @@ export default {
 			showMoreFilters: false,
 			confirm: false,
 			mountFilters: false,
-			reviewCategory: null
+			reviewCategory: null,
+			playlistTracks: Object,
+			playlistMetadata: Object
 		};
-	},
-	computed: {
-		selectedTracks: function() {
-			//Decides which tracks meet all selected filters and adds to an array
-			let tracksArray = [];
-			this.audioFeatures.forEach(track => {
-				if (
-					track.features.doubletime >= this.filters.doubletime.range[0] &&
-					track.features.doubletime <= this.filters.doubletime.range[1] &&
-					track.features.instrumentalness >= this.filters.instrumentalness.range[0] / 100 &&
-					track.features.instrumentalness <= this.filters.instrumentalness.range[1] / 100 &&
-					track.features.danceability >= this.filters.danceability.range[0] / 100 &&
-					track.features.danceability <= this.filters.danceability.range[1] / 100 &&
-					track.features.energy >= this.filters.energy.range[0] / 100 &&
-					track.features.energy <= this.filters.energy.range[1] / 100 &&
-					track.features.valence >= this.filters.valence.range[0] / 100 &&
-					track.features.valence <= this.filters.valence.range[1] / 100
-				)
-					tracksArray.push(track);
-			});
-			return tracksArray;
-		},
-		songCount: function() {
-			return this.selectedTracks.length;
-		},
-		mixDuration: function() {
-			let totalLength = 0;
-			this.selectedTracks.forEach(track => {
-				totalLength += track.track.duration_ms;
-			});
-			//Convert time in ms to hours minutes seconds and return
-			return msToHMS(totalLength);
-		},
-		tempos: function() {
-			let tempos = [];
-			this.selectedTracks.map(el => {
-				tempos.push(el.features.tempo);
-			});
-			return tempos;
-		},
-		lowBPM: function() {
-			return _.min(this.tempos);
-		},
-		highBPM: function() {
-			return _.max(this.tempos);
-		},
-		filterArray: function() {
-			return Object.entries(this.filters);
-		}
 	},
 	methods: {
 		closeModal() {
@@ -201,18 +165,13 @@ export default {
 		},
 		createPlaylistFromSelection() {
 			return new Promise((resolve, reject) => {
+				//Add playlist name to metadata
+				this.playlistMetadata.name = this.playlistName;
+				const metadata = JSON.stringify(this.playlistMetadata);
 				//Get array of selected track's IDs.
-				const trackIDs = getIDsFromDetails(this.selectedTracks);
-				//Collect metadata
-				const metadata = JSON.stringify({
-					name: this.playlistName,
-					lowBPM: this.lowBPM,
-					highBPM: this.highBPM,
-					tracks: this.songCount,
-					duration: this.mixDuration
-				});
+				const trackIDs = getIDsFromDetails(this.playlistTracks);
 				this.$emit("loading");
-				//Create the playlist
+				// Create the playlist
 				this.$http
 					.post("http://192.168.1.215:3000/playlists", {
 						data: {
@@ -318,43 +277,9 @@ export default {
 							: null;
 		}
 	},
-	watch: {
-		selectedTracks() {
-			this.initChartData();
-		}
-	},
 	mounted: function() {
-		this.updateUserInfo();
-		let playlists = [];
-		//Checks for tracks in params (coming from import) or in localstorage (incase of refresh)
-		if (this.$route.params.playlists || localStorage.playlists) {
-			if (localStorage.playlists && !this.$route.params.playlists) {
-				playlists = JSON.parse(localStorage.playlists);
-			} else {
-				playlists = this.$route.params.playlists;
-				localStorage.setItem("playlists", JSON.stringify(playlists));
-			}
-			setTimeout(10);
-			//Gets audio features for selected tracks
-			this.$http
-				.post("http://192.168.1.215:3000/analyze-tracks", {
-					data: {
-						playlists: playlists,
-						credentials: localStorage.RunBPM
-					}
-				})
-				.then(response => {
-					//Creates one array with both audio features and track details
-					this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
-						return { track: a.track, features: b };
-					});
-					this.convertToDoubletime();
-					this.initChartData();
-				})
-				.catch(err => {
-					console.log(err);
-				});
-		} else this.$router.push("/");
+		this.playlistMetadata = JSON.parse(localStorage.playlistMetadata);
+		this.playlistTracks = JSON.parse(localStorage.playlistTracks);
 	}
 };
 </script>

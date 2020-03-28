@@ -4,7 +4,7 @@
 		<v-row class="pr-4">
 			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
-			<v-btn color="primary" class="mr-2" :disabled="loading" @click="confirm = true">Create</v-btn>
+			<v-btn color="primary" class="mr-2" :disabled="loading" @click="savePlaylist">Create</v-btn>
 		</v-row>
 		<v-row class="mt-6 mx-4">
 			<p class="subtitle-1">Step 2 / 2</p>
@@ -121,7 +121,7 @@ import PlaylistFilter from "../containers/PlaylistFilter";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
-import getIDsFromDetails from "@/scripts/getIDsFromDetails";
+// import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 import Playlist from "../containers/Playlist";
 
 export default {
@@ -241,46 +241,59 @@ export default {
 			this.confirm = false;
 			this.createNewPlaylist = false;
 		},
-		createPlaylistFromSelection() {
-			return new Promise((resolve, reject) => {
-				//Get array of selected track's IDs.
-				const trackIDs = getIDsFromDetails(this.selectedTracks);
-				//Collect metadata
-				const metadata = JSON.stringify({
-					name: this.playlistName,
-					lowBPM: this.lowBPM,
-					highBPM: this.highBPM,
-					tracks: this.songCount,
-					duration: this.mixDuration
-				});
-				this.$emit("loading");
-				//Create the playlist
-				this.$http
-					.post("http://192.168.1.215:3000/playlists", {
-						data: {
-							userID: this.$attrs.user.id,
-							trackIDs: trackIDs,
-							metadata: metadata,
-							name: this.playlistName,
-							credentials: localStorage.RunBPM
-						}
-					})
-					.then(() => {
-						this.updateUserInfo();
-						//Check to see if user info has updated before resolving promise
-						let i = setInterval(() => {
-							if (!this.$attrs.loading) {
-								clearInterval(i);
-								resolve();
-							}
-						}, 20);
-					})
-					.catch(err => {
-						console.log("Something went wrong", err);
-						this.loading = false;
-						reject();
-					});
+		savePlaylist() {
+			const metadata = JSON.stringify({
+				lowBPM: this.lowBPM,
+				highBPM: this.highBPM,
+				tracks: this.songCount,
+				duration: this.mixDuration
 			});
+			const selectedTracks = JSON.stringify(this.selectedTracks);
+			localStorage.setItem("playlistMetadata", metadata);
+			localStorage.setItem("playlistTracks", selectedTracks);
+			this.$router.push("Save");
+		},
+		createPlaylistFromSelection() {
+			this.$emit("storePlaylistInfo", "yoyo");
+			// return new Promise((resolve, reject) => {
+			// 	//Get array of selected track's IDs.
+			// 	const trackIDs = getIDsFromDetails(this.selectedTracks);
+			// 	//Collect metadata
+			// 	const metadata = JSON.stringify({
+			// 		name: this.playlistName,
+			// 		lowBPM: this.lowBPM,
+			// 		highBPM: this.highBPM,
+			// 		tracks: this.songCount,
+			// 		duration: this.mixDuration
+			// 	});
+			// 	this.$emit("loading");
+			// 	//Create the playlist
+			// 	this.$http
+			// 		.post("http://192.168.1.215:3000/playlists", {
+			// 			data: {
+			// 				userID: this.$attrs.user.id,
+			// 				trackIDs: trackIDs,
+			// 				metadata: metadata,
+			// 				name: this.playlistName,
+			// 				credentials: localStorage.RunBPM
+			// 			}
+			// 		})
+			// 		.then(() => {
+			// 			this.updateUserInfo();
+			// 			//Check to see if user info has updated before resolving promise
+			// 			let i = setInterval(() => {
+			// 				if (!this.$attrs.loading) {
+			// 					clearInterval(i);
+			// 					resolve();
+			// 				}
+			// 			}, 20);
+			// 		})
+			// 		.catch(err => {
+			// 			console.log("Something went wrong", err);
+			// 			this.loading = false;
+			// 			reject();
+			// 		});
+			// });
 		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
