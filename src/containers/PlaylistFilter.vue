@@ -1,5 +1,9 @@
 <template>
-	<div class="filter-container" :class="collapsed ? 'mx-4 py-0 mt-2' : 'mx-4 pb-4 mb-8 pt-2'">
+	<div
+		class="filter-container"
+		:class="collapsed ? 'mx-4 py-0 mt-2' : 'mx-4 pb-4 mb-8 pt-2'"
+		v-show="name === 'beats per minute' || showMoreFilters"
+	>
 		<p class="overline" :class="collapsed ? 'no-margin' : null">
 			{{ name }}
 			<v-tooltip right v-model="tooltip" v-show="name === 'valence'">
@@ -45,7 +49,7 @@ export default {
 		"line-graph": LineGraph,
 		VueSlider
 	},
-	props: ["tracks", "name", "bars", "filter", "range", "segmentSize", "filters", "chartData", "chartReady", "id", "renderKey"],
+	props: ["tracks", "name", "bars", "filter", "range", "segmentSize", "filters", "showMoreFilters", "chartData", "chartReady", "id", "renderKey"],
 	data: function() {
 		return {
 			sliderRange: this.range,

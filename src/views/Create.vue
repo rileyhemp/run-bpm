@@ -19,6 +19,7 @@
 		<div v-if="mountFilters">
 			<playlist-filter
 				v-for="filter in filters"
+				:showMoreFilters="showMoreFilters"
 				:bars="bars"
 				:key="filter.key"
 				:renderKey="renderKey"
@@ -139,14 +140,16 @@ export default {
 			createNewPlaylist: false,
 			addToPlaylist: false,
 			finishedWithSelection: false,
+			showMoreFilters: false,
 			confirm: false,
 			mountFilters: false,
 			reviewCategory: null,
 			filters: {
 				doubletime: {
-					range: [100, 200],
-					defaultRange: [100, 200],
-					segmentSize: 10,
+					//Beats per minute
+					range: [100, 200], //Current selected range
+					defaultRange: [100, 200], //Starting range selection
+					segmentSize: 10, //E.g 10bpm per block. Lowering this creates a more granular selection
 					name: "beats per minute",
 					id: "doubletime"
 				},
