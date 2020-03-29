@@ -65,9 +65,10 @@
 						<v-spacer />
 						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
 					</v-row>
-					<v-card-title class="subtitle-1 no-word-break">
+					<v-card-title class="subtitle-1 no-word-break" v-if="!success">
 						Add {{ playlistMetadata.tracks }} tracks to {{ playlistToUpdate.name }}?
 					</v-card-title>
+					<v-card-title class="subtitle-1 no-word-break" v-if="success"> Tracks added successfully </v-card-title>
 					<v-row class="px-8 mt-2">
 						<v-btn
 							block
@@ -75,10 +76,12 @@
 							color="primary"
 							@click="
 								() => {
-									this.addToExistingPlaylist().then(() => this.$router.push('/'));
+									if (!success) {
+										this.addToExistingPlaylist().then(() => (this.success = true));
+									} else this.$router.push('/');
 								}
 							"
-							>Okay</v-btn
+							>{{ !success ? "Okay" : "Return Home" }}</v-btn
 						>
 					</v-row>
 				</v-card>
@@ -106,7 +109,7 @@ export default {
 			renderKey: 1,
 			playlistName: undefined,
 			createNewPlaylist: false,
-			addToPlaylist: true,
+			addToPlaylist: false,
 			finishedWithSelection: false,
 			showMoreFilters: false,
 			confirm: false,
@@ -114,7 +117,8 @@ export default {
 			reviewCategory: null,
 			playlistTracks: Object,
 			playlistMetadata: Object,
-			playlistToUpdate: Object
+			playlistToUpdate: Object,
+			success: false
 		};
 	},
 	methods: {
