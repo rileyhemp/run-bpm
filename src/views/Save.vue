@@ -99,7 +99,7 @@
 <script>
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 import PlaylistCardVue from "../components/PlaylistCard.vue";
-
+import _ from "lodash";
 export default {
 	name: "save-playlist",
 	components: {
@@ -152,9 +152,15 @@ export default {
 					})
 					.then(res => {
 						console.log(res);
+						//Filters out duplicates
+						const targetPlaylistTrackIDs = res.data;
 						const trackIDs = getIDsFromDetails(this.playlistTracks);
+						console.log(trackIDs);
+						console.log(targetPlaylistTrackIDs);
+						const uniqueTracks = _.difference(trackIDs, targetPlaylistTrackIDs);
+						console.log(uniqueTracks.length);
 						this.$http
-							.put("http://192.168.1.215:3000/playlistss", {
+							.put("http://192.168.1.215:3000/playlists", {
 								data: {
 									trackIDs: trackIDs,
 									targetPlaylist: this.playlistToUpdate,
