@@ -10,10 +10,7 @@
 			<v-btn icon v-show="name === 'valence'" v-if="!tooltip" @click="tooltip = true">
 				<v-icon>mdi-help-circle-outline</v-icon>
 			</v-btn>
-			<span v-if="tooltip" class="overline"
-				>: Describes the musical positiveness conveyed by a track.
-				<span @click="tooltip = false" style="text-decoration: underline">Close</span></span
-			>
+			<span v-if="tooltip" @click="tooltip = false" class="overline">: Describes the musical positiveness conveyed by a track. </span>
 		</p>
 		<line-graph
 			:collapsed="collapsed"
@@ -53,7 +50,7 @@ export default {
 	data: function() {
 		return {
 			sliderRange: this.range,
-			height: this.filter === "doubletime" ? 100 : 50, //Makes bpm chart taller then the others
+			height: this.filter === "doubletime" ? 100 : 75, //Makes bpm chart taller then the others
 			collapsed: false,
 			tooltip: false
 		};

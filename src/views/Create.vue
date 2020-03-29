@@ -38,79 +38,6 @@
 			<v-btn text class="ml-4 plain-btn" @click="showMoreFilters = !showMoreFilters">{{
 				!showMoreFilters ? "More filters" : "Show less"
 			}}</v-btn>
-			<v-dialog v-model="confirm" width="300">
-				<v-card v-if="!loading && !createNewPlaylist && !addToPlaylist" class="pb-8">
-					<v-card-actions>
-						<v-spacer />
-						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-card-actions>
-					<v-card-title class="subtitle-1 no-word-break">
-						What would you like to do?
-					</v-card-title>
-					<v-row class="mx-6 pb-8">
-						<b-btn text class="py-2" @click="createNewPlaylist = true">Create a new playlist</b-btn>
-						<b-btn text class="py-2" @click="addToPlaylist = true">Add selection to existing playlist</b-btn>
-					</v-row>
-				</v-card>
-				<v-card v-if="addToPlaylist" class="pb-8">
-					<v-card-actions>
-						<v-spacer />
-						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-card-actions>
-					<v-card-title class="subtitle-1 no-word-break">
-						Add to existing playlist
-					</v-card-title>
-					<v-btn v-for="playlist in this.$attrs.userPlaylists.items" :key="playlist.id">{{ playlist.name }}</v-btn>
-					<!-- <p>{{ this.$attrs.userPlaylists.items[0].name }}</p> -->
-					<user-playlist v-for="playlist in this.$attrs.userPlaylists.items" :key="playlist.id">{{ playlist.name }}</user-playlist>
-				</v-card>
-				<v-card v-if="createNewPlaylist" class="pb-8">
-					<v-card-actions>
-						<v-spacer />
-						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-card-actions>
-					<v-card-title class="subtitle-1 no-word-break">
-						Create playlist
-					</v-card-title>
-					<v-row class="mx-4 pb-8">
-						<v-text-field v-if="confirm" autofocus label="Enter a name" hide-details="auto" v-model="playlistName" />
-					</v-row>
-				</v-card>
-				<v-card v-if="!loading && playlistName">
-					<v-card-actions>
-						<v-spacer />
-						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-card-actions>
-					<v-card-title class="subtitle-1 no-word-break">
-						Your playlist {{ playlistName }} will be added to your Spotify library.
-					</v-card-title>
-					<v-card-text>{{ songCount }} tracks {{ mixDuration }}</v-card-text>
-					<v-card-text>Are you finished with this selection?</v-card-text>
-					<v-card-actions>
-						<v-spacer></v-spacer>
-						<v-btn
-							text
-							@click="
-								() => {
-									this.saveAndReset();
-								}
-							"
-							class="plain-btn"
-							>Add another</v-btn
-						>
-						<v-btn
-							color="green darken-1"
-							text
-							@click="
-								() => {
-									this.createPlaylistFromSelection().then(() => this.$router.push('/'));
-								}
-							"
-							>Done</v-btn
-						>
-					</v-card-actions>
-				</v-card>
-			</v-dialog>
 		</v-row>
 	</v-container>
 </template>
@@ -122,31 +49,22 @@ import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
 // import getIDsFromDetails from "@/scripts/getIDsFromDetails";
-import Playlist from "../containers/Playlist";
 
 export default {
 	name: "create-playlist",
 	components: {
-		"playlist-filter": PlaylistFilter,
-		"user-playlist": Playlist
+		"playlist-filter": PlaylistFilter
 	},
 	data: function() {
 		return {
-			//features.data
 			loading: false,
 			bars: true,
 			audioFeatures: features,
 			chartData: Object,
 			chartsReady: false,
 			renderKey: 1,
-			playlistName: undefined,
-			createNewPlaylist: false,
-			addToPlaylist: false,
-			finishedWithSelection: false,
 			showMoreFilters: false,
-			confirm: false,
 			mountFilters: false,
-			reviewCategory: null,
 			filters: {
 				doubletime: {
 					//Beats per minute
@@ -237,10 +155,6 @@ export default {
 		}
 	},
 	methods: {
-		closeModal() {
-			this.confirm = false;
-			this.createNewPlaylist = false;
-		},
 		savePlaylist() {
 			const metadata = JSON.stringify({
 				lowBPM: this.lowBPM,
@@ -253,60 +167,8 @@ export default {
 			localStorage.setItem("playlistTracks", selectedTracks);
 			this.$router.push("Save");
 		},
-		createPlaylistFromSelection() {
-			this.$emit("storePlaylistInfo", "yoyo");
-			// return new Promise((resolve, reject) => {
-			// 	//Get array of selected track's IDs.
-			// 	const trackIDs = getIDsFromDetails(this.selectedTracks);
-			// 	//Collect metadata
-			// 	const metadata = JSON.stringify({
-			// 		name: this.playlistName,
-			// 		lowBPM: this.lowBPM,
-			// 		highBPM: this.highBPM,
-			// 		tracks: this.songCount,
-			// 		duration: this.mixDuration
-			// 	});
-			// 	this.$emit("loading");
-			// 	//Create the playlist
-			// 	this.$http
-			// 		.post("http://192.168.1.215:3000/playlists", {
-			// 			data: {
-			// 				userID: this.$attrs.user.id,
-			// 				trackIDs: trackIDs,
-			// 				metadata: metadata,
-			// 				name: this.playlistName,
-			// 				credentials: localStorage.RunBPM
-			// 			}
-			// 		})
-			// 		.then(() => {
-			// 			this.updateUserInfo();
-			// 			//Check to see if user info has updated before resolving promise
-			// 			let i = setInterval(() => {
-			// 				if (!this.$attrs.loading) {
-			// 					clearInterval(i);
-			// 					resolve();
-			// 				}
-			// 			}, 20);
-			// 		})
-			// 		.catch(err => {
-			// 			console.log("Something went wrong", err);
-			// 			this.loading = false;
-			// 			reject();
-			// 		});
-			// });
-		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
-		},
-		saveAndReset() {
-			//Reset the selection, slider range, and chart
-			this.createPlaylistFromSelection().then(() => {
-				this.playlistName = undefined;
-				Object.keys(this.filters).forEach(i => {
-					this.filters[i].range = this.filters[i].defaultRange;
-				});
-				setTimeout(() => this.filterChartData(), 150);
-			});
 		},
 		convertToDoubletime() {
 			//Double tempo for tracks under 100bpm (90bpm ~= 180bpm)
@@ -357,20 +219,6 @@ export default {
 		},
 		updateFilters: function(options) {
 			this.$set(this.filters[options.filter], "range", options.range);
-		},
-		// prettier-ignore
-		handleChartClick() {
-			console.log(event.toElement.style.fill);
-			document.querySelector(".review-circle").style.backgroundColor = event.toElement.style.fill;
-			event.toElement.style.fill === "rgb(214, 39, 40)"
-				? (this.reviewCategory = `BPM: ${this.lowBPM} - ${this.highBPM}`)
-				: event.toElement.style.fill === "rgb(44, 160, 44)"
-					? (this.reviewCategory = `Energy: ${this.filters.energy.range[0]} - ${this.filters.energy.range[1]}`)
-					: event.toElement.style.fill === "rgb(255, 127, 14)"
-						? (this.reviewCategory = `Danceability: ${this.filters.danceability.range[0]} - ${this.filters.danceability.range[1]}`)
-						: event.toElement.style.fill === "rgb(31, 119, 180)"
-							? (this.reviewCategory = `Valence: ${this.filters.valence.range[0]} - ${this.filters.valence.range[1]}`)
-							: null;
 		}
 	},
 	watch: {
