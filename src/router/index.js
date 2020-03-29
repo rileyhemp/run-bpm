@@ -59,13 +59,11 @@ router.beforeEach((to, from, next) => {
 				next({
 					name: "Dashboard"
 				});
-			}
-			// else if (to.name === "Save" && from.name !== "Create") {
-			// 	next({
-			// 		name: "Dashboard"
-			// 	});
-			// }
-			else next();
+			} else if (to.name === "Save" && from.name !== "Create") {
+				next({
+					name: "Dashboard"
+				});
+			} else next();
 		} else {
 			next({
 				path: "/connect"

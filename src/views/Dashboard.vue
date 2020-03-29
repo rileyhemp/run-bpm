@@ -3,8 +3,29 @@
 		<v-overlay :value="loading" :z-index="1000">
 			<v-progress-circular indeterminate size="64"></v-progress-circular>
 		</v-overlay>
-		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" />
+		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" class="d-md-none d-sm-flex" />
+		<v-navigation-drawer class="d-md-flex d-sm-none" absolute>
+			<v-list dense nav class="py-0">
+				<v-list-item two-line :class="miniVariant && 'px-0'">
+					<v-list-item-avatar>
+						<img src="https://randomuser.me/api/portraits/men/81.jpg" />
+					</v-list-item-avatar>
+					<v-list-item-content>
+						<v-list-item-title>Application</v-list-item-title>
+						<v-list-item-subtitle>Subtext</v-list-item-subtitle>
+					</v-list-item-content>
+				</v-list-item>
+
+				<v-divider></v-divider>
+
+				<v-list-item><v-icon>mdi-home</v-icon><v-btn block class="justify-start" text>Home</v-btn></v-list-item>
+				<v-list-item><v-icon>mdi-plus</v-icon><v-btn block class="justify-start" text>Import</v-btn></v-list-item>
+				<v-list-item><v-icon>mdi-chart-bar</v-icon><v-btn block class="justify-start" text>Create</v-btn></v-list-item>
+				<v-list-item><v-icon>mdi-content-save</v-icon><v-btn block class="justify-start" text>Save</v-btn></v-list-item>
+			</v-list>
+		</v-navigation-drawer>
 		<router-view
+			:class="$vuetify.breakpoint.mdAndUp ? 'px-8' : null"
 			:userPlaylists="this.userPlaylists"
 			:CreatedPlaylists="this.CreatedPlaylists"
 			:userDevices="this.userDevices"
@@ -105,6 +126,10 @@ export default {
 };
 </script>
 <style>
+.dashboard {
+	width: 100%;
+	padding-left: 250px;
+}
 .sticky-nav {
 	position: sticky;
 	top: 0px;

@@ -1,18 +1,20 @@
 <template>
-	<v-app-bar flat>
-		<v-toolbar-title>{{ pageTitle }}</v-toolbar-title>
-		<v-spacer />
-		<v-menu v-model="showMenu" :nudge-bottom="56">
-			<v-list class="text-right">
-				<v-list-item @click="openSpotifyProfile">
-					<v-list-item-title>Connected as {{ this.$attrs.user.display_name }}</v-list-item-title>
-				</v-list-item>
-				<v-list-item @click="logout">
-					<v-list-item-title>Logout</v-list-item-title>
-				</v-list-item>
-			</v-list>
-		</v-menu>
-		<user-avatar v-bind="$attrs" @toggleMenu="toggleMenu" />
+	<v-app-bar class="main-header">
+		<div class="header-content">
+			<v-toolbar-title>{{ pageTitle }}</v-toolbar-title>
+			<v-spacer />
+			<v-menu v-model="showMenu" :nudge-bottom="56">
+				<v-list class="text-right">
+					<v-list-item @click="openSpotifyProfile">
+						<v-list-item-title>Connected as {{ this.$attrs.user.display_name }}</v-list-item-title>
+					</v-list-item>
+					<v-list-item @click="logout">
+						<v-list-item-title>Logout</v-list-item-title>
+					</v-list-item>
+				</v-list>
+			</v-menu>
+			<user-avatar v-bind="$attrs" @toggleMenu="toggleMenu" />
+		</div>
 	</v-app-bar>
 </template>
 
@@ -47,5 +49,12 @@ export default {
 .v-menu__content {
 	left: unset !important;
 	right: 0px;
+}
+.header-content {
+	width: 100%;
+	margin: auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 </style>

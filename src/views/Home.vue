@@ -50,6 +50,9 @@ export default {
 		pause() {
 			this.paused = true;
 		}
+	},
+	mounted: function() {
+		console.log(this.$vuetify.breakpoint);
 	}
 };
 </script>
