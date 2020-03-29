@@ -13,7 +13,7 @@
 <script>
 export default {
 	name: "playlist-card",
-	props: ["playlist"],
+	props: ["playlist", "selectable"],
 	data: function() {
 		return {
 			isSelected: false
@@ -21,8 +21,10 @@ export default {
 	},
 	methods: {
 		selectPlaylist() {
-			this.$emit("selected");
-			this.isSelected = !this.isSelected;
+			if (!this.selectable) {
+				this.$emit("selected");
+				this.isSelected = !this.isSelected;
+			}
 		}
 	}
 };

@@ -48,78 +48,39 @@
 				>Create</v-btn
 			>
 		</v-row>
-
+		<v-row v-if="addToPlaylist" class="px-4 pb-8 pt-4" dense>
+			<playlist-card
+				v-for="playlist in this.$attrs.userPlaylists.items"
+				:key="playlist.id"
+				:playlist="playlist"
+				:selected="selected"
+				@click.native="confirm ? null : selectPlaylist(playlist)"
+				:selectable="true"
+			/>
+		</v-row>
 		<v-row>
 			<v-dialog v-model="confirm" width="300">
 				<v-card v-if="!loading" class="pb-8">
-					<v-card-actions>
+					<v-row class="px-4 mt-1">
 						<v-spacer />
 						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-card-actions>
-					<v-card-title class="subtitle-1 no-word-break">
-						What would you like to do?
-					</v-card-title>
-					<v-row class="mx-6 pb-8">
-						<b-btn text class="py-2" @click="createNewPlaylist = true">Create a new playlist</b-btn>
-						<b-btn text class="py-2" @click="addToPlaylist = true">Add selection to existing playlist</b-btn>
 					</v-row>
-				</v-card>
-				<v-card v-if="addToPlaylist" class="pb-8">
-					<v-card-actions>
-						<v-spacer />
-						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-card-actions>
 					<v-card-title class="subtitle-1 no-word-break">
-						Add to existing playlist
+						Add {{ playlistMetadata.tracks }} tracks to {{ playlistToUpdate.name }}?
 					</v-card-title>
-					<v-btn v-for="playlist in this.$attrs.userPlaylists.items" :key="playlist.id">{{ playlist.name }}</v-btn>
-					<!-- <p>{{ this.$attrs.userPlaylists.items[0].name }}</p> -->
-					<user-playlist v-for="playlist in this.$attrs.userPlaylists.items" :key="playlist.id">{{ playlist.name }}</user-playlist>
-				</v-card>
-				<v-card v-if="createNewPlaylist" class="pb-8">
-					<v-card-actions>
-						<v-spacer />
-						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-card-actions>
-					<v-card-title class="subtitle-1 no-word-break">
-						Create playlist
-					</v-card-title>
-					<v-row class="mx-4 pb-8">
-						<v-text-field v-if="confirm" autofocus label="Enter a name" hide-details="auto" v-model="playlistName" />
-					</v-row>
-				</v-card>
-				<v-card v-if="!loading && playlistName">
-					<v-card-actions>
-						<v-spacer />
-						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-card-actions>
-					<v-card-title class="subtitle-1 no-word-break">
-						Your playlist {{ playlistName }} will be added to your Spotify library.
-					</v-card-title>
-					<v-card-text>Are you finished with this selection?</v-card-text>
-					<v-card-actions>
-						<v-spacer></v-spacer>
+					<v-row class="px-8 mt-2">
 						<v-btn
-							text
+							block
+							class="mx-auto px-4"
+							color="primary"
 							@click="
 								() => {
-									this.saveAndReset();
+									this.addToExistingPlaylist().then(() => console.log('done'));
 								}
 							"
-							class="plain-btn"
-							>Add another</v-btn
+							>Okay</v-btn
 						>
-						<v-btn
-							color="green darken-1"
-							text
-							@click="
-								() => {
-									this.createPlaylistFromSelection().then(() => this.$router.push('/'));
-								}
-							"
-							>Done</v-btn
-						>
-					</v-card-actions>
+					</v-row>
 				</v-card>
 			</v-dialog>
 		</v-row>
@@ -127,22 +88,19 @@
 </template>
 
 <script>
-import features from "@/assets/temp-features";
-import "vue-slider-component/theme/default.css";
-// import _ from "lodash";
 import getIDsFromDetails from "@/scripts/getIDsFromDetails";
-import Playlist from "../containers/Playlist";
+import PlaylistCardVue from "../components/PlaylistCard.vue";
 
 export default {
 	name: "save-playlist",
 	components: {
-		"user-playlist": Playlist
+		"playlist-card": PlaylistCardVue
 	},
 	data: function() {
 		return {
 			loading: false,
+			selected: [],
 			bars: true,
-			audioFeatures: features,
 			chartData: Object,
 			chartsReady: false,
 			renderKey: 1,
@@ -155,13 +113,32 @@ export default {
 			mountFilters: false,
 			reviewCategory: null,
 			playlistTracks: Object,
-			playlistMetadata: Object
+			playlistMetadata: Object,
+			playlistToUpdate: Object
 		};
 	},
 	methods: {
+		selectPlaylist(playlist) {
+			this.confirm = true;
+			this.playlistToUpdate = playlist;
+		},
 		closeModal() {
 			this.confirm = false;
 			this.createNewPlaylist = false;
+		},
+		addToExistingPlaylist() {
+			return new Promise((resolve, reject) => {
+				const trackIDs = getIDsFromDetails(this.playlistTracks);
+				this.$http
+					.put("http://192.168.1.215:3000/playlists", {
+						data: {
+							trackIDs: trackIDs,
+							targetPlaylist: this.playlistToUpdate
+						}
+					})
+					.then(() => resolve())
+					.catch(err => reject(err));
+			});
 		},
 		createPlaylistFromSelection() {
 			return new Promise((resolve, reject) => {

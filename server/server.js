@@ -133,6 +133,15 @@ app.get("/search-playlists", async (req, res) => {
 		})
 		.catch(err => res.status(err.statusCode).send(err));
 });
+app.get("/playlist-details", async (req, res) => {
+	const token = await accessToken(req.query.credentials);
+	const api = spotifyApiWithToken(token);
+	getPlaylistTracks([req.query.playlist], api)
+		.then(response => {
+			res.send(response);
+		})
+		.catch(err => res.status(err.statusCode).send(err));
+});
 
 //Get playlists user created with Run BPM
 app.get("/playlists", function(req, res) {
@@ -145,16 +154,6 @@ app.get("/playlists", function(req, res) {
 		.catch(err => res.send(err));
 });
 
-app.get("/playlist-details", async (req, res) => {
-	const token = await accessToken(req.query.credentials);
-	const api = spotifyApiWithToken(token);
-	getPlaylistTracks([req.query.playlist], api)
-		.then(response => {
-			res.send(response);
-		})
-		.catch(err => res.status(err.statusCode).send(err));
-});
-
 //Add a new playlist to Run BPM's database
 app.post("/playlists", async (req, res) => {
 	const token = await accessToken(req.body.data.credentials);
@@ -165,6 +164,10 @@ app.post("/playlists", async (req, res) => {
 			res.status(201).send(response);
 		})
 		.catch(err => res.send("Something went wrong. Error: " + err));
+});
+
+app.put("/playlists", (req, res) => {
+	console.log(req.body.data);
 });
 
 //Delete a playlist
