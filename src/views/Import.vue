@@ -6,11 +6,17 @@
 			<v-btn color="primary" :disabled="isDisabled" :to="{ name: 'Create', params: { playlists: this.selected } }">Continue</v-btn>
 		</v-row>
 		<v-row class="mt-6 mb-2 mx-2">
-			<p class="subtitle-1">Step 1 / 2</p>
+			<p class="subtitle-1">Step 1 / 3</p>
 			<v-spacer />
-			<p class="subtitle-1">Select one or more playlists</p>
+			<p class="subtitle-1">Import music</p>
 		</v-row>
-		<v-row class="d-flex align-center mx-1 mt-2">
+		<v-row class="my-2 mx-2">
+			<p class="body-2">
+				Select one or more playlists to import and analyze. Or, search for more on Spotify. Playlists will be combined in the next step.
+			</p>
+			<p class="body-2">Try to choose at least 2 hours of music.</p>
+		</v-row>
+		<v-row class="d-flex align-center mx-1">
 			<v-text-field v-model="query" class="mx-2" append-icon="mdi-magnify" @keydown="handleKeydown" @click:append="doSearch">
 				<template v-slot:label>Search playlists</template>
 			</v-text-field>

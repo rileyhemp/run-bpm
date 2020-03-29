@@ -7,7 +7,7 @@
 			<v-btn color="primary" class="mr-2" :disabled="loading" @click="savePlaylist">Create</v-btn>
 		</v-row>
 		<v-row class="mt-6 mx-4">
-			<p class="subtitle-1">Step 2 / 2</p>
+			<p class="subtitle-1">Step 2 / 3</p>
 			<v-spacer />
 			<p class="subtitle-1">Filter tracks</p>
 		</v-row>
