@@ -74,7 +74,10 @@
 					<v-card-title class="subtitle-1 no-word-break" v-if="!success">
 						Add {{ playlistMetadata.tracks }} tracks to {{ playlistToUpdate.name }}?
 					</v-card-title>
-					<v-card-title class="subtitle-1 no-word-break" v-if="success"> Tracks added successfully </v-card-title>
+					<v-card-title class="subtitle-1 no-word-break" v-if="success">
+						{{ duplicatesRemoved > 0 ? "Removed " + duplicatesRemoved + " duplicates." : null }}
+						{{ tracksAdded > 0 ? tracksAdded + " tracks added." : "0 tracks added." }}
+					</v-card-title>
 					<v-row class="px-8 mt-2">
 						<v-btn
 							block
@@ -83,7 +86,10 @@
 							@click="
 								() => {
 									if (!success) {
-										this.addToExistingPlaylist().then(() => (this.success = true));
+										this.addToExistingPlaylist().then(data => {
+											this.success = true;
+											this.totalAdded = data;
+										});
 									} else this.$router.push('/');
 								}
 							"
@@ -116,7 +122,8 @@ export default {
 			playlistTracks: Object,
 			playlistMetadata: Object,
 			playlistToUpdate: Object,
-			success: false
+			success: false,
+			totalAdded: [0, 0]
 		};
 	},
 	computed: {
@@ -129,6 +136,12 @@ export default {
 				}
 			}
 			return ownedPlaylists;
+		},
+		duplicatesRemoved: function() {
+			return this.totalAdded[0] - this.totalAdded[1];
+		},
+		tracksAdded: function() {
+			return this.totalAdded[1];
 		}
 	},
 	methods: {
@@ -155,19 +168,16 @@ export default {
 						//Filters out duplicates
 						const targetPlaylistTrackIDs = res.data;
 						const trackIDs = getIDsFromDetails(this.playlistTracks);
-						console.log(trackIDs);
-						console.log(targetPlaylistTrackIDs);
 						const uniqueTracks = _.difference(trackIDs, targetPlaylistTrackIDs);
-						console.log(uniqueTracks.length);
 						this.$http
 							.put("http://192.168.1.215:3000/playlists", {
 								data: {
-									trackIDs: trackIDs,
+									trackIDs: uniqueTracks,
 									targetPlaylist: this.playlistToUpdate,
 									credentials: localStorage.RunBPM
 								}
 							})
-							.then(() => resolve())
+							.then(() => resolve([trackIDs.length, uniqueTracks.length]))
 							.catch(err => reject(err));
 					})
 					.catch(err => console.log(err));
