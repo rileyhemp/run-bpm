@@ -14,6 +14,8 @@
 			<p class="body-2">
 				Select one or more playlists to import and analyze. Playlists will be combined in the next step.
 			</p>
+		</v-row>
+		<v-row class="mx-2">
 			<p class="body-2">For best results, select at least 2 hours of music.</p>
 		</v-row>
 		<v-row class="d-flex align-center mx-1">

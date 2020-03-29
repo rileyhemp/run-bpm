@@ -1,5 +1,5 @@
 <template>
-	<v-col cols="4">
+	<v-col :cols="$vuetify.breakpoint.mdAndUp ? 3 : 4">
 		<v-card :elevation="12" class="card-select " :tile="!isSelected" :light="isSelected" @click.native="selectPlaylist" :focus="isSelected">
 			<v-img :src="playlist.images[0].url" aspect-ratio="1" class="grey lighten-2 d-flex align-start" :alt="`Image of ${playlist.name}`">
 			</v-img>
@@ -28,21 +28,6 @@ export default {
 		}
 	}
 };
-
-// if (this.tracks === null) {
-// 	this.$http
-// 		.get("http://192.168.1.215:3000/playlist-details", {
-// 			params: {
-// 				playlist: this.playlist.id,
-// 				credentials: localStorage.RunBPM
-// 			}
-// 		})
-// 		.then(res => {
-// 			this.tracks = res.data;
-// 			this.isSelected = !this.isSelected;
-// 		})
-// 		.catch(err => console.log(err));
-// }
 </script>
 <style>
 .card-select {
