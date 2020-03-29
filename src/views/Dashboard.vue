@@ -5,7 +5,7 @@
 		</v-overlay>
 		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" class="d-md-none d-sm-flex" />
 
-		<v-navigation-drawer class="d-md-flex d-sm-none" absolute :userData="userData">
+		<v-navigation-drawer v-if="$vuetify.breakpoint.mdAndUp" class="d-md-flex d-sm-none" absolute :userData="userData">
 			<v-list dense nav class="py-0">
 				<div class="d-md-flex d-sm-none logo-text" />
 				<v-list-item two-line>
