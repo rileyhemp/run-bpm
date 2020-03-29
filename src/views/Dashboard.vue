@@ -16,10 +16,16 @@
 
 				<v-divider></v-divider>
 
-				<v-list-item><v-icon>mdi-home</v-icon><v-btn block class="justify-start" text>Home</v-btn></v-list-item>
-				<v-list-item><v-icon>mdi-plus</v-icon><v-btn block class="justify-start" text>Import</v-btn></v-list-item>
-				<v-list-item><v-icon>mdi-chart-bar</v-icon><v-btn block class="justify-start" text>Create</v-btn></v-list-item>
-				<v-list-item><v-icon>mdi-content-save</v-icon><v-btn block class="justify-start" text>Save</v-btn></v-list-item>
+				<v-list-item><v-icon>mdi-home</v-icon><v-btn to="/" block class="justify-start" text>Home</v-btn></v-list-item>
+				<v-list-item><v-icon>mdi-plus</v-icon><v-btn to="/import" block class="justify-start" text>Import</v-btn></v-list-item>
+				<v-list-item
+					><v-icon :color="$route.name != 'Create' && $route.name != 'Save' ? 'grey darken-2' : 'white'">mdi-chart-bar</v-icon
+					><v-btn :disabled="$route.name != 'Create' && $route.name != 'Save'" block class="justify-start" text>Create</v-btn></v-list-item
+				>
+				<v-list-item
+					><v-icon :color="$route.name != 'Save' ? 'grey darken-2' : 'white'">mdi-content-save</v-icon
+					><v-btn :disabled="$route.name != 'Save'" block class="justify-start" text>Save</v-btn></v-list-item
+				>
 			</v-list>
 		</v-navigation-drawer>
 		<router-view
