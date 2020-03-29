@@ -55,11 +55,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
 	if (to.matched.some(record => record.meta.requiresAuth)) {
 		if (localStorage.RunBPM) {
-			if (to.name === "Create" && from.name !== "Import") {
-				next({
-					name: "Dashboard"
-				});
-			} else if (to.name === "Save" && from.name !== "Create") {
+			if (to.name === "Save" && from.name !== "Create") {
 				next({
 					name: "Dashboard"
 				});

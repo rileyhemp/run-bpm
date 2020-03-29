@@ -4,8 +4,10 @@
 			<v-progress-circular indeterminate size="64"></v-progress-circular>
 		</v-overlay>
 		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" class="d-md-none d-sm-flex" />
+
 		<v-navigation-drawer class="d-md-flex d-sm-none" absolute :userData="userData">
 			<v-list dense nav class="py-0">
+				<div class="d-md-flex d-sm-none logo-text" />
 				<v-list-item two-line>
 					<user-avatar :user="this.userData" class="mr-4" />
 					<v-list-item-content class="mt-2">
@@ -20,11 +22,13 @@
 				<v-list-item><v-icon>mdi-plus</v-icon><v-btn to="/import" block class="justify-start" text>Import</v-btn></v-list-item>
 				<v-list-item
 					><v-icon :color="$route.name != 'Create' && $route.name != 'Save' ? 'grey darken-2' : 'white'">mdi-chart-bar</v-icon
-					><v-btn :disabled="$route.name != 'Create' && $route.name != 'Save'" block class="justify-start" text>Create</v-btn></v-list-item
+					><v-btn :disabled="$route.name != 'Create' && $route.name != 'Save'" to="/create" block class="justify-start" text
+						>Create</v-btn
+					></v-list-item
 				>
 				<v-list-item
 					><v-icon :color="$route.name != 'Save' ? 'grey darken-2' : 'white'">mdi-content-save</v-icon
-					><v-btn :disabled="$route.name != 'Save'" block class="justify-start" text>Save</v-btn></v-list-item
+					><v-btn :disabled="$route.name != 'Save'" to="/save" block class="justify-start" text>Save</v-btn></v-list-item
 				>
 			</v-list>
 		</v-navigation-drawer>
@@ -136,15 +140,25 @@ export default {
 };
 </script>
 <style>
-.dashboard {
-	width: 100%;
-	padding-left: 250px;
+.logo-text {
+	background-image: url("../assets/logo-text.png");
+	background-size: contain;
+	height: 50px;
+	width: 80%;
+	margin-top: 24px;
+	margin-left: 8px;
+}
+@media screen and (min-width: 960px) {
+	.dashboard {
+		width: 100%;
+		padding-left: 250px;
+	}
 }
 .sticky-nav {
 	position: sticky;
 	top: 0px;
 	z-index: 999;
-	background-color: #121212;
+	background-color: black;
 	padding: 12px 0;
 }
 </style>

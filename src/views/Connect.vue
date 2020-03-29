@@ -42,9 +42,20 @@ export default {
 	background-size: contain;
 	background-color: black;
 	background-position-y: 30%;
+	width: 100%;
+}
+@media screen and (min-width: 768px) {
+	.home-page {
+	}
 }
 .app-description {
 	margin-top: 50%;
 	max-width: 500px;
+}
+</style>
+
+<style>
+.theme--dark.v-application {
+	background: black !important;
 }
 </style>
