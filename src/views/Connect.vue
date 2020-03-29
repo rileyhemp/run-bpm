@@ -43,14 +43,23 @@ export default {
 	background-color: black;
 	background-position-y: 30%;
 	width: 100%;
-}
-@media screen and (min-width: 768px) {
-	.home-page {
-	}
+	margin: auto;
+	background-position-x: 52%;
 }
 .app-description {
 	margin-top: 50%;
 	max-width: 500px;
+}
+@media screen and (min-width: 768px) {
+	.home-page {
+		background-image: url("../assets/runbpm-logo-desktop.png");
+		background-position-y: 0%;
+		height: 70% !important;
+		background-size: 800px;
+	}
+	.app-description {
+		margin-top: 20%;
+	}
 }
 </style>
 
