@@ -58,7 +58,6 @@ export default {
 			window.open("https://open.spotify.com/playlist/" + this.playlist.id, "_blank");
 		},
 		updatePlaylists() {
-			this.refreshDevices();
 			this.$emit("updatePlaylists");
 		},
 		getPlaylistInfo(playlist) {
