@@ -1,9 +1,8 @@
 <template>
 	<v-sparkline
-		class="line-graph"
+		class="line-graph mb-3"
 		:class="collapsed ? 'hidden' : null"
 		:value="value"
-		:labels="axis"
 		:opacity="collapsed ? 0 : 1"
 		:gradient="gradient"
 		:smooth="this.type === 'trend' ? 12 : 2"

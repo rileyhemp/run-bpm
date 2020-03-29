@@ -1,7 +1,7 @@
 // eslint-disable-file
 <template>
 	<v-container fluid>
-		<v-row>
+		<v-row class="sticky-nav">
 			<v-btn text class="ml-4" @click="() => this.$router.push('Create')">Back</v-btn>
 		</v-row>
 		<v-row class="mt-6 px-4">

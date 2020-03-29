@@ -2,7 +2,7 @@
 	<v-dialog v-model="dialog" persistent max-width="290">
 		<template v-slot:activator="{ on }">
 			<v-btn icon v-on="on">
-				<v-icon>mdi-delete</v-icon>
+				<v-icon color="grey lighten-2">mdi-delete</v-icon>
 			</v-btn>
 		</template>
 		<v-card>

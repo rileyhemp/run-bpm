@@ -104,3 +104,10 @@ export default {
 	}
 };
 </script>
+<style>
+.sticky-nav {
+	position: sticky;
+	top: 24px;
+	z-index: 999;
+}
+</style>

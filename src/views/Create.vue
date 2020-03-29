@@ -1,7 +1,7 @@
 // eslint-disable-file
 <template>
 	<v-container fluid>
-		<v-row class="pr-4">
+		<v-row class="pr-4 sticky-nav">
 			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
 			<v-btn color="primary" class="mr-2" :disabled="loading" @click="savePlaylist">Create</v-btn>

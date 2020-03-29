@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<v-row class="ma-1">
+		<v-row class="ma-1 sticky-nav">
 			<v-btn text @click="$router.push('/')">Back</v-btn>
 			<v-spacer />
 			<v-btn color="primary" :disabled="isDisabled" :to="{ name: 'Create', params: { playlists: this.selected } }">Continue</v-btn>

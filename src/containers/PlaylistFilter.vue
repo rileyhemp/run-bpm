@@ -27,7 +27,7 @@
 			v-show="!this.collapsed"
 			:min="range[0]"
 			:max="range[1]"
-			:dotSize="24"
+			:dotSize="20"
 			v-model="sliderRange"
 			tooltip="none"
 			class="px-3 no-margin"
