@@ -30,7 +30,7 @@
 				:key="playlist.id"
 				:playlist="playlist"
 				:selected="selected"
-				@selected="selectPlaylist(playlist.id)"
+				@selected="selectPlaylist(playlist)"
 			/>
 		</v-row>
 		<p class="body-1 ma-2">Your playlists</p>
@@ -40,7 +40,7 @@
 				:key="playlist.id"
 				:playlist="playlist"
 				:selected="selected"
-				@click.native="selectPlaylist(playlist.id)"
+				@click.native="selectPlaylist(playlist)"
 			/>
 		</v-row>
 	</v-container>

@@ -134,9 +134,17 @@ app.get("/search-playlists", async (req, res) => {
 		.catch(err => res.status(err.statusCode).send(err));
 });
 app.get("/playlist-details", async (req, res) => {
+	const playlistLength = req.query.playlist.tracks.total;
+	const passes = Math.floor(playlistLength / 100 + 1);
 	const token = await accessToken(req.query.credentials);
 	const api = spotifyApiWithToken(token);
-	getPlaylistTracks([req.query.playlist], api)
+	const arr = [];
+	for (let i = 0; i < passes; i++) {
+		let offset = i * 100 + 1;
+		arr.push(new Promise((resolve, reject) => {}));
+	}
+
+	getPlaylistTracks([req.query.playlist.id], api)
 		.then(response => {
 			res.send(response);
 		})
@@ -372,9 +380,25 @@ function getPlaylistTracks(playlists, api) {
 		for (let i = 0; i < playlists.length; i++) {
 			playlistDetails.push(
 				new Promise((resolve, reject) => {
-					api.getPlaylistTracks(playlists[i])
-						.then(function(data) {
-							resolve(data.body.items);
+					const playlistLength = playlists[i].tracks.total;
+					const passes = Math.floor(playlistLength / 100 + 1);
+					const arr = [];
+					for (let j = 0; j < passes; j++) {
+						let offset = j * 100;
+						arr.push(
+							new Promise((resolve, reject) => {
+								api.getPlaylistTracks(playlists[i].id, { offset: offset })
+									.then(function(data) {
+										resolve(data.body.items);
+									})
+									.catch(err => reject(err));
+							})
+						);
+					}
+					Promise.all(arr)
+						.then(data => {
+							console.log(data);
+							resolve(_.flatten(data));
 						})
 						.catch(err => reject(err));
 				})

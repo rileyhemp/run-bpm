@@ -65,8 +65,8 @@
 			/>
 		</v-row>
 		<v-row>
-			<v-dialog v-model="confirm" width="300">
-				<v-card v-if="!loading" class="pb-8">
+			<v-dialog v-model="confirm" :width="$vuetify.breakpoint.mdAndUp ? 400 : 300">
+				<v-card v-if="!loading" class="pb-8" style="overflow:hidden">
 					<v-row class="px-4 mt-1">
 						<v-spacer />
 						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
@@ -142,17 +142,28 @@ export default {
 		},
 		addToExistingPlaylist() {
 			return new Promise((resolve, reject) => {
-				const trackIDs = getIDsFromDetails(this.playlistTracks);
 				this.$http
-					.put("http://192.168.1.215:3000/playlists", {
-						data: {
-							trackIDs: trackIDs,
-							targetPlaylist: this.playlistToUpdate,
+					.get(`http://192.168.1.215:3000/playlist-details`, {
+						params: {
+							playlist: this.playlistToUpdate.id,
 							credentials: localStorage.RunBPM
 						}
 					})
-					.then(() => resolve())
-					.catch(err => reject(err));
+					.then(res => {
+						console.log(res);
+						const trackIDs = getIDsFromDetails(this.playlistTracks);
+						this.$http
+							.put("http://192.168.1.215:3000/playlists", {
+								data: {
+									trackIDs: trackIDs,
+									targetPlaylist: this.playlistToUpdate,
+									credentials: localStorage.RunBPM
+								}
+							})
+							.then(() => resolve())
+							.catch(err => reject(err));
+					})
+					.catch(err => console.log(err));
 			});
 		},
 		createPlaylistFromSelection() {
