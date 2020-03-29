@@ -103,18 +103,10 @@ export default {
 		return {
 			loading: false,
 			selected: [],
-			bars: true,
-			chartData: Object,
-			chartsReady: false,
-			renderKey: 1,
 			playlistName: undefined,
 			createNewPlaylist: false,
 			addToPlaylist: false,
-			finishedWithSelection: false,
-			showMoreFilters: false,
 			confirm: false,
-			mountFilters: false,
-			reviewCategory: null,
 			playlistTracks: Object,
 			playlistMetadata: Object,
 			playlistToUpdate: Object,
@@ -185,80 +177,6 @@ export default {
 		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
-		},
-		saveAndReset() {
-			//Reset the selection, slider range, and chart
-			this.createPlaylistFromSelection().then(() => {
-				this.playlistName = undefined;
-				Object.keys(this.filters).forEach(i => {
-					this.filters[i].range = this.filters[i].defaultRange;
-				});
-				setTimeout(() => this.filterChartData(), 150);
-			});
-		},
-		convertToDoubletime() {
-			//Double tempo for tracks under 100bpm (90bpm ~= 180bpm)
-			this.audioFeatures.forEach(track => {
-				track.features.tempo = Math.round(track.features.tempo);
-				track.features.tempo < 100
-					? (track.features.doubletime = track.features.tempo * 2)
-					: (track.features.doubletime = track.features.tempo);
-			});
-			this.mountFilters = true;
-		},
-		initChartData() {
-			const filters = Object.keys(this.filters);
-			//Loop through each filter
-			filters.forEach(el => {
-				const filter = this.filters[el];
-				let multiplier;
-				if (el === "doubletime") {
-					multiplier = 1;
-				} else {
-					multiplier = 100;
-				}
-				const segments = [];
-				//Group tracks into segments
-				for (let i = filter.defaultRange[0]; i < filter.defaultRange[1]; i = i + filter.segmentSize) {
-					let segment = {};
-					let tracks = 0;
-					//Count how many tracks are in each segment
-					this.selectedTracks.forEach(track => {
-						track.features[el] * multiplier >= i && track.features[el] * multiplier < i + filter.segmentSize ? tracks++ : null;
-					});
-					//Axis name
-					segment.axis = i + 1;
-					//Percentage of total tracks in segment
-					segment.value = tracks / this.selectedTracks.length;
-					if ((segment.axis = 1 & (segment.value > 0.2))) {
-						segment.value = 0.2;
-					}
-					segment.valueSave = tracks / this.selectedTracks.length;
-					//Number of tracks in segment
-					segment.tracks = tracks;
-					segments.push(segment);
-				}
-				this.chartData = { ...this.chartData, ...{ [el]: segments } };
-				this.chartsReady = true;
-				this.renderKey++;
-			});
-		},
-		updateFilters: function(options) {
-			this.$set(this.filters[options.filter], "range", options.range);
-		},
-		// prettier-ignore
-		handleChartClick() {
-			console.log(event.toElement.style.fill);
-			document.querySelector(".review-circle").style.backgroundColor = event.toElement.style.fill;
-			event.toElement.style.fill === "rgb(214, 39, 40)"
-				? (this.reviewCategory = `BPM: ${this.lowBPM} - ${this.highBPM}`)
-				: event.toElement.style.fill === "rgb(44, 160, 44)"
-					? (this.reviewCategory = `Energy: ${this.filters.energy.range[0]} - ${this.filters.energy.range[1]}`)
-					: event.toElement.style.fill === "rgb(255, 127, 14)"
-						? (this.reviewCategory = `Danceability: ${this.filters.danceability.range[0]} - ${this.filters.danceability.range[1]}`)
-						: event.toElement.style.fill === "rgb(31, 119, 180)"
-							? (this.reviewCategory = `Valence: ${this.filters.valence.range[0]} - ${this.filters.valence.range[1]}`)
-							: null;
 		}
 	},
 	mounted: function() {
