@@ -4,15 +4,13 @@
 			<v-progress-circular indeterminate size="64"></v-progress-circular>
 		</v-overlay>
 		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" class="d-md-none d-sm-flex" />
-		<v-navigation-drawer class="d-md-flex d-sm-none" absolute>
+		<v-navigation-drawer class="d-md-flex d-sm-none" absolute :userData="userData">
 			<v-list dense nav class="py-0">
-				<v-list-item two-line :class="miniVariant && 'px-0'">
-					<v-list-item-avatar>
-						<img src="https://randomuser.me/api/portraits/men/81.jpg" />
-					</v-list-item-avatar>
-					<v-list-item-content>
-						<v-list-item-title>Application</v-list-item-title>
-						<v-list-item-subtitle>Subtext</v-list-item-subtitle>
+				<v-list-item two-line>
+					<user-avatar :user="this.userData" class="mr-4" />
+					<v-list-item-content class="mt-2">
+						<v-list-item-title>{{ userData.display_name }}</v-list-item-title>
+						<v-list-item-subtitle style="cursor: pointer" @click="logout">Logout</v-list-item-subtitle>
 					</v-list-item-content>
 				</v-list-item>
 
@@ -44,12 +42,14 @@
 </template>
 
 <script>
+import UserAvatar from "../components/UserAvatar";
 import HeaderVue from "../containers/Header.vue";
 import { getCurrentTrack, getTrackDetails, initTimer, updatePlayState } from "@/helpers/PlayerMethods";
 export default {
 	name: "Dashboard",
 	components: {
-		"bpm-header": HeaderVue
+		"bpm-header": HeaderVue,
+		"user-avatar": UserAvatar
 	},
 	data: function() {
 		return {
@@ -67,6 +67,10 @@ export default {
 		};
 	},
 	methods: {
+		logout() {
+			localStorage.removeItem("RunBPM");
+			this.$router.push("/connect");
+		},
 		getUserData() {
 			let userCredientials = JSON.parse(localStorage.RunBPM);
 			this.getCurrentTrack();
