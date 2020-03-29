@@ -142,10 +142,11 @@ export default {
 		},
 		addToExistingPlaylist() {
 			return new Promise((resolve, reject) => {
+				//Get a list of tracks in the target playlist
 				this.$http
-					.get(`http://192.168.1.215:3000/playlist-details`, {
-						params: {
-							playlist: this.playlistToUpdate.id,
+					.put(`http://192.168.1.215:3000/playlist-details`, {
+						data: {
+							playlist: this.playlistToUpdate,
 							credentials: localStorage.RunBPM
 						}
 					})
@@ -153,7 +154,7 @@ export default {
 						console.log(res);
 						const trackIDs = getIDsFromDetails(this.playlistTracks);
 						this.$http
-							.put("http://192.168.1.215:3000/playlists", {
+							.put("http://192.168.1.215:3000/playlistss", {
 								data: {
 									trackIDs: trackIDs,
 									targetPlaylist: this.playlistToUpdate,
@@ -211,7 +212,6 @@ export default {
 	mounted: function() {
 		this.playlistMetadata = JSON.parse(localStorage.playlistMetadata);
 		this.playlistTracks = JSON.parse(localStorage.playlistTracks);
-		console.log(this.editablePlaylists);
 	}
 };
 </script>

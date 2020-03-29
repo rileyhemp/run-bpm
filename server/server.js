@@ -133,20 +133,12 @@ app.get("/search-playlists", async (req, res) => {
 		})
 		.catch(err => res.status(err.statusCode).send(err));
 });
-app.get("/playlist-details", async (req, res) => {
-	const playlistLength = req.query.playlist.tracks.total;
-	const passes = Math.floor(playlistLength / 100 + 1);
-	const token = await accessToken(req.query.credentials);
+app.put("/playlist-details", async (req, res) => {
+	const token = await accessToken(req.body.data.credentials);
 	const api = spotifyApiWithToken(token);
-	const arr = [];
-	for (let i = 0; i < passes; i++) {
-		let offset = i * 100 + 1;
-		arr.push(new Promise((resolve, reject) => {}));
-	}
-
-	getPlaylistTracks([req.query.playlist.id], api)
+	getPlaylistTracks([req.body.data.playlist], api)
 		.then(response => {
-			res.send(response);
+			res.send(getIDsFromTracks(response));
 		})
 		.catch(err => res.status(err.statusCode).send(err));
 });
@@ -374,6 +366,7 @@ function createPlaylist(userID, playlistName, trackIDs, metadata, api, image) {
 	});
 }
 
+//This function accepts multiple playlists and returns their track objects. If the playlist has more than 100 tracks, it will make multiple passes.
 function getPlaylistTracks(playlists, api) {
 	const playlistDetails = [];
 	return new Promise((resolve, reject) => {
@@ -397,7 +390,6 @@ function getPlaylistTracks(playlists, api) {
 					}
 					Promise.all(arr)
 						.then(data => {
-							console.log(data);
 							resolve(_.flatten(data));
 						})
 						.catch(err => reject(err));
