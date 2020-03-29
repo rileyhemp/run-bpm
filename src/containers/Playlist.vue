@@ -61,7 +61,7 @@ export default {
 			this.$emit("updatePlaylists");
 		},
 		getPlaylistInfo(playlist) {
-			return this.nowPlaying === playlist.id ? "Now playing..." : playlist.metadata.tracks + " Tracks, " + playlist.metadata.duration;
+			return playlist.metadata.lowBPM + "–" + playlist.metadata.highBPM + " bpm";
 		}
 	}
 };

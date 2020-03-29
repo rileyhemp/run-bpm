@@ -172,7 +172,9 @@ app.put("/playlists", async (req, res) => {
 	const trackIDs = req.body.data.trackIDs;
 	const targetPlaylist = req.body.data.targetPlaylist;
 	addToPlaylist(targetPlaylist.id, trackIDs, api)
-		.then(() => res.status(201).send())
+		.then(() => {
+			res.status(201).send();
+		})
 		.catch(err => res.send(err));
 });
 

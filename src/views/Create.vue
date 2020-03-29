@@ -142,7 +142,7 @@ export default {
 		tempos: function() {
 			let tempos = [];
 			this.selectedTracks.map(el => {
-				tempos.push(el.features.tempo);
+				tempos.push(el.features.doubletime);
 			});
 			return tempos;
 		},
