@@ -75,7 +75,7 @@
 							color="primary"
 							@click="
 								() => {
-									this.addToExistingPlaylist().then(() => console.log('done'));
+									this.addToExistingPlaylist().then(() => this.$router.push('/'));
 								}
 							"
 							>Okay</v-btn
@@ -133,7 +133,8 @@ export default {
 					.put("http://192.168.1.215:3000/playlists", {
 						data: {
 							trackIDs: trackIDs,
-							targetPlaylist: this.playlistToUpdate
+							targetPlaylist: this.playlistToUpdate,
+							credentials: localStorage.RunBPM
 						}
 					})
 					.then(() => resolve())

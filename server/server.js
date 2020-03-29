@@ -166,8 +166,14 @@ app.post("/playlists", async (req, res) => {
 		.catch(err => res.send("Something went wrong. Error: " + err));
 });
 
-app.put("/playlists", (req, res) => {
-	console.log(req.body.data);
+app.put("/playlists", async (req, res) => {
+	const token = await accessToken(req.body.data.credentials);
+	const api = spotifyApiWithToken(token);
+	const trackIDs = req.body.data.trackIDs;
+	const targetPlaylist = req.body.data.targetPlaylist;
+	addToPlaylist(targetPlaylist.id, trackIDs, api)
+		.then(() => res.status(201).send())
+		.catch(err => res.send(err));
 });
 
 //Delete a playlist
@@ -275,6 +281,34 @@ app.get("/player", async (req, res) => {
 		});
 });
 
+function addToPlaylist(playlistID, trackIDs, api) {
+	return new Promise((resolve, reject) => {
+		//Break the track IDs into arrays of 100.
+		chunkedTrackIDs = _.chunk(getURIsFromIDs(trackIDs), 100);
+
+		//Create array to catch the promises if uploading multiple chunks
+		const addedTracks = [];
+
+		//Add tracks to playlist
+		for (let i = 0; i < chunkedTrackIDs.length; i++) {
+			addedTracks.push(
+				new Promise((resolve, reject) => {
+					api.addTracksToPlaylist(playlistID, chunkedTrackIDs[i])
+						.then(data => {
+							resolve();
+						})
+						.catch(err => reject(err));
+				})
+			);
+		}
+		Promise.all(addedTracks)
+			.then(() => {
+				resolve();
+			})
+			.catch(err => reject(err.message));
+	});
+}
+
 function createPlaylist(userID, playlistName, trackIDs, metadata, api, image) {
 	return new Promise((resolve, reject) => {
 		//Create the playlist
@@ -282,14 +316,14 @@ function createPlaylist(userID, playlistName, trackIDs, metadata, api, image) {
 			//Get the new playlists' ID
 			const playlistID = response.body.id;
 
+			//Add playlist description
+			api.changePlaylistDetails(playlistID, { description: "Made with Run BPM" });
+
 			//Break the track IDs into arrays of 100.
 			chunkedTrackIDs = _.chunk(getURIsFromIDs(trackIDs), 100);
 
 			//Create array to catch the promises if uploading multiple chunks
 			const addedTracks = [];
-
-			//Add playlist description
-			api.changePlaylistDetails(playlistID, { description: "Made with Run BPM" });
 
 			//Add tracks to playlist
 			for (let i = 0; i < chunkedTrackIDs.length; i++) {
