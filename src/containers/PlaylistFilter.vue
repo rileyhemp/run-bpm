@@ -50,7 +50,7 @@ export default {
 	data: function() {
 		return {
 			sliderRange: this.range,
-			height: this.filter === "doubletime" ? 100 : 75, //Makes bpm chart taller then the others
+			height: 80,
 			collapsed: false,
 			tooltip: false
 		};
@@ -90,5 +90,8 @@ export default {
 }
 .line-graph {
 	margin: 0 !important;
+}
+.filter-container {
+	min-width: 45%;
 }
 </style>

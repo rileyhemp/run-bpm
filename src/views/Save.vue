@@ -6,11 +6,13 @@
 		</v-row>
 		<v-row class="mt-6 px-4">
 			<p class="subtitle-1">Step 3 / 3</p>
-			<v-spacer />
-			<p class="subtitle-1">Review and save</p>
+			<v-spacer v-if="!$vuetify.breakpoint.mdAndUp" />
+			<p class="subtitle-1" :class="$vuetify.breakpoint.mdAndUp ? 'pl-2' : null">Review and save</p>
 		</v-row>
 		<v-row class="px-4 ">
 			<span class="subtitle-1">What would you like to do?</span>
+		</v-row>
+		<v-row class="px-4">
 			<v-btn
 				class="my-2"
 				:color="createNewPlaylist ? 'primary' : 'default'"
@@ -18,9 +20,11 @@
 					createNewPlaylist = true;
 					addToPlaylist = false;
 				"
-				block
+				:block="!$vuetify.breakpoint.mdAndUp"
+				width="40%"
 				>Create a new playlist</v-btn
-			>
+			></v-row
+		><v-row class="px-4">
 			<v-btn
 				class="my-2"
 				:color="addToPlaylist ? 'primary' : 'default'"
@@ -28,7 +32,8 @@
 					addToPlaylist = true;
 					createNewPlaylist = false;
 				"
-				block
+				:block="!$vuetify.breakpoint.mdAndUp"
+				width="40%"
 				>Add to an existing playlist</v-btn
 			>
 		</v-row>
@@ -44,13 +49,14 @@
 						this.createPlaylistFromSelection().then(() => this.$router.push('/'));
 					}
 				"
-				block
+				:block="!$vuetify.breakpoint.mdAndUp"
+				width="40%"
 				>Create</v-btn
 			>
 		</v-row>
 		<v-row v-if="addToPlaylist" class="px-4 pb-8 pt-4" dense>
 			<playlist-card
-				v-for="playlist in this.$attrs.userPlaylists.items"
+				v-for="playlist in editablePlaylists"
 				:key="playlist.id"
 				:playlist="playlist"
 				:selected="selected"
@@ -112,6 +118,18 @@ export default {
 			playlistToUpdate: Object,
 			success: false
 		};
+	},
+	computed: {
+		editablePlaylists: function() {
+			let ownedPlaylists = [];
+			let userPlaylists = this.$attrs.userPlaylists.items;
+			for (let i = 0; i < userPlaylists.length; i++) {
+				if (userPlaylists[i].collaborative === true || userPlaylists[i].owner.id === this.$attrs.user.id) {
+					ownedPlaylists.push(userPlaylists[i]);
+				}
+			}
+			return ownedPlaylists;
+		}
 	},
 	methods: {
 		selectPlaylist(playlist) {
@@ -182,6 +200,7 @@ export default {
 	mounted: function() {
 		this.playlistMetadata = JSON.parse(localStorage.playlistMetadata);
 		this.playlistTracks = JSON.parse(localStorage.playlistTracks);
+		console.log(this.editablePlaylists);
 	}
 };
 </script>

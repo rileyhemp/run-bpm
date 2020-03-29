@@ -8,15 +8,17 @@
 		</v-row>
 		<v-row class="mt-6 mx-4">
 			<p class="subtitle-1">Step 2 / 3</p>
-			<v-spacer />
-			<p class="subtitle-1">Filter tracks</p>
+			<v-spacer v-if="!$vuetify.breakpoint.mdAndUp" />
+			<p class="subtitle-1" :class="$vuetify.breakpoint.mdAndUp ? 'pl-2' : null">Filter tracks</p>
 		</v-row>
 		<v-row class="px-3">
 			<span class="mx-4 body-2">Drag the sliders to refine your selection. When you're finished, tap create.</span>
-			<span class="mx-4 my-2 subtitle-1">Selected: {{ songCount }} Tracks, {{ mixDuration }}</span>
+		</v-row>
+		<v-row class="px-3">
+			<span class="mx-4 my-2 body-2">Selected: {{ songCount }} Tracks, {{ mixDuration }}</span>
 		</v-row>
 		<v-row class="px-3"> </v-row>
-		<div v-if="mountFilters">
+		<div v-if="mountFilters" class="filters-container">
 			<playlist-filter
 				v-for="filter in filters"
 				:showMoreFilters="showMoreFilters"
@@ -63,7 +65,7 @@ export default {
 			chartData: Object,
 			chartsReady: false,
 			renderKey: 1,
-			showMoreFilters: false,
+			showMoreFilters: this.$vuetify.breakpoint.mdAndUp,
 			mountFilters: false,
 			filters: {
 				doubletime: {
@@ -277,6 +279,12 @@ export default {
 	width: 25px;
 	border-radius: 50%;
 	background-color: rgba(0, 0, 0, 0.3);
+}
+@media screen and (min-width: 960px) {
+	.filters-container {
+		display: flex;
+		flex-wrap: wrap;
+	}
 }
 </style>
 
