@@ -107,7 +107,9 @@ export default {
 <style>
 .sticky-nav {
 	position: sticky;
-	top: 24px;
+	top: 0px;
 	z-index: 999;
+	background-color: #121212;
+	padding: 12px 0;
 }
 </style>
