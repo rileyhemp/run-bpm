@@ -86,7 +86,7 @@ export default {
 			this.getCurrentTrack();
 			this.loading = true;
 			this.$http
-				.get("http://192.168.1.215:3000/get-user-data", {
+				.get("https://d2ob92q3jfbd5e.cloudfront.net/get-user-data", {
 					params: {
 						credentials: localStorage.RunBPM
 					}
@@ -110,7 +110,7 @@ export default {
 		},
 		updatePlaylists() {
 			this.$http
-				.get(`http://192.168.1.215:3000/playlists?id=${this.userData.id}&credentials=${localStorage.RunBPM}`)
+				.get(`https://d2ob92q3jfbd5e.cloudfront.net/playlists?id=${this.userData.id}&credentials=${localStorage.RunBPM}`)
 				.then(response => {
 					let parsedData = response.data.map(el => {
 						return {

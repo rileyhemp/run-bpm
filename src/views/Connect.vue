@@ -20,7 +20,7 @@ export default {
 	mounted: function() {
 		if (window.location.search.length > 0) {
 			this.$http
-				.get(`http://192.168.1.215:3000/authorize?${window.location.search.split("?")[1]}`)
+				.get(`https://d2ob92q3jfbd5e.cloudfront.net/authorize?${window.location.search.split("?")[1]}`)
 				.then(res => {
 					const credentials = {
 						accessToken: res.data.body["access_token"],
