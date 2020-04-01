@@ -27,7 +27,7 @@ const scopes = [
 const spotifyApi = new SpotifyWebApi(credentials);
 
 const allowCrossDomain = function(req, res, next) {
-	res.header("Access-Control-Allow-Origin", "https://www.runbpm.app");
+	res.header("Access-Control-Allow-Origin", "https://runbpm.app");
 	res.header("Access-Control-Allow-Methods", "*");
 	res.header("Access-Control-Allow-Headers", "*");
 	next();
