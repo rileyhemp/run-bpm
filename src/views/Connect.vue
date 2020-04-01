@@ -48,6 +48,7 @@ export default {
 }
 .app-description {
 	max-width: 500px;
+	padding-top: 50%;
 }
 @media screen and (min-width: 768px) {
 	.home-page {
