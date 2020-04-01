@@ -57,7 +57,7 @@ export default {
 		flex-wrap: nowrap !important;
 	}
 	.app-description {
-		padding-top: 30%;
+		padding-top: 250px;
 	}
 }
 </style>
