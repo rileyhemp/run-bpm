@@ -3,8 +3,46 @@
 		<p class="subtitle-1 app-description">
 			Create killer running playlists in seconds. Filter your music by tempo, energy level, danceability and more.
 		</p>
+
+		<v-dialog v-model="dialog" persistent max-width="290">
+			<template v-slot:activator="{ on }">
+				<v-btn color="blue-grey lighten-2" v-on="on" @click="e1 = 1" rounded class="px-6 mb-5">take a tour</v-btn>
+			</template>
+			<v-card
+				><v-stepper v-model="e1">
+					<v-stepper-header>
+						<v-stepper-step :complete="e1 > 1" step="1">Name of step 1</v-stepper-step>
+
+						<v-divider></v-divider>
+
+						<v-stepper-step :complete="e1 > 2" step="2">Name of step 2</v-stepper-step>
+
+						<v-divider></v-divider>
+
+						<v-stepper-step step="3">Name of step 3</v-stepper-step>
+					</v-stepper-header>
+
+					<v-stepper-items>
+						<v-stepper-content step="1">
+							<v-btn color="primary" @click="e1 = 2">
+								Next
+							</v-btn>
+						</v-stepper-content>
+
+						<v-stepper-content step="2">
+							<v-btn color="primary" @click="e1 = 3">
+								Next
+							</v-btn>
+						</v-stepper-content>
+
+						<v-stepper-content step="3">
+							<v-btn color="primary" @click="dialog = false">Got it</v-btn>
+						</v-stepper-content>
+					</v-stepper-items>
+				</v-stepper>
+			</v-card>
+		</v-dialog>
 		<spotify-login />
-		<p class="caption">Requires Premium</p>
 	</v-container>
 </template>
 
@@ -16,6 +54,12 @@ export default {
 	name: "Connect",
 	components: {
 		"spotify-login": SpotifyLogin
+	},
+	data() {
+		return {
+			dialog: false,
+			e1: 1
+		};
 	},
 	mounted: function() {
 		if (window.location.search.length > 0) {
