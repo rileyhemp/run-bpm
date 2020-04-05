@@ -11,31 +11,71 @@
 			<v-card
 				><v-stepper v-model="e1">
 					<v-stepper-header>
-						<v-stepper-step :complete="e1 > 1" step="1">Name of step 1</v-stepper-step>
+						<v-stepper-step :complete="e1 > 1" step="1">Welcome</v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step :complete="e1 > 2" step="2">Name of step 2</v-stepper-step>
+						<v-stepper-step :complete="e1 > 1" step="2">Why use Run BPM?</v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step step="3">Name of step 3</v-stepper-step>
+						<v-stepper-step :complete="e1 > 2" step="3">Importing music</v-stepper-step>
+
+						<v-divider></v-divider>
+
+						<v-stepper-step :complete="e1 > 3" step="4">Creating playlists</v-stepper-step>
+
+						<v-divider></v-divider>
+
+						<v-stepper-step :complete="e1 > 4" step="5">Done</v-stepper-step>
 					</v-stepper-header>
 
 					<v-stepper-items>
 						<v-stepper-content step="1">
-							<v-btn color="primary" @click="e1 = 2">
+							<h2>Welcome to Run BPM</h2>
+							<p class="caption">Run BPM helps runners improve or maintain their cadence with music.</p>
+							<h4>What is a running cadence?</h4>
+							<p class="caption">
+								Cadence refers to the number of steps you take per minute, and increasing it is one of the fastest ways to become a
+								better runner.
+							</p>
+							<v-btn color="primary" @click="e1 = 2" bottom>
 								Next
 							</v-btn>
 						</v-stepper-content>
 
 						<v-stepper-content step="2">
+							<h2>How does it work?</h2>
+							<p class="caption">
+								Run BPM lets you import your existing playlists, and create new ones at any tempo, or beats-per-minute.
+							</p>
+							<h4>Why is this important?</h4>
+							<p class="caption">
+								Not only is running to the beat more fun, but it can be a great tool to train your body and brain to adapt to a
+								quicker cadence.
+							</p>
 							<v-btn color="primary" @click="e1 = 3">
 								Next
 							</v-btn>
 						</v-stepper-content>
 
 						<v-stepper-content step="3">
+							<h2>Importing music</h2>
+							<p class="body-1">
+								Select one or more of your Spotify playlists to import.
+							</p>
+							<v-btn color="primary" @click="e1 = 4">
+								Next
+							</v-btn>
+						</v-stepper-content>
+
+						<v-stepper-content step="4">
+							<v-btn color="primary" @click="e1 = 5">
+								Next
+							</v-btn>
+						</v-stepper-content>
+
+						<v-stepper-content step="5">
 							<v-btn color="primary" @click="dialog = false">Got it</v-btn>
 						</v-stepper-content>
 					</v-stepper-items>
