@@ -4,7 +4,7 @@
 			Create killer running playlists in seconds. Filter your music by tempo, energy level, danceability and more.
 		</p>
 
-		<v-dialog v-model="dialog" persistent max-width="290">
+		<v-dialog v-model="dialog" persistent>
 			<template v-slot:activator="{ on }">
 				<v-btn color="blue-grey lighten-2" v-on="on" @click="e1 = 1" rounded class="px-6 mb-5">take a tour</v-btn>
 			</template>
@@ -15,29 +15,27 @@
 
 						<v-divider></v-divider>
 
-						<v-stepper-step :complete="e1 > 1" step="2">Why use Run BPM?</v-stepper-step>
+						<v-stepper-step :complete="e1 > 1" step="2">Importing music</v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step :complete="e1 > 2" step="3">Importing music</v-stepper-step>
+						<v-stepper-step :complete="e1 > 2" step="3">Filtering music</v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step :complete="e1 > 3" step="4">Creating playlists</v-stepper-step>
-
-						<v-divider></v-divider>
-
-						<v-stepper-step :complete="e1 > 4" step="5">Done</v-stepper-step>
+						<v-stepper-step :complete="e1 > 3" step="4">Get started</v-stepper-step>
 					</v-stepper-header>
 
 					<v-stepper-items>
 						<v-stepper-content step="1">
 							<h2>Welcome to Run BPM</h2>
-							<p class="caption">Run BPM helps runners improve or maintain their cadence with music.</p>
-							<h4>What is a running cadence?</h4>
 							<p class="caption">
-								Cadence refers to the number of steps you take per minute, and increasing it is one of the fastest ways to become a
-								better runner.
+								Run BPM is the most advanced playlist creation tool for runners. Filter your own Spotify library by tempo and match
+								your music to your pace.
+							</p>
+							<h4>Did you know:</h4>
+							<p class="caption">
+								Studies show runners perform better when the beats-per-minute (BPM) of their music matches their cadence.
 							</p>
 							<v-btn color="primary" @click="e1 = 2" bottom>
 								Next
@@ -45,38 +43,35 @@
 						</v-stepper-content>
 
 						<v-stepper-content step="2">
-							<h2>How does it work?</h2>
+							<h2>Step 1:</h2>
 							<p class="caption">
-								Run BPM lets you import your existing playlists, and create new ones at any tempo, or beats-per-minute.
+								Import one or more of your existing Spotify playlists, or search Spotify for any public playlist.
 							</p>
-							<h4>Why is this important?</h4>
-							<p class="caption">
-								Not only is running to the beat more fun, but it can be a great tool to train your body and brain to adapt to a
-								quicker cadence.
-							</p>
+							<v-img src="../assets/demo/import.gif" aspect-ratio=".7" class="mb-4" />
 							<v-btn color="primary" @click="e1 = 3">
 								Next
 							</v-btn>
 						</v-stepper-content>
 
 						<v-stepper-content step="3">
-							<h2>Importing music</h2>
-							<p class="body-1">
-								Select one or more of your Spotify playlists to import.
+							<h2>Step 2:</h2>
+							<p class="caption">
+								Use the sliders to dial in your selection. You can filter by beats-per-minute, energy level, danceability and more.
 							</p>
+							<v-img src="../assets/demo/filter.gif" aspect-ratio=".7" class="mb-4" />
 							<v-btn color="primary" @click="e1 = 4">
 								Next
 							</v-btn>
 						</v-stepper-content>
 
 						<v-stepper-content step="4">
-							<v-btn color="primary" @click="e1 = 5">
-								Next
-							</v-btn>
-						</v-stepper-content>
-
-						<v-stepper-content step="5">
-							<v-btn color="primary" @click="dialog = false">Got it</v-btn>
+							<h2>Let's go!</h2>
+							<p class="caption">
+								Run BPM is 100% free and we will never sell your data. Click below to get started.
+							</p>
+							<div class="d-flex justify-center">
+								<spotify-login />
+							</div>
 						</v-stepper-content>
 					</v-stepper-items>
 				</v-stepper>
@@ -93,30 +88,30 @@ import SpotifyLogin from "../components/SpotifyLogin.vue";
 export default {
 	name: "Connect",
 	components: {
-		"spotify-login": SpotifyLogin
+		"spotify-login": SpotifyLogin,
 	},
 	data() {
 		return {
 			dialog: false,
-			e1: 1
+			e1: 1,
 		};
 	},
 	mounted: function() {
 		if (window.location.search.length > 0) {
 			this.$http
 				.get(`https://d2ob92q3jfbd5e.cloudfront.net/authorize?${window.location.search.split("?")[1]}`)
-				.then(res => {
+				.then((res) => {
 					const credentials = {
 						accessToken: res.data.body["access_token"],
 						refreshToken: res.data.body["refresh_token"],
-						expiresAt: new Date().getTime() + 3000000
+						expiresAt: new Date().getTime() + 3000000,
 					};
 					localStorage.RunBPM = JSON.stringify(credentials);
 					this.$router.push("/");
 				})
-				.catch(err => console.log(err));
+				.catch((err) => console.log(err));
 		}
-	}
+	},
 };
 </script>
 

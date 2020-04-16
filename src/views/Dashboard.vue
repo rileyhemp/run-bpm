@@ -4,8 +4,7 @@
 			<v-progress-circular indeterminate size="64"></v-progress-circular>
 		</v-overlay>
 		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" class="d-md-none d-sm-flex" />
-
-		<v-navigation-drawer v-if="$vuetify.breakpoint.mdAndUp" class="d-md-flex d-sm-none" absolute :userData="userData">
+		<v-navigation-drawer v-if="$vuetify.breakpoint.mdAndUp" class="d-md-flex d-sm-none" absolute :userData="userData" permanent>
 			<v-list dense nav class="py-0">
 				<div class="d-md-flex d-sm-none logo-text" />
 				<v-list-item two-line>
@@ -59,7 +58,7 @@ export default {
 	name: "Dashboard",
 	components: {
 		"bpm-header": HeaderVue,
-		"user-avatar": UserAvatar
+		"user-avatar": UserAvatar,
 	},
 	data: function() {
 		return {
@@ -69,11 +68,11 @@ export default {
 			userDevices: Object,
 			currentTrack: {
 				id: null,
-				isPlaying: false
+				isPlaying: false,
 			},
 			disableButtons: false,
 			displaySaved: false,
-			loading: false
+			loading: false,
 		};
 	},
 	methods: {
@@ -88,10 +87,10 @@ export default {
 			this.$http
 				.get("https://d2ob92q3jfbd5e.cloudfront.net/get-user-data", {
 					params: {
-						credentials: localStorage.RunBPM
-					}
+						credentials: localStorage.RunBPM,
+					},
 				})
-				.then(response => {
+				.then((response) => {
 					this.userData = response.data.userData;
 					this.userPlaylists = response.data.userPlaylists;
 					this.userDevices = response.data.userDevices;
@@ -100,7 +99,7 @@ export default {
 					userCredientials.expiresAt = response.data.userCredentials.expiresAt;
 					localStorage.RunBPM = JSON.stringify(userCredientials);
 				})
-				.catch(err => {
+				.catch((err) => {
 					//If access token throws an error, the server will request a new one.
 					userCredientials.accessToken = err.response.data;
 					localStorage.RunBPM = JSON.stringify(userCredientials);
@@ -111,18 +110,18 @@ export default {
 		updatePlaylists() {
 			this.$http
 				.get(`https://d2ob92q3jfbd5e.cloudfront.net/playlists?id=${this.userData.id}&credentials=${localStorage.RunBPM}`)
-				.then(response => {
-					let parsedData = response.data.map(el => {
+				.then((response) => {
+					let parsedData = response.data.map((el) => {
 						return {
 							id: el.playlist_id,
 							tracks: JSON.parse(el.tracks),
-							metadata: JSON.parse(el.metadata)
+							metadata: JSON.parse(el.metadata),
 						};
 					});
 					this.CreatedPlaylists = parsedData;
 					this.loading = false;
 				})
-				.catch(err => {
+				.catch((err) => {
 					this.loading = false;
 					console.log(err);
 				});
@@ -130,13 +129,13 @@ export default {
 		getCurrentTrack,
 		getTrackDetails,
 		initTimer,
-		updatePlayState
+		updatePlayState,
 	},
 	mounted: function() {
 		if (Object.entries(this.userData).length === 0) {
 			this.getUserData();
 		}
-	}
+	},
 };
 </script>
 <style>

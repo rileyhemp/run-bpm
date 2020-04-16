@@ -10,14 +10,14 @@
 			<v-spacer v-if="!$vuetify.breakpoint.mdAndUp" />
 			<p class="subtitle-1" :class="$vuetify.breakpoint.mdAndUp ? 'pl-2' : null">Import music</p>
 		</v-row>
-		<v-row class="my-2 mx-2">
+		<!-- <v-row class="my-2 mx-2">
 			<p class="body-2">
 				Select one or more playlists to import and analyze. Playlists will be combined in the next step.
 			</p>
 		</v-row>
 		<v-row class="mx-2">
 			<p class="body-2">For best results, select at least 2 hours of music.</p>
-		</v-row>
+		</v-row> -->
 		<v-row class="d-flex align-center mx-1">
 			<v-text-field v-model="query" class="mx-2" append-icon="mdi-magnify" @keydown="handleKeydown" @click:append="doSearch">
 				<template v-slot:label>Search playlists</template>
