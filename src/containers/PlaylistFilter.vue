@@ -1,5 +1,5 @@
 <template>
-	<div class="filter-container px-1 mt-2" v-show="name === 'beats per minute' || showMoreFilters">
+	<div class="filter-container px-1 mt-2">
 		<div class="overline" :class="collapsed ? 'no-margin' : null">
 			{{ name }}
 			<v-btn icon @click="tooltip = !tooltip">

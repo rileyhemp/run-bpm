@@ -34,7 +34,7 @@
 			/>
 		</v-row>
 		<p class="body-1 ma-2">Your playlists</p>
-		<v-row class="mx-1 mt-3" dense>
+		<v-row class="mx-1 mt-3 mb-8" dense>
 			<playlist-card
 				v-for="playlist in this.$attrs.userPlaylists.items"
 				:key="playlist.id"
@@ -51,19 +51,19 @@ import PlaylistCardVue from "../components/PlaylistCard.vue";
 export default {
 	name: "Import",
 	components: {
-		"playlist-card": PlaylistCardVue
+		"playlist-card": PlaylistCardVue,
 	},
 	data: function() {
 		return {
 			selected: [],
 			query: null,
-			searchResults: []
+			searchResults: [],
 		};
 	},
 	computed: {
 		isDisabled: function() {
 			return this.selected.length > 0 ? false : true;
-		}
+		},
 	},
 	methods: {
 		selectPlaylist(playlist) {
@@ -81,19 +81,19 @@ export default {
 					.get(`https://d2ob92q3jfbd5e.cloudfront.net/search-playlists`, {
 						params: {
 							q: this.query,
-							credentials: localStorage.RunBPM
-						}
+							credentials: localStorage.RunBPM,
+						},
 					})
-					.then(res => {
+					.then((res) => {
 						this.searchResults = res.data.body.playlists.items;
 					})
-					.catch(err => console.log(err));
+					.catch((err) => console.log(err));
 			}
-		}
+		},
 	},
 	mounted: function() {
 		this.$emit("updateUserInfo");
-	}
+	},
 };
 //
 </script>
