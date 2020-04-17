@@ -36,11 +36,6 @@
 				@filterChartData="updateFilters"
 			/>
 		</div>
-		<v-row>
-			<v-btn text class="ml-4 plain-btn" @click="showMoreFilters = !showMoreFilters">{{
-				!showMoreFilters ? "More filters" : "Show less"
-			}}</v-btn>
-		</v-row>
 	</v-container>
 </template>
 

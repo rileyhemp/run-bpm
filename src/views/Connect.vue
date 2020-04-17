@@ -35,7 +35,7 @@
 							</p>
 							<h4>Did you know:</h4>
 							<p class="caption">
-								Studies show runners perform better when the beats-per-minute (BPM) of their music matches their cadence.
+								Studies show runners perform better when the beats-per-minute (BPM) of their music matches their cadence?
 							</p>
 							<v-btn color="primary" @click="e1 = 2" bottom>
 								Next

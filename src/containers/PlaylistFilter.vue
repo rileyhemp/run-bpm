@@ -36,31 +36,28 @@
 			:chartData="this.chartData"
 			:key="renderKey"
 		/>
-		<vue-slider
-			v-show="!this.collapsed"
+		<v-range-slider
 			:min="range[0]"
 			:max="range[1]"
+			thumb-label
 			:dotSize="20"
 			v-model="sliderRange"
 			tooltip="none"
-			class="px-3 no-margin"
-			:enable-cross="false"
+			color="cyan darken-3"
 			:marks="sliderRange"
 			@change="filterChartData"
-		></vue-slider>
+		></v-range-slider>
 	</div>
 </template>
 
 <script>
 import LineGraph from "../components/LineGraph";
-import VueSlider from "vue-slider-component";
 import gsap from "gsap";
 import _ from "lodash";
 import "vue-slider-component/theme/material.css";
 export default {
 	components: {
 		"line-graph": LineGraph,
-		VueSlider,
 	},
 	props: ["tracks", "name", "bars", "filter", "range", "segmentSize", "filters", "showMoreFilters", "chartData", "chartReady", "id", "renderKey"],
 	data: function() {
