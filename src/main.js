@@ -4,6 +4,7 @@ import router from "./router";
 import Axios from "axios";
 import vuetify from './plugins/vuetify';
 import VueRouter from "vue-router";
+import './registerServiceWorker'
 
 Vue.config.productionTip = false;
 Vue.prototype.$http = Axios;
