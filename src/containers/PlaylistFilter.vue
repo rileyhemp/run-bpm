@@ -1,12 +1,7 @@
 <template>
-	<div
-		class="filter-container"
-		:class="collapsed ? 'mx-4 py-0 mt-2' : 'mx-4 pb-4 mb-8 pt-2'"
-		v-show="name === 'beats per minute' || showMoreFilters"
-	>
+	<div class="filter-container px-1 mt-2" v-show="name === 'beats per minute' || showMoreFilters">
 		<div class="overline" :class="collapsed ? 'no-margin' : null">
 			{{ name }}
-
 			<v-btn icon @click="tooltip = !tooltip">
 				<v-icon>{{ tooltip ? "mdi-close-circle-outline" : "mdi-help-circle-outline" }}</v-icon>
 			</v-btn>
@@ -29,7 +24,7 @@
 			</p>
 		</div>
 		<line-graph
-			:collapsed="collapsed"
+			class="mt-3"
 			:type="bars ? 'bar' : 'trend'"
 			:height="height"
 			v-if="this.chartReady"
@@ -105,6 +100,6 @@ export default {
 	margin: 0 !important;
 }
 .filter-container {
-	width: 45%;
+	min-width: 50%;
 }
 </style>

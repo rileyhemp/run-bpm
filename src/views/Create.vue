@@ -4,6 +4,7 @@
 		<v-row class="pr-4 sticky-nav">
 			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
+
 			<v-btn color="primary" class="mr-2" :disabled="loading" @click="savePlaylist">Create</v-btn>
 		</v-row>
 		<v-row class="mt-6 mx-4">
@@ -14,11 +15,13 @@
 		<v-row class="px-3">
 			<span class="mx-4 body-2">Drag the sliders to refine your selection. When you're finished, tap create.</span>
 		</v-row>
-		<v-row class="px-3">
-			<span class="mx-4 my-2 body-2">Selected: {{ songCount }} Tracks, {{ mixDuration }}</span>
+		<v-row class="px-3 pt-4">
+			<span class="mx-4 my-2 body-2"
+				>Tracks: {{ songCount }} <br />
+				Duration: {{ mixDuration }} <br />
+			</span>
 		</v-row>
-		<v-row class="px-3"> </v-row>
-		<div v-if="mountFilters" class="filters-container">
+		<div v-if="mountFilters" class="filters-container px-3 mt-2">
 			<playlist-filter
 				v-for="filter in filters"
 				:showMoreFilters="showMoreFilters"
@@ -286,6 +289,7 @@ export default {
 	.filters-container {
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: space-between;
 	}
 }
 </style>
