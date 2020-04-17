@@ -11,7 +11,7 @@ const credentials = {
 	clientId: "dd71362980ad40bb9820af4e02f5c39e",
 	clientSecret: "515a0f00287745c19c006ce63af4d7b6",
 	// redirectUri: "https://runbpm.app/connect"
-	redirectUri: "http://runbpm.app/connect",
+	redirectUri: "https://runbpm.app/connect",
 };
 
 const scopes = [
