@@ -4,7 +4,7 @@
 			Create killer running playlists in seconds. Filter your music by tempo, energy level, danceability and more.
 		</p>
 
-		<v-dialog v-model="dialog" max-width="400">
+		<v-dialog v-model="dialog" max-width="500">
 			<template v-slot:activator="{ on }">
 				<v-btn color="blue-grey lighten-2" v-on="on" @click="e1 = 1" rounded class="px-6 mb-5">take a tour</v-btn>
 			</template>

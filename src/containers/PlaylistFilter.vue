@@ -4,14 +4,30 @@
 		:class="collapsed ? 'mx-4 py-0 mt-2' : 'mx-4 pb-4 mb-8 pt-2'"
 		v-show="name === 'beats per minute' || showMoreFilters"
 	>
-		<p class="overline" :class="collapsed ? 'no-margin' : null">
+		<div class="overline" :class="collapsed ? 'no-margin' : null">
 			{{ name }}
 
-			<v-btn icon v-show="name === 'valence'" v-if="!tooltip" @click="tooltip = true">
-				<v-icon>mdi-help-circle-outline</v-icon>
+			<v-btn icon @click="tooltip = !tooltip">
+				<v-icon>{{ tooltip ? "mdi-close-circle-outline" : "mdi-help-circle-outline" }}</v-icon>
 			</v-btn>
-			<span v-if="tooltip" @click="tooltip = false" class="overline">: Describes the musical positiveness conveyed by a track. </span>
-		</p>
+			<p v-if="tooltip" @click="tooltip = false" class="overline" style="text-transform: none">
+				{{
+					name === "beats per minute"
+						? "Beats per minute, or BPM, represents the speed of a track. Note: Tracks below 100 bpm are indexed in doubletime, meaning a selection of 160 will include tracks at both 80 and 160 bpm."
+						: name === "energy"
+						? "Represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale."
+						: name === "instrumentalness"
+						? "Predicts whether a track contains no vocals. The closer the instrumentalness value is to 100, the greater likelihood the track contains no vocal content. "
+						: name === "danceability"
+						? "	Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity."
+						: name === "acousticness"
+						? "A confidence measure from 0 to 100 of whether the track is acoustic."
+						: name === "valence"
+						? "Describes the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry)."
+						: null
+				}}
+			</p>
+		</div>
 		<line-graph
 			:collapsed="collapsed"
 			:type="bars ? 'bar' : 'trend'"
@@ -44,7 +60,7 @@ import "vue-slider-component/theme/material.css";
 export default {
 	components: {
 		"line-graph": LineGraph,
-		VueSlider
+		VueSlider,
 	},
 	props: ["tracks", "name", "bars", "filter", "range", "segmentSize", "filters", "showMoreFilters", "chartData", "chartReady", "id", "renderKey"],
 	data: function() {
@@ -52,7 +68,7 @@ export default {
 			sliderRange: this.range,
 			height: 80,
 			collapsed: false,
-			tooltip: false
+			tooltip: false,
 		};
 	},
 	methods: {
@@ -60,13 +76,13 @@ export default {
 			if (!this.collapsed) {
 				gsap.to(this, {
 					height: 0,
-					duration: 0.2
+					duration: 0.2,
 				});
 				setTimeout(() => (this.collapsed = true), 175);
 			} else {
 				gsap.to(this, {
 					height: 100,
-					duration: 0.2
+					duration: 0.2,
 				});
 				this.collapsed = false;
 			}
@@ -76,11 +92,11 @@ export default {
 			this.$emit("filterChartData", {
 				range: this.sliderRange,
 				scale: this.segmentSize,
-				filter: this.filter
+				filter: this.filter,
 			});
-		}, 50)
+		}, 50),
 	},
-	mounted: function() {}
+	mounted: function() {},
 };
 </script>
 
@@ -92,6 +108,6 @@ export default {
 	margin: 0 !important;
 }
 .filter-container {
-	min-width: 45%;
+	width: 45%;
 }
 </style>

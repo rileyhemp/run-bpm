@@ -55,7 +55,7 @@ import msToHMS from "@/scripts/msToHMS";
 export default {
 	name: "create-playlist",
 	components: {
-		"playlist-filter": PlaylistFilter
+		"playlist-filter": PlaylistFilter,
 	},
 	data: function() {
 		return {
@@ -74,44 +74,51 @@ export default {
 					defaultRange: [100, 200], //Starting range selection
 					segmentSize: 10, //E.g 10bpm per block. Lowering this creates a more granular selection
 					name: "beats per minute",
-					id: "doubletime"
+					id: "doubletime",
 				},
 				energy: {
 					range: [0, 100],
 					defaultRange: [0, 100],
 					segmentSize: 10,
 					name: "energy",
-					id: "energy"
+					id: "energy",
 				},
 				instrumentalness: {
 					range: [0, 100],
 					defaultRange: [0, 100],
 					segmentSize: 10,
 					name: "instrumentalness",
-					id: "instrumentalness"
+					id: "instrumentalness",
 				},
 				danceability: {
 					range: [0, 100],
 					defaultRange: [0, 100],
 					segmentSize: 10,
 					name: "danceability",
-					id: "danceability"
+					id: "danceability",
+				},
+				acousticness: {
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
+					name: "acousticness",
+					id: "acousticness",
 				},
 				valence: {
 					range: [0, 100],
 					defaultRange: [0, 100],
 					segmentSize: 10,
 					name: "valence",
-					id: "valence"
-				}
-			}
+					id: "valence",
+				},
+			},
 		};
 	},
 	computed: {
 		selectedTracks: function() {
 			//Decides which tracks meet all selected filters and adds to an array
 			let tracksArray = [];
-			this.audioFeatures.forEach(track => {
+			this.audioFeatures.forEach((track) => {
 				if (
 					track.features.doubletime >= this.filters.doubletime.range[0] &&
 					track.features.doubletime <= this.filters.doubletime.range[1] &&
@@ -133,7 +140,7 @@ export default {
 		},
 		mixDuration: function() {
 			let totalLength = 0;
-			this.selectedTracks.forEach(track => {
+			this.selectedTracks.forEach((track) => {
 				totalLength += track.track.duration_ms;
 			});
 			//Convert time in ms to hours minutes seconds and return
@@ -141,7 +148,7 @@ export default {
 		},
 		tempos: function() {
 			let tempos = [];
-			this.selectedTracks.map(el => {
+			this.selectedTracks.map((el) => {
 				tempos.push(el.features.doubletime);
 			});
 			return tempos;
@@ -154,7 +161,7 @@ export default {
 		},
 		filterArray: function() {
 			return Object.entries(this.filters);
-		}
+		},
 	},
 	methods: {
 		savePlaylist() {
@@ -162,7 +169,7 @@ export default {
 				lowBPM: this.lowBPM,
 				highBPM: this.highBPM,
 				tracks: this.songCount,
-				duration: this.mixDuration
+				duration: this.mixDuration,
 			});
 			const selectedTracks = JSON.stringify(this.selectedTracks);
 			localStorage.setItem("playlistMetadata", metadata);
@@ -174,7 +181,7 @@ export default {
 		},
 		convertToDoubletime() {
 			//Double tempo for tracks under 100bpm (90bpm ~= 180bpm)
-			this.audioFeatures.forEach(track => {
+			this.audioFeatures.forEach((track) => {
 				track.features.tempo = Math.round(track.features.tempo);
 				track.features.tempo < 100
 					? (track.features.doubletime = track.features.tempo * 2)
@@ -185,7 +192,7 @@ export default {
 		initChartData() {
 			const filters = Object.keys(this.filters);
 			//Loop through each filter
-			filters.forEach(el => {
+			filters.forEach((el) => {
 				const filter = this.filters[el];
 				let multiplier;
 				if (el === "doubletime") {
@@ -199,7 +206,7 @@ export default {
 					let segment = {};
 					let tracks = 0;
 					//Count how many tracks are in each segment
-					this.selectedTracks.forEach(track => {
+					this.selectedTracks.forEach((track) => {
 						track.features[el] * multiplier >= i && track.features[el] * multiplier < i + filter.segmentSize ? tracks++ : null;
 					});
 					//Axis name
@@ -221,12 +228,12 @@ export default {
 		},
 		updateFilters: function(options) {
 			this.$set(this.filters[options.filter], "range", options.range);
-		}
+		},
 	},
 	watch: {
 		selectedTracks() {
 			this.initChartData();
-		}
+		},
 	},
 	mounted: function() {
 		this.updateUserInfo();
@@ -245,10 +252,10 @@ export default {
 				.post("https://d2ob92q3jfbd5e.cloudfront.net/analyze-tracks", {
 					data: {
 						playlists: playlists,
-						credentials: localStorage.RunBPM
-					}
+						credentials: localStorage.RunBPM,
+					},
 				})
-				.then(response => {
+				.then((response) => {
 					//Creates one array with both audio features and track details
 					this.audioFeatures = _.zipWith(response.data.playlistDetails, response.data.audioFeatures, function(a, b) {
 						return { track: a.track, features: b };
@@ -256,11 +263,11 @@ export default {
 					this.convertToDoubletime();
 					this.initChartData();
 				})
-				.catch(err => {
+				.catch((err) => {
 					console.log(err);
 				});
 		} else this.$router.push("/");
-	}
+	},
 };
 </script>
 
