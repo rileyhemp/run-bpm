@@ -4,26 +4,26 @@
 			Create killer running playlists in seconds. Filter your music by tempo, energy level, danceability and more.
 		</p>
 
-		<v-dialog v-model="dialog" persistent>
+		<v-dialog v-model="dialog" max-width="400">
 			<template v-slot:activator="{ on }">
 				<v-btn color="blue-grey lighten-2" v-on="on" @click="e1 = 1" rounded class="px-6 mb-5">take a tour</v-btn>
 			</template>
 			<v-card
-				><v-stepper v-model="e1">
+				><v-stepper v-model="e1" class="pb-8">
 					<v-stepper-header>
-						<v-stepper-step :complete="e1 > 1" step="1">Welcome</v-stepper-step>
+						<v-stepper-step :complete="e1 > 1" step="1"></v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step :complete="e1 > 1" step="2">Importing music</v-stepper-step>
+						<v-stepper-step :complete="e1 > 1" step="2"></v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step :complete="e1 > 2" step="3">Filtering music</v-stepper-step>
+						<v-stepper-step :complete="e1 > 2" step="3"></v-stepper-step>
 
 						<v-divider></v-divider>
 
-						<v-stepper-step :complete="e1 > 3" step="4">Get started</v-stepper-step>
+						<v-stepper-step :complete="e1 > 3" step="4"></v-stepper-step>
 					</v-stepper-header>
 
 					<v-stepper-items>
@@ -45,9 +45,16 @@
 						<v-stepper-content step="2">
 							<h2>Step 1:</h2>
 							<p class="caption">
-								Import one or more of your existing Spotify playlists, or search Spotify for any public playlist.
+								Import one or more Spotify playlists. These can be yours or any public playlist.
 							</p>
-							<v-img src="../assets/demo/import.gif" aspect-ratio=".7" class="mb-4" />
+							<v-img
+								src="../assets/demo/import.gif"
+								position="center top"
+								aspect-ratio="1"
+								class="mb-4"
+								max-height="300"
+								max-width="300"
+							/>
 							<v-btn color="primary" @click="e1 = 3">
 								Next
 							</v-btn>
@@ -58,7 +65,14 @@
 							<p class="caption">
 								Use the sliders to dial in your selection. You can filter by beats-per-minute, energy level, danceability and more.
 							</p>
-							<v-img src="../assets/demo/filter.gif" aspect-ratio=".7" class="mb-4" />
+							<v-img
+								src="../assets/demo/filter2.gif"
+								position="center top"
+								aspect-ratio="1"
+								class="mb-4"
+								max-height="300"
+								max-width="300"
+							/>
 							<v-btn color="primary" @click="e1 = 4">
 								Next
 							</v-btn>
