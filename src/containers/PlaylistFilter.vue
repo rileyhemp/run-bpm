@@ -34,13 +34,34 @@
 		<v-range-slider
 			:min="range[0]"
 			:max="range[1]"
-			thumb-label
 			:dotSize="20"
 			v-model="sliderRange"
 			tooltip="none"
 			color="cyan darken-3"
 			:marks="sliderRange"
 			@change="filterChartData"
+		>
+			<template v-slot:prepend>
+				<v-text-field
+					:value="sliderRange[0]"
+					class="mt-0 pt-0"
+					hide-details
+					single-line
+					type="number"
+					style="width: 30px; transform: translateY(20px); position:absolute;"
+					@change="$set(sliderRange, 0, $event)"
+				></v-text-field>
+			</template>
+			<template v-slot:append>
+				<v-text-field
+					:value="sliderRange[1]"
+					class="mt-0 pt-0"
+					hide-details
+					single-line
+					type="number"
+					style="width: 30px; transform: translateY(20px) translateX(-30px); position:absolute;"
+					@change="$set(sliderRange, 1, $event)"
+				></v-text-field> </template
 		></v-range-slider>
 	</div>
 </template>
