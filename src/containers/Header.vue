@@ -3,7 +3,7 @@
 		<div class="header-content">
 			<v-toolbar-title>{{ pageTitle }}</v-toolbar-title>
 			<v-spacer />
-			<v-menu v-model="showMenu" :nudge-bottom="56">
+			<v-menu v-model="showMenu" :nudge-bottom="56" style="z-index:1000">
 				<v-list class="text-right">
 					<v-list-item @click="openSpotifyProfile">
 						<v-list-item-title>Connected as {{ this.$attrs.user.display_name }}</v-list-item-title>
@@ -23,12 +23,12 @@ import UserAvatar from "../components/UserAvatar";
 export default {
 	name: "Header",
 	components: {
-		"user-avatar": UserAvatar
+		"user-avatar": UserAvatar,
 	},
 	props: ["pageTitle"],
 	data: function() {
 		return {
-			showMenu: false
+			showMenu: false,
 		};
 	},
 	methods: {
@@ -41,8 +41,8 @@ export default {
 		logout() {
 			localStorage.removeItem("RunBPM");
 			this.$router.push("/connect");
-		}
-	}
+		},
+	},
 };
 </script>
 <style>
