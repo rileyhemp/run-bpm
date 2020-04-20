@@ -7,12 +7,7 @@ const UserDB = require("./sql");
 const axios = require("axios");
 const DatabasePath = __dirname + "/db/new.db";
 
-const credentials = {
-	clientId: "dd71362980ad40bb9820af4e02f5c39e",
-	clientSecret: "515a0f00287745c19c006ce63af4d7b6",
-	redirectUri: "https://runbpm.app/connect",
-	// redirectUri: "http://localhost:8080/connect",
-};
+const credentials = require("./config.js");
 
 const scopes = [
 	"user-read-private",
@@ -28,8 +23,8 @@ const scopes = [
 const spotifyApi = new SpotifyWebApi(credentials);
 
 const allowCrossDomain = function(req, res, next) {
-	// res.header("Access-Control-Allow-Origin", "https://runbpm.app");
-	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Origin", "https://runbpm.app");
+	// res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Methods", "*");
 	res.header("Access-Control-Allow-Headers", "*");
 	next();
