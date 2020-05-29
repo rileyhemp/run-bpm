@@ -15,11 +15,6 @@
 		<v-row class="px-3">
 			<span class="mx-4 body-2">Drag the sliders to refine your selection. When you're finished, tap create.</span>
 		</v-row>
-		<v-row class="px-3">
-			<span class="mx-4 body-2"
-				>Attention iPhone users: We are investigating an issue that causes the sliders to not load properly on iOS.</span
-			>
-		</v-row>
 		<v-row class="px-3 pt-4">
 			<span class="mx-4 my-2 body-2"
 				>Tracks: {{ songCount }} <br />

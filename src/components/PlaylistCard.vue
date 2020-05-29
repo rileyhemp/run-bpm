@@ -1,6 +1,13 @@
 <template>
-	<v-col :cols="$vuetify.breakpoint.mdAndUp ? 3 : 4">
-		<v-card :elevation="12" class="card-select " :tile="!isSelected" :light="isSelected" @click.native="selectPlaylist" :focus="isSelected">
+	<v-col :cols="$vuetify.breakpoint.xlOnly ? 2 : $vuetify.breakpoint.mdAndUp ? 3 : 4">
+		<v-card
+			:elevation="12"
+			:class="$vuetify.breakpoint.lgAndUp ? 'pa-1 ma-1 card-select' : 'pa-1 card-select'"
+			:tile="!isSelected"
+			:light="isSelected"
+			@click.native="selectPlaylist"
+			:focus="isSelected"
+		>
 			<v-img :src="playlist.images[0].url" aspect-ratio="1" class="grey lighten-2 d-flex align-start" :alt="`Image of ${playlist.name}`">
 			</v-img>
 			<v-row align="end" dense>
@@ -16,7 +23,7 @@ export default {
 	props: ["playlist", "selectable"],
 	data: function() {
 		return {
-			isSelected: false
+			isSelected: false,
 		};
 	},
 	methods: {
@@ -25,8 +32,8 @@ export default {
 				this.$emit("selected");
 				this.isSelected = !this.isSelected;
 			}
-		}
-	}
+		},
+	},
 };
 </script>
 <style>
