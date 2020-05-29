@@ -20,6 +20,12 @@
 				Duration: {{ mixDuration }} <br />
 			</span>
 		</v-row>
+		<v-row class="px-3 pt-4">
+			<v-btn class="ml-4" color="success" @click="editPlaylist = true">Edit Selection</v-btn>
+			<v-dialog v-model="editPlaylist">
+				<playlist-tracks :tracks="this.selectedTracks" @close="editPlaylist = false" />
+			</v-dialog>
+		</v-row>
 		<div v-if="mountFilters" class="filters-container px-3 mt-2">
 			<playlist-filter
 				v-for="filter in filters"
@@ -47,12 +53,14 @@ import PlaylistFilter from "../containers/PlaylistFilter";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
+import PlaylistTracks from "../components/PlaylistTracks";
 // import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 
 export default {
 	name: "create-playlist",
 	components: {
 		"playlist-filter": PlaylistFilter,
+		"playlist-tracks": PlaylistTracks,
 	},
 	data: function() {
 		return {
@@ -61,6 +69,7 @@ export default {
 			audioFeatures: features,
 			chartData: Object,
 			chartsReady: false,
+			editPlaylist: false,
 			renderKey: 1,
 			showMoreFilters: this.$vuetify.breakpoint.mdAndUp,
 			mountFilters: false,

@@ -1,17 +1,9 @@
 <template>
-	<v-card @click.native="close">
-		<v-list-item three-line>
-			<v-list-item-content>
-				<v-list-item-title class="title mb-1">{{ playlist.name }}</v-list-item-title>
-				<v-list-item-subtitle>{{ playlist.description }}</v-list-item-subtitle>
-				<v-list-item-content>
-					<p class="body-2">{{ tracks.length }} tracks {{ mixDuration }}</p>
-				</v-list-item-content>
-			</v-list-item-content>
-			<v-list-item-avatar tile size="80" color="grey">
-				<img :src="playlist.images[1] ? playlist.images[1].url : playlist.images[0].url" alt="Image for Spotify playlist" />
-			</v-list-item-avatar>
-		</v-list-item>
+	<v-card absolute style="z-index: 1000" class="pa-4">
+		<v-row class="sticky-row px-2">
+			<v-spacer />
+			<v-btn @click="close">Close</v-btn>
+		</v-row>
 		<v-list two-line class="mx-2">
 			<v-list-item-subtitle class="mx-4"></v-list-item-subtitle>
 			<v-list-item v-for="track in tracks" :key="track.id">
@@ -32,19 +24,19 @@ export default {
 	computed: {
 		mixDuration: function() {
 			let totalLength = 0;
-			this.tracks.forEach(track => {
+			this.tracks.forEach((track) => {
 				totalLength += track.track.duration_ms;
 			});
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
-		}
+		},
 	},
 	methods: {
 		getArtist(track) {
 			const artists = track.track.artists;
 			let names = [];
 			if (artists.length > 1) {
-				artists.forEach(el => {
+				artists.forEach((el) => {
 					names.push(el.name);
 				});
 				return names.join(", ");
@@ -53,7 +45,13 @@ export default {
 		},
 		close() {
 			this.$emit("close");
-		}
-	}
+		},
+	},
 };
 </script>
+<style>
+.sticky-row {
+	position: sticky;
+	top: 16px;
+}
+</style>

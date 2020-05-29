@@ -156,7 +156,7 @@ export default {
 .sticky-nav {
 	position: sticky;
 	top: 0px;
-	z-index: 999;
+	z-index: 190;
 	background-color: black;
 	padding: 12px 0;
 }
