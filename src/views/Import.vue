@@ -7,8 +7,7 @@
 		</v-row>
 		<v-row class="mt-6 mb-2 mx-2">
 			<p class="subtitle-1">Step 1 / 3</p>
-			<v-spacer v-if="!$vuetify.breakpoint.mdAndUp" />
-			<p class="subtitle-1" :class="$vuetify.breakpoint.mdAndUp ? 'pl-2' : null">Import music</p>
+			<p class="subtitle-1 pl-2">Import music</p>
 		</v-row>
 		<!-- <v-row class="my-2 mx-2">
 			<p class="body-2">

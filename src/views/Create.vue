@@ -9,8 +9,7 @@
 		</v-row>
 		<v-row class="mt-6 mx-4">
 			<p class="subtitle-1">Step 2 / 3</p>
-			<v-spacer v-if="!$vuetify.breakpoint.mdAndUp" />
-			<p class="subtitle-1" :class="$vuetify.breakpoint.mdAndUp ? 'pl-2' : null">Filter tracks</p>
+			<p class="subtitle-1 pl-2">Filter tracks</p>
 		</v-row>
 		<v-row class="px-3">
 			<span class="mx-4 body-2">Drag the sliders to refine your selection. When you're finished, tap create.</span>
@@ -285,7 +284,7 @@ export default {
 	border-radius: 50%;
 	background-color: rgba(0, 0, 0, 0.3);
 }
-@media screen and (min-width: 960px) {
+@media screen and (min-width: 600px) {
 	.filters-container {
 		display: flex;
 		flex-wrap: wrap;

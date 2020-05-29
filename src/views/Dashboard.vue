@@ -3,7 +3,7 @@
 		<v-overlay :value="loading" :z-index="1000">
 			<v-progress-circular indeterminate size="64"></v-progress-circular>
 		</v-overlay>
-		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" class="d-md-none d-sm-flex" />
+		<bpm-header :pageTitle="this.$router.currentRoute.name" :user="this.userData" class="d-md-none" />
 		<v-navigation-drawer v-if="$vuetify.breakpoint.mdAndUp" class="d-md-flex d-sm-none" absolute :userData="userData" permanent>
 			<v-list dense nav class="py-0">
 				<div class="d-md-flex d-sm-none logo-text" />

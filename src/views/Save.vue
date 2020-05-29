@@ -6,8 +6,7 @@
 		</v-row>
 		<v-row class="mt-6 px-4">
 			<p class="subtitle-1">Step 3 / 3</p>
-			<v-spacer v-if="!$vuetify.breakpoint.mdAndUp" />
-			<p class="subtitle-1" :class="$vuetify.breakpoint.mdAndUp ? 'pl-2' : null">Review and save</p>
+			<p class="subtitle-1 pl-2">Review and save</p>
 		</v-row>
 		<v-row class="px-4 ">
 			<span class="subtitle-1">What would you like to do?</span>
@@ -86,7 +85,7 @@
 							@click="
 								() => {
 									if (!success) {
-										this.addToExistingPlaylist().then(data => {
+										this.addToExistingPlaylist().then((data) => {
 											this.success = true;
 											this.totalAdded = data;
 										});
@@ -109,7 +108,7 @@ import _ from "lodash";
 export default {
 	name: "save-playlist",
 	components: {
-		"playlist-card": PlaylistCardVue
+		"playlist-card": PlaylistCardVue,
 	},
 	data: function() {
 		return {
@@ -123,7 +122,7 @@ export default {
 			playlistMetadata: Object,
 			playlistToUpdate: Object,
 			success: false,
-			totalAdded: [0, 0]
+			totalAdded: [0, 0],
 		};
 	},
 	computed: {
@@ -142,7 +141,7 @@ export default {
 		},
 		tracksAdded: function() {
 			return this.totalAdded[1];
-		}
+		},
 	},
 	methods: {
 		selectPlaylist(playlist) {
@@ -160,10 +159,10 @@ export default {
 					.put(`https://d2ob92q3jfbd5e.cloudfront.net/playlist-details`, {
 						data: {
 							playlist: this.playlistToUpdate,
-							credentials: localStorage.RunBPM
-						}
+							credentials: localStorage.RunBPM,
+						},
 					})
-					.then(res => {
+					.then((res) => {
 						console.log(res);
 						//Filters out duplicates
 						const targetPlaylistTrackIDs = res.data;
@@ -174,13 +173,13 @@ export default {
 								data: {
 									trackIDs: uniqueTracks,
 									targetPlaylist: this.playlistToUpdate,
-									credentials: localStorage.RunBPM
-								}
+									credentials: localStorage.RunBPM,
+								},
 							})
 							.then(() => resolve([trackIDs.length, uniqueTracks.length]))
-							.catch(err => reject(err));
+							.catch((err) => reject(err));
 					})
-					.catch(err => console.log(err));
+					.catch((err) => console.log(err));
 			});
 		},
 		createPlaylistFromSelection() {
@@ -200,10 +199,10 @@ export default {
 							trackIDs: trackIDs,
 							metadata: metadata,
 							name: this.playlistName,
-							credentials: localStorage.RunBPM
-						}
+							credentials: localStorage.RunBPM,
+						},
 					})
-					.then(res => {
+					.then((res) => {
 						console.log(res);
 						this.updateUserInfo();
 						//Check to see if user info has updated before resolving promise
@@ -214,7 +213,7 @@ export default {
 							}
 						}, 20);
 					})
-					.catch(err => {
+					.catch((err) => {
 						console.log("Something went wrong", err);
 						this.loading = false;
 						reject();
@@ -223,12 +222,12 @@ export default {
 		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
-		}
+		},
 	},
 	mounted: function() {
 		this.playlistMetadata = JSON.parse(localStorage.playlistMetadata);
 		this.playlistTracks = JSON.parse(localStorage.playlistTracks);
-	}
+	},
 };
 </script>
 

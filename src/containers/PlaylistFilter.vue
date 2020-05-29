@@ -5,7 +5,7 @@
 			<v-btn icon @click="tooltip = !tooltip">
 				<v-icon>{{ tooltip ? "mdi-close-circle-outline" : "mdi-help-circle-outline" }}</v-icon>
 			</v-btn>
-			<p v-if="tooltip" @click="tooltip = false" class="overline" style="text-transform: none">
+			<p v-if="tooltip" @click="tooltip = false" class="body-2" style="text-transform: none">
 				{{
 					name === "beats per minute"
 						? "Beats per minute, or BPM, represents the speed of a track. Note: Tracks below 100 bpm are indexed in doubletime, meaning a selection of 160 will include tracks at both 80 and 160 bpm."
@@ -41,28 +41,37 @@
 			:marks="sliderRange"
 			@change="filterChartData"
 		>
-			<template v-slot:prepend>
+		</v-range-slider>
+		<v-row style="transform: translateY(-30px)">
+			<v-col :cols="$vuetify.breakpoint.smAndUp ? 3 : null">
 				<v-text-field
 					:value="sliderRange[0]"
 					class="mt-0 pt-0"
 					hide-details
 					single-line
-					type="number"
-					style="width: 30px; transform: translateY(20px); position:absolute;"
+					:type="$vuetify.breakpoint.mdAndUp ? 'text' : 'number'"
 					@change="$set(sliderRange, 0, $event)"
+					flat
+					solo-inverted
+					:style="$vuetify.breakpoint.mdAndUp ? 'pointer-events:none' : null"
 				></v-text-field>
-			</template>
-			<template v-slot:append>
+			</v-col>
+			<v-spacer />
+			<v-col :cols="$vuetify.breakpoint.smAndUp ? 3 : null">
 				<v-text-field
 					:value="sliderRange[1]"
 					class="mt-0 pt-0"
 					hide-details
 					single-line
-					type="number"
-					style="width: 30px; transform: translateY(20px) translateX(-30px); position:absolute;"
+					:type="$vuetify.breakpoint.mdAndUp ? 'text' : 'number'"
 					@change="$set(sliderRange, 1, $event)"
-				></v-text-field> </template
-		></v-range-slider>
+					flat
+					solo-inverted
+					reverse
+					:style="$vuetify.breakpoint.mdAndUp ? 'pointer-events:none' : null"
+				></v-text-field>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 
@@ -111,6 +120,8 @@ export default {
 	},
 	mounted: function() {},
 };
+// style="width: 30px; transform: translateY(20px) translateX(-30px); position:absolute;"
+// style="width: 30px; transform: translateY(20px); position:absolute;"
 </script>
 
 <style>
@@ -121,6 +132,22 @@ export default {
 	margin: 0 !important;
 }
 .filter-container {
-	min-width: 50%;
+	min-width: 100%;
+}
+
+@media screen and (min-width: 600px) {
+	.filter-container {
+		min-width: 50%;
+		max-width: 50%;
+	}
+}
+@media screen and (min-width: 1400px) {
+	.filter-container {
+		min-width: 33%;
+		max-width: 33%;
+	}
+}
+.theme--dark.v-text-field--solo > .v-input__control > .v-input__slot {
+	background: transparent;
 }
 </style>
