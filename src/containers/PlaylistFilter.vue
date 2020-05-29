@@ -1,11 +1,16 @@
 <template>
 	<div class="filter-container px-1 mt-2">
-		<div class="overline" :class="collapsed ? 'no-margin' : null">
+		<div class="overline" :class="collapsed ? 'no-margin' : null" style="position:relative">
 			{{ name }}
 			<v-btn icon @click="tooltip = !tooltip">
 				<v-icon>{{ tooltip ? "mdi-close-circle-outline" : "mdi-help-circle-outline" }}</v-icon>
 			</v-btn>
-			<p v-if="tooltip" @click="tooltip = false" class="body-2" style="text-transform: none">
+			<p
+				v-if="tooltip"
+				@click="tooltip = false"
+				class="body-2"
+				style="text-transform: none; position: absolute; background-color: rgba(0,0,0,0.6)"
+			>
 				{{
 					name === "beats per minute"
 						? "Beats per minute, or BPM, represents the speed of a track. Note: Tracks below 100 bpm are indexed in doubletime, meaning a selection of 160 will include tracks at both 80 and 160 bpm."
@@ -43,7 +48,7 @@
 		>
 		</v-range-slider>
 		<v-row style="transform: translateY(-30px)">
-			<v-col :cols="$vuetify.breakpoint.smAndUp ? 3 : null">
+			<v-col :cols="$vuetify.breakpoint.xsOnly ? 3 : $vuetify.breakpoint.smAndUp ? 3 : null">
 				<v-text-field
 					:value="sliderRange[0]"
 					class="mt-0 pt-0"
@@ -57,7 +62,7 @@
 				></v-text-field>
 			</v-col>
 			<v-spacer />
-			<v-col :cols="$vuetify.breakpoint.smAndUp ? 3 : null">
+			<v-col :cols="$vuetify.breakpoint.xsOnly ? 3 : $vuetify.breakpoint.smAndUp ? 3 : null">
 				<v-text-field
 					:value="sliderRange[1]"
 					class="mt-0 pt-0"
