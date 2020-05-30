@@ -6,9 +6,58 @@
 		</v-row>
 		<v-list two-line class="mx-2 sticky-row sticky-list-item">
 			<v-list-item>
-				<v-btn icon large v-show="$vuetify.breakpoint.smAndDown"><v-icon light>mdi-select</v-icon></v-btn>
-				<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected"><v-icon>mdi-lock</v-icon></v-btn>
-				<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected"><v-icon light>mdi-delete</v-icon></v-btn>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected" v-on="on"><v-icon>mdi-lock</v-icon></v-btn>
+					</template>
+					<span>Lock</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"><v-icon>mdi-delete</v-icon></v-btn>
+					</template>
+					<span>Delete</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected" @click="deselectAll" v-on="on"><v-icon>mdi-cancel</v-icon></v-btn>
+					</template>
+					<span>Clear selection</span>
+				</v-tooltip>
+				<div class="ml-8">
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"
+								><v-icon large>mdi-chevron-double-up</v-icon></v-btn
+							>
+						</template>
+						<span>Send to top</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"
+								><v-icon large>mdi-chevron-up</v-icon></v-btn
+							>
+						</template>
+						<span>Move up</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"
+								><v-icon large>mdi-chevron-down</v-icon></v-btn
+							>
+						</template>
+						<span>Move down</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"
+								><v-icon large>mdi-chevron-double-down</v-icon></v-btn
+							>
+						</template>
+						<span>Send to bottom</span>
+					</v-tooltip>
+				</div>
 				<v-spacer></v-spacer>
 				<div class="track-features">
 					<div @click="sortBy('doubletime')" class="feature actionable overline">BPM</div>
@@ -21,7 +70,7 @@
 			</v-list-item>
 		</v-list>
 		<v-list two-line class="mx-2">
-			<v-hover v-slot:default="{ hover }" v-for="track in tracks" :key="track.id">
+			<v-hover v-slot:default="{ hover }" v-for="(track, index) in sortedPlaylist" :key="index + 1">
 				<v-list-item
 					class="actionable"
 					:class="
@@ -33,7 +82,7 @@
 							? 'list-item-selected'
 							: null
 					"
-					@click="select(tracks.indexOf(track))"
+					@click="select(sortedPlaylist.indexOf(track))"
 					v-ripple="false"
 				>
 					<v-icon
@@ -73,7 +122,7 @@ export default {
 	data: function() {
 		return {
 			sortMethod: "default",
-			sortedPlaylist: this.tracks,
+			sortedPlaylist: Object,
 			sortHighToLow: true,
 			renderKey: 1,
 			altRenderKey: 1,
@@ -89,6 +138,14 @@ export default {
 			});
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
+		},
+		dragOptions() {
+			return {
+				animation: 200,
+				group: "description",
+				disabled: false,
+				ghostClass: "ghost",
+			};
 		},
 	},
 	methods: {
@@ -146,6 +203,12 @@ export default {
 			this.renderKey++;
 		},
 	},
+	mounted: function() {
+		for (let i = 0; i < this.tracks.length; i++) {
+			this.tracks[i].id = this.tracks[i].track.id;
+		}
+		this.sortedPlaylist = this.tracks;
+	},
 };
 </script>
 <style>
@@ -181,6 +244,7 @@ export default {
 }
 .list-item-locked {
 	opacity: 0.5;
+	pointer-events: none;
 }
 .locked-item-selected {
 	pointer-events: none;
