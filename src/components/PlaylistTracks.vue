@@ -24,11 +24,19 @@
 			<v-hover v-slot:default="{ hover }" v-for="track in tracks" :key="track.id">
 				<v-list-item
 					class="actionable"
-					:class="track.is_selected ? 'list-item-selected' : null"
+					:class="
+						track.is_locked && !track.is_selected
+							? 'list-item-locked'
+							: track.is_selected && track.is_locked
+							? 'locked-item-selected'
+							: track.is_selected
+							? 'list-item-selected'
+							: null
+					"
 					@click="select(tracks.indexOf(track))"
 					v-ripple="false"
 				>
-					<v-icon class="mr-2" v-if="track.is_locked">mdi-lock</v-icon>
+					<v-icon class="mr-2" style="pointer-events:all" v-if="track.is_locked">mdi-lock</v-icon>
 					<v-list-item-icon class="mx-0" v-if="!track.is_locked">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
@@ -160,6 +168,16 @@ export default {
 	cursor: pointer;
 }
 .list-item-selected {
+	background-color: rgba(255, 255, 255, 0.05);
+	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
+	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
+}
+.list-item-locked {
+	opacity: 0.5;
+	pointer-events: none;
+}
+.locked-item-selected {
+	pointer-events: none;
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
 	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
