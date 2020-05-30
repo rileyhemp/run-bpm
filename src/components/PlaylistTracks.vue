@@ -7,7 +7,7 @@
 		<v-list two-line class="mx-2 sticky-row sticky-list-item">
 			<v-list-item>
 				<v-btn icon large v-show="$vuetify.breakpoint.smAndDown"><v-icon light>mdi-select</v-icon></v-btn>
-				<v-btn icon large :disabled="!tracksAreSelected"><v-icon>mdi-lock</v-icon></v-btn>
+				<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected"><v-icon>mdi-lock</v-icon></v-btn>
 				<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected"><v-icon light>mdi-delete</v-icon></v-btn>
 				<v-spacer></v-spacer>
 				<div class="track-features">
@@ -106,15 +106,27 @@ export default {
 		},
 		deleteSelected() {
 			_.pullAll(this.sortedPlaylist, this.selectedTracks);
-			this.selectedTracks = [];
-			this.tracksAreSelected = false;
-			this.renderKey++;
+			this.deselectAll();
 		},
 		select(index) {
 			this.sortedPlaylist[index].is_selected = !this.sortedPlaylist[index].is_selected;
 			let id = this.sortedPlaylist[index];
 			this.selectedTracks.includes(id) ? (this.selectedTracks = _.pull(this.selectedTracks, id)) : this.selectedTracks.push(id);
 			this.tracksAreSelected = this.selectedTracks.length > 0;
+		},
+		lockSelected() {
+			for (let i = 0; i < this.sortedPlaylist.length; i++) {
+				this.sortedPlaylist[i].is_locked = !this.sortedPlaylist[i].is_locked;
+			}
+			this.deselectAll();
+		},
+		deselectAll() {
+			for (let i = 0; i < this.sortedPlaylist.length; i++) {
+				this.sortedPlaylist[i].is_selected = false;
+			}
+			this.selectedTracks = [];
+			this.tracksAreSelected = false;
+			this.renderKey++;
 		},
 	},
 };
