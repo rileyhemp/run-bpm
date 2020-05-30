@@ -36,7 +36,16 @@
 					@click="select(tracks.indexOf(track))"
 					v-ripple="false"
 				>
-					<v-icon class="mr-2" style="pointer-events:all" v-if="track.is_locked">mdi-lock</v-icon>
+					<v-icon
+						class="mr-2"
+						style="pointer-events:all"
+						v-if="track.is_locked"
+						@click="
+							track.is_locked = false;
+							select(sortedPlaylist.indexOf(track));
+						"
+						>mdi-lock</v-icon
+					>
 					<v-list-item-icon class="mx-0" v-if="!track.is_locked">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
@@ -65,6 +74,7 @@ export default {
 		return {
 			sortMethod: "default",
 			sortedPlaylist: this.tracks,
+			sortHighToLow: true,
 			renderKey: 1,
 			altRenderKey: 1,
 			selectedTracks: [],
@@ -101,16 +111,13 @@ export default {
 		},
 		sortBy(property) {
 			let list = this.tracks;
-			let direction = null;
-			if (this.sortMethod === property + "HightToLow") {
-				list.sort((a, b) => (a.features[property] < b.features[property] ? 1 : -1));
-				direction = "LowToHigh";
+			if (this.sortHighToLow) {
+				list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.features[property] < b.features[property] ? 1 : -1));
 			} else {
-				list.sort((a, b) => (a.features[property] > b.features[property] ? 1 : -1));
-				direction = "HightToLow";
+				list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.features[property] > b.features[property] ? 1 : -1));
 			}
+			this.sortHighToLow = !this.sortHighToLow;
 			this.sortedPlaylist = list;
-			this.sortMethod = property + direction;
 			this.renderKey++;
 		},
 		deleteSelected() {
@@ -174,7 +181,6 @@ export default {
 }
 .list-item-locked {
 	opacity: 0.5;
-	pointer-events: none;
 }
 .locked-item-selected {
 	pointer-events: none;
