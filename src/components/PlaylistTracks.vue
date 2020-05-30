@@ -7,8 +7,8 @@
 		<v-list two-line class="mx-2 sticky-row sticky-list-item">
 			<v-list-item>
 				<v-btn icon large v-show="$vuetify.breakpoint.smAndDown"><v-icon light>mdi-select</v-icon></v-btn>
-				<v-btn icon large color="grey darken-2"><v-icon>mdi-lock</v-icon></v-btn>
-				<v-btn icon large :disabled="!tracksAreSelected"><v-icon light>mdi-delete</v-icon></v-btn>
+				<v-btn icon large :disabled="!tracksAreSelected"><v-icon>mdi-lock</v-icon></v-btn>
+				<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected"><v-icon light>mdi-delete</v-icon></v-btn>
 				<v-spacer></v-spacer>
 				<div class="track-features">
 					<div @click="sortBy('doubletime')" class="feature actionable overline">BPM</div>
@@ -104,12 +104,15 @@ export default {
 			this.sortMethod = property + direction;
 			this.renderKey++;
 		},
-		// deleteSelected(ids){
-
-		// }
+		deleteSelected() {
+			_.pullAll(this.sortedPlaylist, this.selectedTracks);
+			this.selectedTracks = [];
+			this.tracksAreSelected = false;
+			this.renderKey++;
+		},
 		select(index) {
 			this.sortedPlaylist[index].is_selected = !this.sortedPlaylist[index].is_selected;
-			let id = this.sortedPlaylist[index].track.id;
+			let id = this.sortedPlaylist[index];
 			this.selectedTracks.includes(id) ? (this.selectedTracks = _.pull(this.selectedTracks, id)) : this.selectedTracks.push(id);
 			this.tracksAreSelected = this.selectedTracks.length > 0;
 		},
