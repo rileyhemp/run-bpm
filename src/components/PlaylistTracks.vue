@@ -28,7 +28,8 @@
 					@click="select(tracks.indexOf(track))"
 					v-ripple="false"
 				>
-					<v-list-item-icon class="mx-0">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
+					<v-icon class="mr-2" v-if="track.is_locked">mdi-lock</v-icon>
+					<v-list-item-icon class="mx-0" v-if="!track.is_locked">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
 						<v-list-item-subtitle>{{ getArtist(track) }}</v-list-item-subtitle>
@@ -115,8 +116,9 @@ export default {
 			this.tracksAreSelected = this.selectedTracks.length > 0;
 		},
 		lockSelected() {
-			for (let i = 0; i < this.sortedPlaylist.length; i++) {
-				this.sortedPlaylist[i].is_locked = !this.sortedPlaylist[i].is_locked;
+			for (let i = 0; i < this.selectedTracks.length; i++) {
+				let index = this.sortedPlaylist.indexOf(this.selectedTracks[i]);
+				this.sortedPlaylist[index].is_locked = !this.sortedPlaylist[index].is_locked;
 			}
 			this.deselectAll();
 		},
