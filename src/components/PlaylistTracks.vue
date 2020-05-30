@@ -8,7 +8,7 @@
 			<v-list-item>
 				<v-btn icon large v-show="$vuetify.breakpoint.smAndDown"><v-icon light>mdi-select</v-icon></v-btn>
 				<v-btn icon large color="grey darken-2"><v-icon>mdi-lock</v-icon></v-btn>
-				<v-btn icon large color="grey darken-2"><v-icon light>mdi-delete</v-icon></v-btn>
+				<v-btn icon large :disabled="!tracksAreSelected"><v-icon light>mdi-delete</v-icon></v-btn>
 				<v-spacer></v-spacer>
 				<div class="track-features">
 					<div @click="sortBy('doubletime')" class="feature actionable overline">BPM</div>
@@ -22,8 +22,13 @@
 		</v-list>
 		<v-list two-line class="mx-2">
 			<v-hover v-slot:default="{ hover }" v-for="track in tracks" :key="track.id">
-				<v-list-item class="actionable" :class="hover ? 'list-item-hovered' : 'list-item-not-hovered'">
-					<v-list-item-icon class="mx-0">{{ tracks.indexOf(track) + 1 }}</v-list-item-icon>
+				<v-list-item
+					class="actionable"
+					:class="track.is_selected ? 'list-item-selected' : null"
+					@click="select(tracks.indexOf(track))"
+					v-ripple="false"
+				>
+					<v-list-item-icon class="mx-0">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
 						<v-list-item-subtitle>{{ getArtist(track) }}</v-list-item-subtitle>
@@ -44,13 +49,17 @@
 
 <script>
 import msToHMS from "../scripts/msToHMS";
+import _ from "lodash";
 export default {
 	props: ["playlist", "tracks"],
 	data: function() {
 		return {
 			sortMethod: "default",
-			sortedPlaylist: Array,
+			sortedPlaylist: this.tracks,
 			renderKey: 1,
+			altRenderKey: 1,
+			selectedTracks: [],
+			tracksAreSelected: false,
 		};
 	},
 	computed: {
@@ -95,6 +104,15 @@ export default {
 			this.sortMethod = property + direction;
 			this.renderKey++;
 		},
+		// deleteSelected(ids){
+
+		// }
+		select(index) {
+			this.sortedPlaylist[index].is_selected = !this.sortedPlaylist[index].is_selected;
+			let id = this.sortedPlaylist[index].track.id;
+			this.selectedTracks.includes(id) ? (this.selectedTracks = _.pull(this.selectedTracks, id)) : this.selectedTracks.push(id);
+			this.tracksAreSelected = this.selectedTracks.length > 0;
+		},
 	},
 };
 </script>
@@ -119,12 +137,14 @@ export default {
 .feature {
 	margin-left: 8px;
 	text-align: right;
-	cursor: default;
+	cursor: pointer;
 }
 .actionable {
 	cursor: pointer;
 }
-.list-item-hovered {
-	background-color: rgba(0, 0, 0, 0.1);
+.list-item-selected {
+	background-color: rgba(255, 255, 255, 0.05);
+	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
+	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
 }
 </style>
