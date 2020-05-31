@@ -70,7 +70,7 @@
 			</v-list-item>
 		</v-list>
 		<v-list two-line class="mx-2">
-			<v-hover v-slot:default="{ hover }" v-for="(track, index) in sortedPlaylist" :key="index + 1">
+			<v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
 				<v-list-item
 					class="actionable list-item"
 					:class="
@@ -78,8 +78,10 @@
 							? 'list-item-locked'
 							: track.is_selected && track.is_locked
 							? 'locked-item-selected'
-							: track.is_selected
+							: track.is_selected && !hover
 							? 'list-item-selected'
+							: hover
+							? 'on-hover'
 							: null
 					"
 					@click="select($event, sortedPlaylist.indexOf(track), $el)"
@@ -91,7 +93,7 @@
 						v-if="track.is_locked"
 						@click="
 							track.is_locked = false;
-							select(sortedPlaylist.indexOf(track));
+							deselectAll();
 						"
 						>mdi-lock</v-icon
 					>
@@ -189,6 +191,9 @@ export default {
 			for (let i = 0; i < this.selectedTracks.length; i++) {
 				let track = this.sortedPlaylist[this.selectedTracks[i].index];
 				let newIndex = track.index - 1;
+				while (this.sortedPlaylist[newIndex - 1] && this.sortedPlaylist[newIndex - 1].is_locked) {
+					newIndex--;
+				}
 				this.moveItem(this.sortedPlaylist, track.index, newIndex);
 				track.index = newIndex;
 				newIndex === 0 ? (this.topIsSelected = !this.topIsSelected) : null;
@@ -196,6 +201,7 @@ export default {
 		},
 		//look into splice API. Collect indexes in an array, number of items, and move all at once.
 		moveDown() {
+			this.topIsSelected = false;
 			if (!this.reversed) {
 				_.reverse(this.selectedTracks);
 				this.reversed = true;
@@ -203,6 +209,9 @@ export default {
 			for (let i = 0; i < this.selectedTracks.length; i++) {
 				let track = this.sortedPlaylist[this.selectedTracks[i].index];
 				let newIndex = track.index + 1;
+				while (this.sortedPlaylist[newIndex + 1] && this.sortedPlaylist[newIndex + 1].is_locked) {
+					newIndex++;
+				}
 				this.moveItem(this.sortedPlaylist, track.index, newIndex);
 				track.index = newIndex;
 				newIndex === this.sortedPlaylist.length - 1 ? (this.lastIsSelected = true) : null;
@@ -259,10 +268,11 @@ export default {
 			this.deselectAll();
 		},
 		select(event, index, element) {
+			element.classList.add("list-item-selected");
 			console.log(element);
 			let indexes = [index];
 			let indexesToAdd = [];
-			if (event.shiftKey) {
+			if (event.shiftKey && !this.sortedPlaylist[this.lastClickedIndex].is_locked && !this.sortedPlaylist[index].is_locked) {
 				let itemsToFill = index - this.lastClickedIndex - 1;
 				itemsToFill < 0 ? (itemsToFill = itemsToFill + 2) : null;
 				console.log(itemsToFill);
@@ -318,6 +328,11 @@ export default {
 		lockSelected() {
 			for (let i = 0; i < this.selectedTracks.length; i++) {
 				let index = this.sortedPlaylist.indexOf(this.selectedTracks[i]);
+				if (index === 0) {
+					this.topIsSelected = false;
+				} else if (index === this.sortedPlaylist.length - 1) {
+					this.lastIsSelected = false;
+				}
 				this.sortedPlaylist[index].is_locked = !this.sortedPlaylist[index].is_locked;
 			}
 			this.deselectAll();
@@ -339,7 +354,7 @@ export default {
 	},
 };
 </script>
-<style>
+<style lang="scss">
 .sticky-row {
 	position: sticky;
 	top: 16px;
@@ -366,7 +381,8 @@ export default {
 	cursor: pointer;
 }
 .list-item-selected {
-	background-color: rgba(255, 255, 255, 0.05);
+	/* background-color: rgba(255, 255, 255, 0.075); */
+	background-color: rgba(41, 182, 246, 0.2);
 	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
 	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
 }
@@ -379,5 +395,8 @@ export default {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
 	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
+}
+.on-hover {
+	background-color: rgba(41, 182, 246, 0.2);
 }
 </style>
