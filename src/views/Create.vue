@@ -21,7 +21,7 @@
 			</span>
 		</v-row>
 		<v-row class="px-3 pt-4">
-			<v-btn class="ml-4" color="success" @click="editPlaylist = true">Refine Selection</v-btn>
+			<v-btn class="ml-4" color="success" @click="editPlaylist = true">Edit Tracks</v-btn>
 			<v-dialog v-model="editPlaylist" id="tracks-container">
 				<playlist-tracks :tracks="this.selectedTracks" @close="editPlaylist = false" />
 			</v-dialog>

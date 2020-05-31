@@ -10,7 +10,7 @@
 					<template v-slot:activator="{ on }">
 						<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected" v-on="on"><v-icon>mdi-lock</v-icon></v-btn>
 					</template>
-					<span>Lock</span>
+					<span>Lock position</span>
 				</v-tooltip>
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on }">

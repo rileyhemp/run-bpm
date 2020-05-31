@@ -9,7 +9,7 @@
 				v-if="tooltip"
 				@click="tooltip = false"
 				class="body-2"
-				style="text-transform: none; position: absolute; background-color: rgba(0,0,0,0.6)"
+				style="text-transform: none; position: absolute; background-color: rgba(0,0,0,.95); line-height: 1.5rem"
 			>
 				{{
 					name === "beats per minute"
