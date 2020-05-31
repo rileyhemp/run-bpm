@@ -5,12 +5,7 @@
 			<v-btn icon @click="tooltip = !tooltip">
 				<v-icon>{{ tooltip ? "mdi-close-circle-outline" : "mdi-help-circle-outline" }}</v-icon>
 			</v-btn>
-			<p
-				v-if="tooltip"
-				@click="tooltip = false"
-				class="body-2"
-				style="text-transform: none; position: absolute; background-color: rgba(0,0,0,.95); line-height: 1.5rem"
-			>
+			<p v-if="tooltip" @click="tooltip = false" class="body-2 filter-tooltip">
 				{{
 					name === "beats per minute"
 						? "Beats per minute, or BPM, represents the speed of a track. Note: Tracks below 100 bpm are indexed in doubletime, meaning a selection of 160 will include tracks at both 80 and 160 bpm."
@@ -125,8 +120,6 @@ export default {
 	},
 	mounted: function() {},
 };
-// style="width: 30px; transform: translateY(20px) translateX(-30px); position:absolute;"
-// style="width: 30px; transform: translateY(20px); position:absolute;"
 </script>
 
 <style>
@@ -138,6 +131,16 @@ export default {
 }
 .filter-container {
 	min-width: 100%;
+}
+
+.filter-tooltip {
+	text-transform: none;
+	position: absolute;
+	background-color: #1e1e1e;
+	line-height: 1.5rem;
+	padding: 8px;
+	border-radius: 3px;
+	cursor: pointer;
 }
 
 @media screen and (min-width: 600px) {

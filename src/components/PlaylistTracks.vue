@@ -82,7 +82,7 @@
 							? 'list-item-selected'
 							: null
 					"
-					@click="select(sortedPlaylist.indexOf(track))"
+					@click="select($event, sortedPlaylist.indexOf(track))"
 					v-ripple="false"
 				>
 					<v-icon
@@ -131,6 +131,7 @@ export default {
 			topIsSelected: false,
 			lastIsSelected: false,
 			reversed: false,
+			lastClickedIndex: Number,
 		};
 	},
 	computed: {
@@ -141,6 +142,14 @@ export default {
 			});
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
+		},
+		isShiftDown() {
+			document.onkeydown = (e) => {
+				if (e.shiftKey) {
+					return true;
+				}
+			};
+			return false;
 		},
 	},
 	methods: {
@@ -249,12 +258,37 @@ export default {
 			_.pullAll(this.sortedPlaylist, this.selectedTracks);
 			this.deselectAll();
 		},
-		select(index) {
+		select(event, index) {
+			let indexes = [index];
+			if (event.shiftKey) {
+				let itemsToFill = index - this.lastClickedIndex - 1;
+				itemsToFill < 0 ? (itemsToFill = itemsToFill + 2) : null;
+				console.log(itemsToFill);
+				for (let i = 0; i < Math.abs(itemsToFill); i++) {
+					let incriment = itemsToFill / Math.abs(itemsToFill);
+					// console.log("adding index: ", this.lastClickedIndex + i * incriment + incriment);
+					indexes.push(this.lastClickedIndex + i * incriment + incriment);
+				}
+			}
+			indexes.sort();
+			console.log(indexes);
+			this.lastClickedIndex = index;
+			for (let i = 0; i < indexes.length; i++) {
+				this.selectSingle(indexes[i]);
+			}
+		},
+		selectSingle(index) {
+			//Checks if the item at position 0 is selected
 			index === 0 ? (this.topIsSelected = !this.topIsSelected) : null;
+			//Checks if the last item is selected
 			index === this.sortedPlaylist.length - 1 ? (this.lastIsSelected = !this.lastIsSelected) : null;
+			//Toggles select on the target
 			this.sortedPlaylist[index].is_selected = !this.sortedPlaylist[index].is_selected;
+			//Get the selected item
 			let track = this.sortedPlaylist[index];
+			//Write its index to the object
 			this.sortedPlaylist[index].index = index;
+			//Add or remove the track from the selected tracks array, sorted by index
 			if (this.selectedTracks.includes(track)) {
 				this.selectedTracks = _.pull(this.selectedTracks, track);
 			} else {
@@ -267,6 +301,7 @@ export default {
 					}
 				});
 			}
+			//Indicates to controls whether tracks are selected
 			this.tracksAreSelected = this.selectedTracks.length > 0;
 		},
 		lockSelected() {
