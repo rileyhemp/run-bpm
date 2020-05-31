@@ -72,7 +72,7 @@
 		<v-list two-line class="mx-2">
 			<v-hover v-slot:default="{ hover }" v-for="(track, index) in sortedPlaylist" :key="index + 1">
 				<v-list-item
-					class="actionable"
+					class="actionable list-item"
 					:class="
 						track.is_locked && !track.is_selected
 							? 'list-item-locked'
@@ -82,7 +82,7 @@
 							? 'list-item-selected'
 							: null
 					"
-					@click="select($event, sortedPlaylist.indexOf(track))"
+					@click="select($event, sortedPlaylist.indexOf(track), $el)"
 					v-ripple="false"
 				>
 					<v-icon
@@ -258,16 +258,26 @@ export default {
 			_.pullAll(this.sortedPlaylist, this.selectedTracks);
 			this.deselectAll();
 		},
-		select(event, index) {
+		select(event, index, element) {
+			console.log(element);
 			let indexes = [index];
+			let indexesToAdd = [];
 			if (event.shiftKey) {
 				let itemsToFill = index - this.lastClickedIndex - 1;
 				itemsToFill < 0 ? (itemsToFill = itemsToFill + 2) : null;
 				console.log(itemsToFill);
 				for (let i = 0; i < Math.abs(itemsToFill); i++) {
 					let incriment = itemsToFill / Math.abs(itemsToFill);
-					// console.log("adding index: ", this.lastClickedIndex + i * incriment + incriment);
 					indexes.push(this.lastClickedIndex + i * incriment + incriment);
+					indexesToAdd.push(this.lastClickedIndex + i * incriment + incriment);
+					console.log(indexesToAdd);
+				}
+				const nodes = document.querySelectorAll(".list-item");
+				for (let i = 0; i < indexesToAdd.length; i++) {
+					let target = nodes[indexesToAdd[i]];
+					target.classList.contains("list-item-selected")
+						? target.classList.remove("list-item-selected")
+						: target.classList.add("list-item-selected");
 				}
 			}
 			indexes.sort();
@@ -280,6 +290,7 @@ export default {
 		selectSingle(index) {
 			//Checks if the item at position 0 is selected
 			index === 0 ? (this.topIsSelected = !this.topIsSelected) : null;
+			this.sortedPlaylist[0].is_locked ? (this.topIsSelected = false) : null;
 			//Checks if the last item is selected
 			index === this.sortedPlaylist.length - 1 ? (this.lastIsSelected = !this.lastIsSelected) : null;
 			//Toggles select on the target
