@@ -85,6 +85,7 @@ export default {
 	height: 125px;
 	display: flex;
 	align-items: flex-end;
+	margin-bottom: 8px;
 }
 .bar {
 	width: 10%;

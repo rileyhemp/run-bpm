@@ -35,10 +35,10 @@
 		<v-range-slider
 			:min="range[0]"
 			:max="range[1]"
-			:dotSize="20"
 			v-model="sliderRange"
+			:thumb-size="50"
 			tooltip="none"
-			color="cyan darken-3"
+			color="none"
 			:marks="sliderRange"
 			@input="filterChartData"
 		>
@@ -103,13 +103,13 @@ export default {
 				scale: this.segmentSize,
 				filter: this.filter,
 			});
-		}, 50),
+		}, 100),
 	},
 	mounted: function() {},
 };
 </script>
 
-<style>
+<style lang="scss">
 .no-margin {
 	margin: 0 !important;
 }

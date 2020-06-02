@@ -1,0 +1,39 @@
+.v-slider__thumb {
+	background-color: transparent !important;
+	width: 30px;
+	border-radius: 0;
+	height: 172px;
+	position: absolute;
+	pointer-events: all;
+	transform: translateX(-50%) translateY(-50%);
+	top: -75px;
+	cursor: pointer;
+	&:before {
+		left: 11px;
+		top: 0px;
+		width: 10px;
+		height: 172px;
+		transform-origin: bottom;
+		border-radius: 0;
+		opacity: 0.1 !important;
+	}
+	&:after {
+		content: "";
+		background-color: red;
+		border-radius: 2px;
+		height: 22px;
+		width: 10px;
+		position: absolute;
+		bottom: 0px;
+		transform: translateX(110%);
+	}
+}
+
+.v-slider__thumb-container--focused,
+.v-slider__thumb-container--active,
+.v-slider__thumb-container--hover {
+	.v-slider__thumb:before {
+		opacity: 0.3;
+		transform: scale(1) !important;
+	}
+}
