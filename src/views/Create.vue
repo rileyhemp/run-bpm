@@ -22,7 +22,7 @@
 		</v-row>
 		<v-row class="px-3 pt-4">
 			<v-btn class="ml-4" color="success" @click="editPlaylist = true">Edit Tracks</v-btn>
-			<v-dialog v-model="editPlaylist" id="tracks-container">
+			<v-dialog :fullscreen="$vuetify.breakpoint.smAndDown" v-model="editPlaylist" id="tracks-container">
 				<playlist-tracks :tracks="this.selectedTracks" @close="editPlaylist = false" />
 			</v-dialog>
 		</v-row>
@@ -32,8 +32,6 @@
 				:showMoreFilters="showMoreFilters"
 				:bars="bars"
 				:key="filter.key"
-				:renderKey="renderKey"
-				:tracks="audioFeatures"
 				:name="filter.name"
 				:filter="filter.id"
 				:filters="filters"
@@ -70,9 +68,17 @@ export default {
 			chartData: Object,
 			chartsReady: false,
 			editPlaylist: false,
-			renderKey: 1,
 			showMoreFilters: this.$vuetify.breakpoint.mdAndUp,
 			mountFilters: false,
+			test: {
+				valence: {
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
+					name: "valence",
+					id: "valence",
+				},
+			},
 			filters: {
 				doubletime: {
 					//Beats per minute
@@ -121,7 +127,7 @@ export default {
 		};
 	},
 	computed: {
-		selectedTracks: function() {
+		selectedTracks: _.throttle(function() {
 			//Decides which tracks meet all selected filters and adds to an array
 			let tracksArray = [];
 			this.audioFeatures.forEach((track) => {
@@ -140,31 +146,31 @@ export default {
 					tracksArray.push(track);
 			});
 			return tracksArray;
-		},
-		songCount: function() {
+		}, 10),
+		songCount: _.throttle(function() {
 			return this.selectedTracks.length;
-		},
-		mixDuration: function() {
+		}, 10),
+		mixDuration: _.throttle(function() {
 			let totalLength = 0;
 			this.selectedTracks.forEach((track) => {
 				totalLength += track.track.duration_ms;
 			});
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
-		},
-		tempos: function() {
+		}, 10),
+		tempos: _.throttle(function() {
 			let tempos = [];
 			this.selectedTracks.map((el) => {
 				tempos.push(el.features.doubletime);
 			});
 			return tempos;
-		},
-		lowBPM: function() {
+		}, 10),
+		lowBPM: _.throttle(function() {
 			return _.min(this.tempos);
-		},
-		highBPM: function() {
+		}, 10),
+		highBPM: _.throttle(function() {
 			return _.max(this.tempos);
-		},
+		}, 10),
 		filterArray: function() {
 			return Object.entries(this.filters);
 		},
@@ -229,7 +235,6 @@ export default {
 				}
 				this.chartData = { ...this.chartData, ...{ [el]: segments } };
 				this.chartsReady = true;
-				this.renderKey++;
 			});
 		},
 		updateFilters: function(options) {

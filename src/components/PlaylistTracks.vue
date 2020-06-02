@@ -1,30 +1,32 @@
 <template>
-	<v-card absolute style="z-index: 1000" class="pa-4" :key="this.renderKey">
+	<v-card absolute style="z-index: 1000" class="pa-4">
 		<v-row class="sticky-row px-2">
 			<v-spacer />
 			<v-btn @click="close">Close</v-btn>
 		</v-row>
 		<v-list two-line class="mx-2 sticky-row sticky-list-item">
-			<v-list-item>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected" v-on="on"><v-icon>mdi-lock</v-icon></v-btn>
-					</template>
-					<span>Lock position</span>
-				</v-tooltip>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"><v-icon>mdi-delete</v-icon></v-btn>
-					</template>
-					<span>Delete</span>
-				</v-tooltip>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected" @click="deselectAll" v-on="on"><v-icon>mdi-cancel</v-icon></v-btn>
-					</template>
-					<span>Clear selection</span>
-				</v-tooltip>
-				<div class="ml-8">
+			<v-list-item class="controls-container">
+				<div class="controls-group">
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected" v-on="on"><v-icon>mdi-lock</v-icon></v-btn>
+						</template>
+						<span>Lock position</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"><v-icon>mdi-delete</v-icon></v-btn>
+						</template>
+						<span>Delete</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn icon large :disabled="!tracksAreSelected" @click="deselectAll" v-on="on"><v-icon>mdi-cancel</v-icon></v-btn>
+						</template>
+						<span>Clear selection</span>
+					</v-tooltip>
+				</div>
+				<div :class="$vuetify.breakpoint.mdAndUp ? 'ml-8' : null" class="controls-group">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn icon large :disabled="!tracksAreSelected || topIsSelected" @click="moveTop" v-on="on"
@@ -60,55 +62,76 @@
 				</div>
 				<v-spacer></v-spacer>
 				<div class="track-features">
-					<div @click="sortBy('doubletime')" class="feature actionable overline">BPM</div>
-					<div @click="sortBy('energy')" class="feature actionable overline">ENRG</div>
-					<div @click="sortBy('instrumentalness')" class="feature actionable overline">INST</div>
-					<div @click="sortBy('danceability')" class="feature actionable overline">DANC</div>
-					<div @click="sortBy('acousticness')" class="feature actionable overline">ACST</div>
-					<div @click="sortBy('valence')" class="feature actionable overline">VLNC</div>
+					<div
+						v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp"
+						@click="sortBy('doubletime')"
+						class="feature actionable overline"
+					>
+						BPM
+					</div>
+					<div
+						v-show="sortMethod === 'energy' || $vuetify.breakpoint.mdAndUp"
+						@click="sortBy('energy')"
+						class="feature actionable overline"
+					>
+						ENRG
+					</div>
+					<div
+						v-show="sortMethod === 'instrumentalness' || $vuetify.breakpoint.mdAndUp"
+						@click="sortBy('instrumentalness')"
+						class="feature actionable overline"
+					>
+						INST
+					</div>
+					<div
+						v-show="sortMethod === 'danceability' || $vuetify.breakpoint.mdAndUp"
+						@click="sortBy('danceability')"
+						class="feature actionable overline"
+					>
+						DANC
+					</div>
+					<div
+						v-show="sortMethod === 'acousticness' || $vuetify.breakpoint.mdAndUp"
+						@click="sortBy('acousticness')"
+						class="feature actionable overline"
+					>
+						ACST
+					</div>
+					<div
+						v-show="sortMethod === 'valence' || $vuetify.breakpoint.mdAndUp"
+						@click="sortBy('valence')"
+						class="feature actionable overline"
+					>
+						VLNC
+					</div>
 				</div>
 			</v-list-item>
 		</v-list>
-		<v-list two-line class="mx-2">
+		<v-list two-line :class="$vuetify.breakpoint.smAndDown ? null : 'mx-2'">
 			<v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
-				<v-list-item
-					class="actionable list-item"
-					:class="
-						track.is_locked && !track.is_selected
-							? 'list-item-locked'
-							: track.is_selected && track.is_locked
-							? 'locked-item-selected'
-							: track.is_selected && !hover
-							? 'list-item-selected'
-							: hover
-							? 'on-hover'
-							: null
-					"
-					@click="select($event, sortedPlaylist.indexOf(track), $el)"
-					v-ripple="false"
-				>
-					<v-icon
-						class="mr-2"
-						style="pointer-events:all"
-						v-if="track.is_locked"
-						@click="
-							track.is_locked = false;
-							deselectAll();
-						"
-						>mdi-lock</v-icon
-					>
-					<v-list-item-icon class="mx-0" v-if="!track.is_locked">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
+				<v-list-item class="actionable list-item" @click="select($event, sortedPlaylist.indexOf(track), $el)" v-ripple="false">
+					<v-list-item-icon class="mx-0">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
 						<v-list-item-subtitle>{{ getArtist(track) }}</v-list-item-subtitle>
 					</v-list-item-content>
 					<div class="track-features ">
-						<div class="feature">{{ track.features.doubletime }}</div>
-						<div class="feature">{{ getValue(track.features.energy) }}</div>
-						<div class="feature">{{ getValue(track.features.instrumentalness) }}</div>
-						<div class="feature">{{ getValue(track.features.danceability) }}</div>
-						<div class="feature">{{ getValue(track.features.acousticness) }}</div>
-						<div class="feature">{{ getValue(track.features.valence) }}</div>
+						<div v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp" class="feature">{{ track.features.doubletime }}</div>
+						<div v-show="sortMethod === 'energy' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.energy) }}
+						</div>
+						<div v-show="sortMethod === 'instrumentalness' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.instrumentalness) }}
+						</div>
+						<div v-show="sortMethod === 'danceability' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.danceability) }}
+						</div>
+						<div v-show="sortMethod === 'acousticness' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.acousticness) }}
+						</div>
+						<div v-show="sortMethod === 'valence' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.valence) }}
+						</div>
 					</div>
 				</v-list-item>
 			</v-hover>
@@ -123,11 +146,9 @@ export default {
 	props: ["playlist", "tracks"],
 	data: function() {
 		return {
-			sortMethod: "default",
+			sortMethod: "doubletime",
 			sortedPlaylist: Object,
 			sortHighToLow: true,
-			renderKey: 1,
-			altRenderKey: 1,
 			selectedTracks: [],
 			tracksAreSelected: false,
 			topIsSelected: false,
@@ -145,13 +166,8 @@ export default {
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
 		},
-		isShiftDown() {
-			document.onkeydown = (e) => {
-				if (e.shiftKey) {
-					return true;
-				}
-			};
-			return false;
+		nodes: function() {
+			return document.querySelectorAll(".list-item");
 		},
 	},
 	methods: {
@@ -195,6 +211,8 @@ export default {
 					newIndex--;
 				}
 				this.moveItem(this.sortedPlaylist, track.index, newIndex);
+				this.nodes[track.index].classList.toggle("list-item-selected");
+				this.nodes[newIndex].classList.toggle("list-item-selected");
 				track.index = newIndex;
 				newIndex === 0 ? (this.topIsSelected = !this.topIsSelected) : null;
 			}
@@ -213,6 +231,8 @@ export default {
 					newIndex++;
 				}
 				this.moveItem(this.sortedPlaylist, track.index, newIndex);
+				this.nodes[track.index].classList.toggle("list-item-selected");
+				this.nodes[newIndex].classList.toggle("list-item-selected");
 				track.index = newIndex;
 				newIndex === this.sortedPlaylist.length - 1 ? (this.lastIsSelected = true) : null;
 			}
@@ -261,15 +281,13 @@ export default {
 			}
 			this.sortHighToLow = !this.sortHighToLow;
 			this.sortedPlaylist = list;
-			this.renderKey++;
 		},
 		deleteSelected() {
 			_.pullAll(this.sortedPlaylist, this.selectedTracks);
 			this.deselectAll();
 		},
-		select(event, index, element) {
-			element.classList.add("list-item-selected");
-			console.log(element);
+		select(event, index) {
+			this.nodes[index].classList.toggle("list-item-selected");
 			let indexes = [index];
 			let indexesToAdd = [];
 			if (event.shiftKey && !this.sortedPlaylist[this.lastClickedIndex].is_locked && !this.sortedPlaylist[index].is_locked) {
@@ -282,12 +300,9 @@ export default {
 					indexesToAdd.push(this.lastClickedIndex + i * incriment + incriment);
 					console.log(indexesToAdd);
 				}
-				const nodes = document.querySelectorAll(".list-item");
 				for (let i = 0; i < indexesToAdd.length; i++) {
-					let target = nodes[indexesToAdd[i]];
-					target.classList.contains("list-item-selected")
-						? target.classList.remove("list-item-selected")
-						: target.classList.add("list-item-selected");
+					let target = this.nodes[indexesToAdd[i]];
+					target.classList.toggle("list-item-selected");
 				}
 			}
 			indexes.sort();
@@ -334,16 +349,17 @@ export default {
 					this.lastIsSelected = false;
 				}
 				this.sortedPlaylist[index].is_locked = !this.sortedPlaylist[index].is_locked;
+				this.nodes[index].classList.toggle("list-item-locked");
 			}
 			this.deselectAll();
 		},
 		deselectAll() {
 			for (let i = 0; i < this.sortedPlaylist.length; i++) {
 				this.sortedPlaylist[i].is_selected = false;
+				this.nodes[i].classList.remove("list-item-selected");
 			}
 			this.selectedTracks = [];
 			this.tracksAreSelected = false;
-			this.renderKey++;
 		},
 	},
 	mounted: function() {
@@ -367,10 +383,18 @@ export default {
 	z-index: 100;
 	padding-top: 64px;
 }
+.controls-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
 .track-features {
 	display: flex;
-	width: 35%;
 	justify-content: space-between;
+	@media screen and (min-width: 960px) {
+		width: 35%;
+	}
 }
 .feature {
 	margin-left: 8px;
@@ -388,15 +412,24 @@ export default {
 }
 .list-item-locked {
 	opacity: 0.5;
-	pointer-events: none;
+	/* pointer-events: none; */
 }
 .locked-item-selected {
-	pointer-events: none;
+	/* pointer-events: none; */
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
 	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
 }
 .on-hover {
-	background-color: rgba(41, 182, 246, 0.2);
+	background-color: transparent;
+	@media screen and (min-width: 960px) {
+		background-color: rgba(41, 182, 246, 0.2);
+	}
+}
+.v-list-item--link:before {
+	background-color: transparent;
+	@media screen and (min-width: 960px) {
+		background-color: currentColor;
+	}
 }
 </style>

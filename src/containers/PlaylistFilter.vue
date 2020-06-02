@@ -1,6 +1,6 @@
 <template>
 	<div class="filter-container px-1 mt-2">
-		<div class="overline" :class="collapsed ? 'no-margin' : null" style="position:relative">
+		<div class="overline" style="position:relative">
 			{{ name }}
 			<v-btn icon @click="tooltip = !tooltip">
 				<v-icon>{{ tooltip ? "mdi-close-circle-outline" : "mdi-help-circle-outline" }}</v-icon>
@@ -23,14 +23,15 @@
 				}}
 			</p>
 		</div>
-		<line-graph
+		<!-- <line-graph
 			class="mt-3"
 			:type="bars ? 'bar' : 'trend'"
 			:height="height"
 			v-if="this.chartReady"
 			:chartData="this.chartData"
-			:key="renderKey"
-		/>
+			:key="renderKey + 1"
+		/> -->
+		<bar-graph class="mt-3" :type="bars ? 'bar' : 'trend'" :height="height" v-if="this.chartReady" :chartData="this.chartData" />
 		<v-range-slider
 			:min="range[0]"
 			:max="range[1]"
@@ -39,7 +40,7 @@
 			tooltip="none"
 			color="cyan darken-3"
 			:marks="sliderRange"
-			@change="filterChartData"
+			@input="filterChartData"
 		>
 		</v-range-slider>
 		<v-row style="transform: translateY(-30px)">
@@ -76,39 +77,25 @@
 </template>
 
 <script>
-import LineGraph from "../components/LineGraph";
-import gsap from "gsap";
+// import LineGraph from "../components/LineGraph";
+import BarGraph from "../components/BarGraph";
+// import gsap from "gsap";
 import _ from "lodash";
 import "vue-slider-component/theme/material.css";
 export default {
 	components: {
-		"line-graph": LineGraph,
+		// "line-graph": LineGraph,
+		"bar-graph": BarGraph,
 	},
-	props: ["tracks", "name", "bars", "filter", "range", "segmentSize", "filters", "showMoreFilters", "chartData", "chartReady", "id", "renderKey"],
+	props: ["name", "bars", "filter", "range", "segmentSize", "filters", "showMoreFilters", "chartData", "chartReady", "id"],
 	data: function() {
 		return {
 			sliderRange: this.range,
 			height: 80,
-			collapsed: false,
 			tooltip: false,
 		};
 	},
 	methods: {
-		collapse() {
-			if (!this.collapsed) {
-				gsap.to(this, {
-					height: 0,
-					duration: 0.2,
-				});
-				setTimeout(() => (this.collapsed = true), 175);
-			} else {
-				gsap.to(this, {
-					height: 100,
-					duration: 0.2,
-				});
-				this.collapsed = false;
-			}
-		},
 		filterChartData: _.throttle(function() {
 			//Emit event saying what changed, the scale it was using, and what the new values are.
 			this.$emit("filterChartData", {
