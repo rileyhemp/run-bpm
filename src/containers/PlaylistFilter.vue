@@ -23,14 +23,6 @@
 				}}
 			</p>
 		</div>
-		<!-- <line-graph
-			class="mt-3"
-			:type="bars ? 'bar' : 'trend'"
-			:height="height"
-			v-if="this.chartReady"
-			:chartData="this.chartData"
-			:key="renderKey + 1"
-		/> -->
 		<bar-graph class="mt-3" :type="bars ? 'bar' : 'trend'" :height="height" v-if="this.chartReady" :chartData="this.chartData" />
 		<v-range-slider
 			:min="range[0]"
@@ -128,6 +120,7 @@ export default {
 	padding: 8px;
 	border-radius: 3px;
 	cursor: pointer;
+	z-index: 101;
 }
 
 @media screen and (min-width: 600px) {

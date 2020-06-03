@@ -16,10 +16,11 @@
 		transform-origin: bottom;
 		border-radius: 0;
 		opacity: 0.1 !important;
+		display: none;
 	}
 	&:after {
 		content: "";
-		background-color: red;
+		background-color: rgb(165, 165, 165);
 		border-radius: 2px;
 		height: 22px;
 		width: 10px;
@@ -29,11 +30,17 @@
 	}
 }
 
-.v-slider__thumb-container--focused,
 .v-slider__thumb-container--active,
 .v-slider__thumb-container--hover {
 	.v-slider__thumb:before {
 		opacity: 0.3;
+		transform: scale(1) !important;
+	}
+}
+
+.v-slider__thumb-container--focused {
+	.v-slider__thumb:before {
+		opacity: 0;
 		transform: scale(1) !important;
 	}
 }

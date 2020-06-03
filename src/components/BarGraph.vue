@@ -1,21 +1,24 @@
 <template>
 	<div class="bar-graph">
-		<transition name="expand" @enter="enter" v-for="(axis, index) in chartData" :key="index">
-			>
-			<div class="bar" :style="'height:' + getHeight(axis.tracks, multiplier) + '%'"
-		/></transition>
+		<v-tooltip bottom v-for="(axis, index) in chartData" :key="index">
+			<template v-slot:activator="{ on }">
+				<div
+					v-on="$vuetify.breakpoint.mdAndUp && on"
+					class="bar"
+					:style="
+						$vuetify.breakpoint.mdAndUp
+							? 'height:' + getHeight(axis.tracks, multiplier) + '%; z-index: 100'
+							: 'height:' + getHeight(axis.tracks, multiplier) + '%'
+					"
+					:class="'gradient-' + index"
+				/>
+			</template>
+			<span>{{ axis.tracks }} tracks</span>
+		</v-tooltip>
 	</div>
 </template>
 
 <script>
-// const gradients = [
-// 	["#222"],
-// 	["#42b3f4"],
-// 	["red", "orange", "yellow"],
-// 	["purple", "violet"],
-// 	["#00c6ff", "#F0F", "#FF0"],
-// 	["#f72047", "#ffd200", "#1feaea"],
-// ];
 export default {
 	props: ["chartData", "type", "height", "collapsed"],
 	data: () => ({
@@ -23,35 +26,8 @@ export default {
 	}),
 	methods: {
 		getHeight: function(value, multiplier) {
-			return value * multiplier;
-		},
-		enter(element) {
-			const width = getComputedStyle(element).width;
-
-			element.style.width = width;
-			element.style.position = "absolute";
-			element.style.visibility = "hidden";
-			element.style.height = "auto";
-
-			const height = getComputedStyle(element).height;
-
-			element.style.width = null;
-			element.style.position = null;
-			element.style.visibility = null;
-			element.style.height = 0;
-
-			// Force repaint to make sure the
-			// animation is triggered correctly.
-			getComputedStyle(element).height;
-
-			// Trigger the animation.
-			// We use `requestAnimationFrame` because we need
-			// to make sure the browser has finished
-			// painting after setting the `height`
-			// to `0` in the line above.
-			requestAnimationFrame(() => {
-				element.style.height = height;
-			});
+			const height = value * multiplier;
+			return height < 3 && height > 0 ? 3 : height;
 		},
 	},
 
@@ -89,20 +65,40 @@ export default {
 }
 .bar {
 	width: 10%;
-	margin: 0 6px;
+	margin: 0 1.3%;
 	border-radius: 3px;
-	background-color: white;
 	height: 100%;
-	transition: all 0.5s;
-}
-.expand-enter-active,
-.expand-leave-active {
-	transition: height 1s ease-in-out;
-	overflow: hidden;
+	transition: all 0.5s 0.05s ease;
 }
 
-.expand-enter,
-.expand-leave-to {
-	height: 0;
+.gradient-9 {
+	background: linear-gradient(360deg, #f83d3b 0%, #f72744 100%);
+}
+.gradient-8 {
+	background: linear-gradient(360deg, #fa612d 0%, #f94b35 100%);
+}
+.gradient-7 {
+	background: linear-gradient(360deg, #d7721a 0%, #fb6e28 100%);
+}
+.gradient-6 {
+	background: linear-gradient(360deg, #fda810 0%, #fd921a 100%);
+}
+.gradient-5 {
+	background: linear-gradient(360deg, #ffcc02 0%, #feb50c 100%);
+}
+.gradient-4 {
+	background: linear-gradient(360deg, #dad627 0%, #f7d308 100%);
+}
+.gradient-3 {
+	background: linear-gradient(360deg, #adda55 0%, #cad838 100%);
+}
+.gradient-2 {
+	background: linear-gradient(360deg, #54e4b2 0%, #6fe196 100%);
+}
+.gradient-1 {
+	background: linear-gradient(360deg, #54e4b2 0%, #6ee298 100%);
+}
+.gradient-0 {
+	background: linear-gradient(360deg, #27e9e1 0%, #44e6c5 100%);
 }
 </style>
