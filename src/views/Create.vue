@@ -101,19 +101,19 @@ export default {
 					name: "instrumentalness",
 					id: "instrumentalness",
 				},
-				acousticness: {
-					range: [0, 100],
-					defaultRange: [0, 100],
-					segmentSize: 10,
-					name: "acousticness",
-					id: "acousticness",
-				},
 				danceability: {
 					range: [0, 100],
 					defaultRange: [0, 100],
 					segmentSize: 10,
 					name: "danceability",
 					id: "danceability",
+				},
+				acousticness: {
+					range: [0, 100],
+					defaultRange: [0, 100],
+					segmentSize: 10,
+					name: "acousticness",
+					id: "acousticness",
 				},
 				valence: {
 					range: [0, 100],
@@ -204,10 +204,8 @@ export default {
 		},
 		initChartData() {
 			const filters = Object.keys(this.filters);
-			console.log(filters);
 			//Loop through each filter
 			filters.forEach((el) => {
-				console.log(el);
 				const filter = this.filters[el];
 				let multiplier;
 				if (el === "doubletime") {
@@ -221,8 +219,6 @@ export default {
 					let segment = {};
 					let tracks = 0;
 					//Count how many tracks are in each segment
-					console.log(this);
-					console.log(this.selectedTracks);
 					this.selectedTracks.forEach((track) => {
 						track.features[el] * multiplier >= i && track.features[el] * multiplier < i + filter.segmentSize ? tracks++ : null;
 					});

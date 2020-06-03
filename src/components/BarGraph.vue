@@ -5,11 +5,7 @@
 				<div
 					v-on="$vuetify.breakpoint.mdAndUp && on"
 					class="bar"
-					:style="
-						$vuetify.breakpoint.mdAndUp
-							? 'height:' + getHeight(axis.tracks, multiplier) + '%; z-index: 100'
-							: 'height:' + getHeight(axis.tracks, multiplier) + '%'
-					"
+					:style="'height: ' + getHeight(axis.tracks, multiplier) + '%'"
 					:class="'gradient-' + index"
 				/>
 			</template>

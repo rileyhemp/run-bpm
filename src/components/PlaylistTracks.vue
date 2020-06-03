@@ -4,64 +4,62 @@
 			<v-spacer />
 			<v-btn @click="close">Close</v-btn>
 		</v-row>
-		<v-list two-line class="mx-2 sticky-row sticky-list-item">
-			<v-list-item class="controls-container">
-				<div class="controls-group">
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected" v-on="on"><v-icon>mdi-lock</v-icon></v-btn>
-						</template>
-						<span>Lock position</span>
-					</v-tooltip>
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"><v-icon>mdi-delete</v-icon></v-btn>
-						</template>
-						<span>Delete</span>
-					</v-tooltip>
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-btn icon large :disabled="!tracksAreSelected" @click="deselectAll" v-on="on"><v-icon>mdi-cancel</v-icon></v-btn>
-						</template>
-						<span>Clear selection</span>
-					</v-tooltip>
-				</div>
-				<div :class="$vuetify.breakpoint.mdAndUp ? 'ml-8' : null" class="controls-group">
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-btn icon large :disabled="!tracksAreSelected || topIsSelected" @click="moveTop" v-on="on"
-								><v-icon large>mdi-chevron-double-up</v-icon></v-btn
-							>
-						</template>
-						<span>Send to top</span>
-					</v-tooltip>
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-btn icon large :disabled="!tracksAreSelected || topIsSelected" @click="moveUp" v-on="on"
-								><v-icon large>mdi-chevron-up</v-icon></v-btn
-							>
-						</template>
-						<span>Move up</span>
-					</v-tooltip>
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected" @click="moveDown" v-on="on"
-								><v-icon large>mdi-chevron-down</v-icon></v-btn
-							>
-						</template>
-						<span>Move down</span>
-					</v-tooltip>
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected" @click="moveBottom" v-on="on"
-								><v-icon large>mdi-chevron-double-down</v-icon></v-btn
-							>
-						</template>
-						<span>Send to bottom</span>
-					</v-tooltip>
-				</div>
-				<v-spacer></v-spacer>
-				<div class="track-features">
+		<v-row class="mx-2 sticky-row sticky-list-item controls-container">
+			<div class="controls-group">
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected" v-on="on"><v-icon>mdi-lock</v-icon></v-btn>
+					</template>
+					<span>Lock position</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"><v-icon>mdi-delete</v-icon></v-btn>
+					</template>
+					<span>Delete</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected" @click="deselectAll" v-on="on"><v-icon>mdi-cancel</v-icon></v-btn>
+					</template>
+					<span>Clear selection</span>
+				</v-tooltip>
+			</div>
+			<div :class="$vuetify.breakpoint.mdAndUp ? 'ml-8' : null" class="controls-group">
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected || topIsSelected" @click="moveTop" v-on="on"
+							><v-icon large>mdi-chevron-double-up</v-icon></v-btn
+						>
+					</template>
+					<span>Send to top</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected || topIsSelected" @click="moveUp" v-on="on"
+							><v-icon large>mdi-chevron-up</v-icon></v-btn
+						>
+					</template>
+					<span>Move up</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected" @click="moveDown" v-on="on"
+							><v-icon large>mdi-chevron-down</v-icon></v-btn
+						>
+					</template>
+					<span>Move down</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected" @click="moveBottom" v-on="on"
+							><v-icon large>mdi-chevron-double-down</v-icon></v-btn
+						>
+					</template>
+					<span>Send to bottom</span>
+				</v-tooltip>
+			</div>
+			<!-- <div class="track-features">
 					<div
 						v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp"
 						@click="sortBy('doubletime')"
@@ -104,20 +102,26 @@
 					>
 						VLNC
 					</div>
-				</div>
-			</v-list-item>
-		</v-list>
-		<v-list two-line :class="$vuetify.breakpoint.smAndDown ? null : 'mx-2'">
-			<v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
-				<v-list-item class="actionable list-item" @click="select($event, sortedPlaylist.indexOf(track), $el)" v-ripple="false">
-					<v-list-item-icon class="mx-0">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
-					<v-list-item-content>
-						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
-						<v-list-item-subtitle>{{ getArtist(track) }}</v-list-item-subtitle>
-					</v-list-item-content>
-					<div class="track-features ">
-						<div v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp" class="feature">{{ track.features.doubletime }}</div>
-						<div v-show="sortMethod === 'energy' || $vuetify.breakpoint.mdAndUp" class="feature">
+				</div> -->
+		</v-row>
+		<v-list :class="$vuetify.breakpoint.smAndDown ? null : 'mx-2'">
+			<v-list-item class="actionable list-item">
+				<v-list-item-icon class="mx-0"></v-list-item-icon>
+				<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
+					<v-list-item-subtitle>Title</v-list-item-subtitle>
+					<v-list-item-subtitle>Artist</v-list-item-subtitle>
+				</v-list-item-content>
+				<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
+					<v-list-item-subtitle>Duration</v-list-item-subtitle>
+					<v-list-item-subtitle class="ml-4" v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp"
+						>Tempo</v-list-item-subtitle
+					>
+					<v-list-item-subtitle class=" d-flex flex-nowrap">
+						<v-list-item-subtitle class="text-right">Key</v-list-item-subtitle>
+						<v-list-item-subtitle class="mx-1" style="max-width: 8px; text-align: center;">/</v-list-item-subtitle>
+						<v-list-item-subtitle>Mode</v-list-item-subtitle>
+					</v-list-item-subtitle>
+					<!-- <div v-show="sortMethod === 'energy' || $vuetify.breakpoint.mdAndUp" class="feature">
 							{{ getValue(track.features.energy) }}
 						</div>
 						<div v-show="sortMethod === 'instrumentalness' || $vuetify.breakpoint.mdAndUp" class="feature">
@@ -131,7 +135,40 @@
 						</div>
 						<div v-show="sortMethod === 'valence' || $vuetify.breakpoint.mdAndUp" class="feature">
 							{{ getValue(track.features.valence) }}
+						</div> -->
+				</div>
+			</v-list-item>
+			<v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
+				<v-list-item class="actionable list-item" @click="select($event, sortedPlaylist.indexOf(track), $el)" v-ripple="false">
+					<v-list-item-icon class="mx-0">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
+					<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
+						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
+						<v-list-item-subtitle>{{ getArtist(track) }}</v-list-item-subtitle>
+					</v-list-item-content>
+					<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
+						<v-list-item-subtitle>{{ getTrackDuration(track) }}</v-list-item-subtitle>
+						<v-list-item-subtitle class="ml-4" v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp"
+							>{{ track.features.doubletime }} bpm</v-list-item-subtitle
+						>
+						<v-list-item-subtitle class=" d-flex flex-nowrap">
+							<v-list-item-subtitle class=" text-right mr-4">{{ getTrackKey(track) }}</v-list-item-subtitle>
+							<v-list-item-subtitle>{{ getTrackMode(track) }}</v-list-item-subtitle>
+						</v-list-item-subtitle>
+						<!-- <div v-show="sortMethod === 'energy' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.energy) }}
 						</div>
+						<div v-show="sortMethod === 'instrumentalness' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.instrumentalness) }}
+						</div>
+						<div v-show="sortMethod === 'danceability' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.danceability) }}
+						</div>
+						<div v-show="sortMethod === 'acousticness' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.acousticness) }}
+						</div>
+						<div v-show="sortMethod === 'valence' || $vuetify.breakpoint.mdAndUp" class="feature">
+							{{ getValue(track.features.valence) }}
+						</div> -->
 					</div>
 				</v-list-item>
 			</v-hover>
@@ -184,6 +221,16 @@ export default {
 		},
 		getValue(value) {
 			return Math.floor(value.toFixed(2) * 100);
+		},
+		getTrackDuration(track) {
+			return msToHMS(track.track.duration_ms).split("00:")[1];
+		},
+		getTrackKey(track) {
+			const scale = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
+			return scale[track.features.key];
+		},
+		getTrackMode(track) {
+			return track.features.mode ? "major" : "minor";
 		},
 		close() {
 			this.$emit("close");
@@ -293,12 +340,10 @@ export default {
 			if (event.shiftKey && !this.sortedPlaylist[this.lastClickedIndex].is_locked && !this.sortedPlaylist[index].is_locked) {
 				let itemsToFill = index - this.lastClickedIndex - 1;
 				itemsToFill < 0 ? (itemsToFill = itemsToFill + 2) : null;
-				console.log(itemsToFill);
 				for (let i = 0; i < Math.abs(itemsToFill); i++) {
 					let incriment = itemsToFill / Math.abs(itemsToFill);
 					indexes.push(this.lastClickedIndex + i * incriment + incriment);
 					indexesToAdd.push(this.lastClickedIndex + i * incriment + incriment);
-					console.log(indexesToAdd);
 				}
 				for (let i = 0; i < indexesToAdd.length; i++) {
 					let target = this.nodes[indexesToAdd[i]];
@@ -306,7 +351,6 @@ export default {
 				}
 			}
 			indexes.sort();
-			console.log(indexes);
 			this.lastClickedIndex = index;
 			for (let i = 0; i < indexes.length; i++) {
 				this.selectSingle(indexes[i]);
@@ -386,21 +430,23 @@ export default {
 .controls-container {
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
+	justify-content: flex-start;
 	flex-wrap: wrap;
 }
 .track-features {
 	display: flex;
 	justify-content: space-between;
-	@media screen and (min-width: 960px) {
+	flex: 1;
+	/* @media screen and (min-width: 960px) {
 		width: 35%;
-	}
+	} */
 }
 .feature {
-	margin-left: 8px;
-	text-align: right;
+	/* margin-left: 8px; */
+	/* text-align: right; */
 	cursor: pointer;
 }
+
 .actionable {
 	cursor: pointer;
 }
