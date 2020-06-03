@@ -27,6 +27,7 @@ export default {
 	methods: {
 		getHeight: function(value, multiplier) {
 			const height = value * multiplier;
+			//Set minimum height for bar
 			return height < 3 && height > 0 ? 3 : height;
 		},
 	},
