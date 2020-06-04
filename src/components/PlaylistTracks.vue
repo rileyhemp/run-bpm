@@ -1,81 +1,123 @@
 <template>
-	<v-card absolute style="z-index: 1000" class="px-4" :key="renderKey">
-		<v-row class="sticky-row px-4">
-			<div class="controls-group ml-2">
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected" v-on="on"><v-icon>mdi-lock</v-icon></v-btn>
-					</template>
-					<span>Lock position</span>
-				</v-tooltip>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected" @click="deleteSelected" v-on="on"><v-icon>mdi-delete</v-icon></v-btn>
-					</template>
-					<span>Delete</span>
-				</v-tooltip>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected" @click="deselectAll" v-on="on"><v-icon>mdi-cancel</v-icon></v-btn>
-					</template>
-					<span>Clear selection</span>
-				</v-tooltip>
+	<v-card absolute style="z-index: 1000; overflow-y: hidden" :key="renderKey" :class="$vuetify.breakpoint.mdAndUp ? 'pa-4' : null">
+		<v-row class="sticky-row d-flex justify-space-between flex-nowrap px-4 py-4">
+			<div class="d-flex flex-wrap flex-row-reverse justify-end">
+				<div :class="$vuetify.breakpoint.smAndUp ? 'ml-8' : null" class="controls-group d-flex flex-nowrap">
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn
+								icon
+								:large="$vuetify.breakpoint.smAndUp"
+								:disabled="!tracksAreSelected"
+								@click="lockSelected"
+								v-on="$vuetify.breakpoint.smAndUp ? on : null"
+								><v-icon>mdi-lock</v-icon></v-btn
+							>
+						</template>
+						<span>Lock position</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn
+								icon
+								:large="$vuetify.breakpoint.smAndUp"
+								:disabled="!tracksAreSelected"
+								@click="deleteSelected"
+								v-on="$vuetify.breakpoint.smAndUp ? on : null"
+								><v-icon>mdi-delete</v-icon></v-btn
+							>
+						</template>
+						<span>Delete</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn
+								icon
+								:large="$vuetify.breakpoint.smAndUp"
+								:disabled="!tracksAreSelected"
+								@click="deselectAll"
+								v-on="$vuetify.breakpoint.smAndUp ? on : null"
+								><v-icon>mdi-cancel</v-icon></v-btn
+							>
+						</template>
+						<span>Clear selection</span>
+					</v-tooltip>
+				</div>
+				<div class="controls-group d-flex flex-nowrap">
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn
+								icon
+								:large="$vuetify.breakpoint.smAndUp"
+								:disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected"
+								@click="moveTop"
+								v-on="$vuetify.breakpoint.smAndUp ? on : null"
+								><v-icon :large="$vuetify.breakpoint.smAndUp">mdi-chevron-double-up</v-icon></v-btn
+							>
+						</template>
+						<span>Send to top</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn
+								icon
+								:large="$vuetify.breakpoint.smAndUp"
+								:disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected"
+								@click="moveUp"
+								v-on="$vuetify.breakpoint.smAndUp ? on : null"
+								><v-icon :large="$vuetify.breakpoint.smAndUp">mdi-chevron-up</v-icon></v-btn
+							>
+						</template>
+						<span>Move up</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn
+								icon
+								:large="$vuetify.breakpoint.smAndUp"
+								:disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected"
+								@click="moveDown"
+								v-on="$vuetify.breakpoint.smAndUp ? on : null"
+								><v-icon :large="$vuetify.breakpoint.smAndUp">mdi-chevron-down</v-icon></v-btn
+							>
+						</template>
+						<span>Move down</span>
+					</v-tooltip>
+					<v-tooltip bottom>
+						<template v-slot:activator="{ on }">
+							<v-btn
+								icon
+								:large="$vuetify.breakpoint.smAndUp"
+								:disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected"
+								@click="moveBottom"
+								v-on="$vuetify.breakpoint.smAndUp ? on : null"
+								><v-icon :large="$vuetify.breakpoint.smAndUp">mdi-chevron-double-down</v-icon></v-btn
+							>
+						</template>
+						<span>Send to bottom</span>
+					</v-tooltip>
+				</div>
 			</div>
-			<div :class="$vuetify.breakpoint.mdAndUp ? 'ml-8' : null" class="controls-group">
-				<v-tooltip bottom>
+			<div class="d-flex">
+				<v-tooltip bottom v-if="!duplicatesRemoved">
 					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected" @click="moveTop" v-on="on"
-							><v-icon large>mdi-chevron-double-up</v-icon></v-btn
+						<v-btn
+							@click="removeDuplicates"
+							style="transform: translateY(-3px)"
+							icon
+							:disabled="getDuplicates === 0"
+							:large="$vuetify.breakpoint.smAndUp"
+							v-on="$vuetify.breakpoint.smAndUp ? on : null"
+							><v-icon>mdi-minus-box-multiple-outline</v-icon></v-btn
 						>
 					</template>
-					<span>Send to top</span>
+					<span>Remove duplicates</span>
 				</v-tooltip>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected" @click="moveUp" v-on="on"
-							><v-icon large>mdi-chevron-up</v-icon></v-btn
-						>
-					</template>
-					<span>Move up</span>
-				</v-tooltip>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected" @click="moveDown" v-on="on"
-							><v-icon large>mdi-chevron-down</v-icon></v-btn
-						>
-					</template>
-					<span>Move down</span>
-				</v-tooltip>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected" @click="moveBottom" v-on="on"
-							><v-icon large>mdi-chevron-double-down</v-icon></v-btn
-						>
-					</template>
-					<span>Send to bottom</span>
-				</v-tooltip>
+				<span class="mr-4 overline" style="transform: translateX(-4px)">{{ getDuplicates() }}</span>
+				<v-btn color="primary" class="mr-2" :width="50" @click="close">Done</v-btn>
 			</div>
-			<v-spacer />
-			<v-tooltip bottom v-if="!duplicatesRemoved">
-				<template v-slot:activator="{ on }">
-					<span class="mr-4 overline" style="transform: translateX(-4px)">{{ getDuplicates() }}</span>
-					<v-btn
-						:class="$vuetify.breakpoint.smAndDown ? 'ml-3' : null"
-						@click="removeDuplicates"
-						style="transform: translateY(-3px)"
-						icon
-						:disabled="getDuplicates === 0"
-						large
-						v-on="on"
-						><v-icon>mdi-minus-box-multiple-outline</v-icon></v-btn
-					>
-				</template>
-				<span>Remove duplicates</span>
-			</v-tooltip>
-			<v-spacer v-if="$vuetify.breakpoint.smAndDown" />
-			<v-btn color="primary" @click="close">Done</v-btn>
 		</v-row>
-		<v-list class="px-0" :class="$vuetify.breakpoint.smAndDown ? null : 'mx-2'">
+		<v-list class="px-0" :class="$vuetify.breakpoint.smAndDown ? 'pl-2 pr-4' : 'mr-2'">
 			<v-list-item class="actionable">
 				<v-list-item-icon class="mx-0"></v-list-item-icon>
 				<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap '">
@@ -104,7 +146,7 @@
 					<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
 						<v-list-item-subtitle class="text-right" @click="sortBy('key')">Key</v-list-item-subtitle>
 						<v-list-item-subtitle class="mx-1" style="max-width: 8px; text-align: center;">/</v-list-item-subtitle>
-						<v-list-item-subtitle @click="sortBy('mode')">Mode</v-list-item-subtitle>
+						<v-list-item-subtitle style="max-width: 40px" @click="sortBy('mode')">Mode</v-list-item-subtitle>
 					</v-list-item-subtitle>
 				</div>
 			</v-list-item>
@@ -422,6 +464,11 @@ export default {
 	padding-bottom: 8px;
 	z-index: 101;
 	background-color: #1e1e1e;
+}
+@media screen and (max-width: 420px) {
+	div.v-card div.sticky-row {
+		padding-bottom: 0 !important;
+	}
 }
 .controls-container {
 	display: flex;

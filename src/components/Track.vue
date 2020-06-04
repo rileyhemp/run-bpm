@@ -35,7 +35,7 @@
 				>
 				<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
 					<v-list-item-subtitle class=" text-right mr-4">{{ getTrackKey(track) }}</v-list-item-subtitle>
-					<v-list-item-subtitle>{{ getTrackMode(track) }}</v-list-item-subtitle>
+					<v-list-item-subtitle style="max-width: 40px">{{ getTrackMode(track) }}</v-list-item-subtitle>
 				</v-list-item-subtitle>
 			</div>
 		</v-list-item>
