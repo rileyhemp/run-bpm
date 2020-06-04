@@ -71,8 +71,8 @@
 			<v-list-item class="actionable">
 				<v-list-item-icon class="mx-0"></v-list-item-icon>
 				<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap '">
-					<v-list-item-subtitle style="transform: translateX(4px);">Title</v-list-item-subtitle>
-					<v-list-item-subtitle class="px-4" style="transform: translateX(4px);">Artist</v-list-item-subtitle>
+					<v-list-item-subtitle style="transform: translateX(4px);" @click="sortBy('title')">Title</v-list-item-subtitle>
+					<v-list-item-subtitle class="px-4" style="transform: translateX(4px);" @click="sortBy('artist')">Artist</v-list-item-subtitle>
 				</v-list-item-content>
 				<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
 					<v-list-item-subtitle @click="sortBy('duration_ms')">Duration</v-list-item-subtitle>
@@ -266,11 +266,25 @@ export default {
 			this.selectedTracks = sortedList;
 		},
 		sortBy(property) {
-			let list = this.tracks;
-			if (this.sortHighToLow) {
-				list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.features[property] < b.features[property] ? 1 : -1));
+			let list = this.sortedPlaylist;
+			if (property === "artist") {
+				if (this.sortHighToLow) {
+					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : this.getArtist(a) < this.getArtist(b) ? 1 : -1));
+				} else {
+					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : this.getArtist(a) > this.getArtist(b) ? 1 : -1));
+				}
+			} else if (property === "title") {
+				if (this.sortHighToLow) {
+					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.track.name < b.track.name ? 1 : -1));
+				} else {
+					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.track.name > b.track.name ? 1 : -1));
+				}
 			} else {
-				list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.features[property] > b.features[property] ? 1 : -1));
+				if (this.sortHighToLow) {
+					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.features[property] < b.features[property] ? 1 : -1));
+				} else {
+					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.features[property] > b.features[property] ? 1 : -1));
+				}
 			}
 			this.sortHighToLow = !this.sortHighToLow;
 			this.sortedPlaylist = list;
