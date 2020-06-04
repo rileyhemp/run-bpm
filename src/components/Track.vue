@@ -15,7 +15,8 @@
 			v-ripple="false"
 		>
 			<v-list-item-icon class="ml-0 mr-2"
-				><span class="text-right" style="width: 100%">{{ index + 1 }}</span></v-list-item-icon
+				><span v-if="!track.is_locked" class="text-right" style="width: 100%">{{ index + 1 }}</span
+				><v-icon v-if="track.is_locked">mdi-lock</v-icon></v-list-item-icon
 			>
 			<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
 				<v-list-item-title>{{ track.track.name }}</v-list-item-title>
