@@ -1,11 +1,7 @@
 <template>
 	<v-card absolute style="z-index: 1000" class="pa-4">
-		<v-row class="sticky-row px-2">
-			<v-spacer />
-			<v-btn @click="close">Close</v-btn>
-		</v-row>
-		<v-row class="mx-2 sticky-row sticky-list-item controls-container">
-			<div class="controls-group">
+		<v-row class="sticky-row px-4">
+			<div class="controls-group ml-2">
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on }">
 						<v-btn icon large :disabled="!tracksAreSelected" @click="lockSelected" v-on="on"><v-icon>mdi-lock</v-icon></v-btn>
@@ -59,6 +55,31 @@
 					<span>Send to bottom</span>
 				</v-tooltip>
 			</div>
+			<div :class="$vuetify.breakpoint.mdAndUp ? 'ml-8' : null" class="controls-group">
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large v-on="on"><v-icon medium>mdi-sort-alphabetical-variant</v-icon></v-btn>
+					</template>
+					<span>Sort by</span>
+				</v-tooltip>
+				<v-tooltip bottom>
+					<template v-slot:activator="{ on }">
+						<v-btn icon large v-on="on"><v-icon>mdi-filter-variant-plus</v-icon></v-btn>
+					</template>
+					<span>More filters</span>
+				</v-tooltip>
+			</div>
+			<v-spacer />
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
+					<span v-show="numberOfDuplicates > 0" class="mr-4 overline">{{ numberOfDuplicates }}</span>
+					<v-btn icon :disabled="numberOfDuplicates === 0" large v-on="on"><v-icon>mdi-minus-box-multiple-outline</v-icon></v-btn>
+				</template>
+				<span>Remove duplicates</span>
+			</v-tooltip>
+			<v-btn color="primary" class="mr-4" @click="close">Done</v-btn>
+		</v-row>
+		<v-row class="mx-2 sticky-row sticky-list-item controls-container">
 			<!-- <div class="track-features">
 					<div
 						v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp"
@@ -104,12 +125,12 @@
 					</div>
 				</div> -->
 		</v-row>
-		<v-list :class="$vuetify.breakpoint.smAndDown ? null : 'mx-2'">
-			<v-list-item class="actionable list-item">
+		<v-list class="px-0" :class="$vuetify.breakpoint.smAndDown ? null : 'mx-2'">
+			<v-list-item class="actionable">
 				<v-list-item-icon class="mx-0"></v-list-item-icon>
-				<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
-					<v-list-item-subtitle>Title</v-list-item-subtitle>
-					<v-list-item-subtitle>Artist</v-list-item-subtitle>
+				<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap '">
+					<v-list-item-subtitle style="transform: translateX(4px);">Title</v-list-item-subtitle>
+					<v-list-item-subtitle class="px-4" style="transform: translateX(4px);">Artist</v-list-item-subtitle>
 				</v-list-item-content>
 				<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
 					<v-list-item-subtitle>Duration</v-list-item-subtitle>
@@ -140,10 +161,12 @@
 			</v-list-item>
 			<v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
 				<v-list-item class="actionable list-item" @click="select($event, sortedPlaylist.indexOf(track), $el)" v-ripple="false">
-					<v-list-item-icon class="mx-0">{{ sortedPlaylist.indexOf(track) + 1 }}</v-list-item-icon>
+					<v-list-item-icon class="ml-0 mr-2"
+						><span class="text-right" style="width: 100%">{{ sortedPlaylist.indexOf(track) + 1 }}</span></v-list-item-icon
+					>
 					<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
 						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
-						<v-list-item-subtitle>{{ getArtist(track) }}</v-list-item-subtitle>
+						<v-list-item-subtitle class="px-4">{{ getArtist(track) }}</v-list-item-subtitle>
 					</v-list-item-content>
 					<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
 						<v-list-item-subtitle>{{ getTrackDuration(track) }}</v-list-item-subtitle>
@@ -205,6 +228,9 @@ export default {
 		},
 		nodes: function() {
 			return document.querySelectorAll(".list-item");
+		},
+		numberOfDuplicates: function() {
+			return 2;
 		},
 	},
 	methods: {
@@ -432,6 +458,9 @@ export default {
 	flex-direction: row;
 	justify-content: flex-start;
 	flex-wrap: wrap;
+}
+.controls-group {
+	transform: translateY(-4px);
 }
 .track-features {
 	display: flex;

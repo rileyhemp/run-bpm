@@ -19,7 +19,7 @@
 			</span>
 		</v-row>
 		<v-row class="px-3 pt-4">
-			<v-btn color="primary" class="mx-4" @click="editPlaylist = true">Edit Tracks</v-btn>
+			<v-btn color="grey-lighten-2" class="mx-4" @click="editPlaylist = true">Edit Tracks</v-btn>
 			<v-btn color="primary" :disabled="loading" @click="savePlaylist">Save Playlist</v-btn>
 			<v-dialog :fullscreen="$vuetify.breakpoint.smAndDown" v-model="editPlaylist" id="tracks-container">
 				<playlist-tracks :tracks="this.selectedTracks" @close="editPlaylist = false" />
