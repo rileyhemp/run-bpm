@@ -1,6 +1,6 @@
 <template>
 	<v-card absolute style="z-index: 1000; overflow-y: hidden" :key="renderKey" :class="$vuetify.breakpoint.mdAndUp ? 'pa-4' : null">
-		<v-row class="sticky-row d-flex justify-space-between flex-nowrap px-4 py-4">
+		<v-row class="sticky-row d-flex justify-space-between flex-nowrap px-4 pt-4 pb-3">
 			<div class="d-flex flex-wrap flex-row-reverse justify-end">
 				<div :class="$vuetify.breakpoint.smAndUp ? 'ml-8' : null" class="controls-group d-flex flex-nowrap">
 					<v-tooltip bottom>
@@ -117,39 +117,39 @@
 				<v-btn color="primary" class="mr-2" :width="50" @click="close">Done</v-btn>
 			</div>
 		</v-row>
-		<v-list class="px-0" :class="$vuetify.breakpoint.smAndDown ? 'pl-2 pr-4' : 'mr-2'">
-			<v-list-item class="actionable">
-				<v-list-item-icon class="mx-0"></v-list-item-icon>
-				<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap '">
-					<v-list-item-subtitle style="transform: translateX(4px);" @click="sortBy('title')">Title</v-list-item-subtitle>
-					<v-list-item-subtitle
-						:class="$vuetify.breakpoint.smAndDown ? null : 'px-4'"
-						style="transform: translateX(4px);"
-						@click="sortBy('artist')"
-						>Artist</v-list-item-subtitle
-					>
-				</v-list-item-content>
-				<div
-					class="track-features"
-					:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
-					:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: .7'"
+		<v-list-item class="actionable filter-row">
+			<v-list-item-icon class="mx-0"></v-list-item-icon>
+			<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap '">
+				<v-list-item-subtitle style="transform: translateX(4px);" @click="sortBy('title')">Title</v-list-item-subtitle>
+				<v-list-item-subtitle
+					:class="$vuetify.breakpoint.smAndDown ? null : 'px-4'"
+					style="transform: translateX(4px);"
+					@click="sortBy('artist')"
+					>Artist</v-list-item-subtitle
 				>
-					<v-list-item-subtitle
-						@click="sortBy('duration_ms')"
-						style="overflow:visible"
-						:class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
-						>Duration</v-list-item-subtitle
-					>
-					<v-list-item-subtitle class="ml-4" @click="sortBy('doubletime')" :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
-						>Tempo</v-list-item-subtitle
-					>
-					<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
-						<v-list-item-subtitle class="text-right" @click="sortBy('key')">Key</v-list-item-subtitle>
-						<v-list-item-subtitle class="mx-1" style="max-width: 8px; text-align: center;">/</v-list-item-subtitle>
-						<v-list-item-subtitle style="max-width: 40px" @click="sortBy('mode')">Mode</v-list-item-subtitle>
-					</v-list-item-subtitle>
-				</div>
-			</v-list-item>
+			</v-list-item-content>
+			<div
+				class="track-features"
+				:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
+				:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: .7'"
+			>
+				<v-list-item-subtitle
+					@click="sortBy('duration_ms')"
+					style="overflow:visible"
+					:class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+					>Duration</v-list-item-subtitle
+				>
+				<v-list-item-subtitle class="ml-4" @click="sortBy('doubletime')" :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+					>Tempo</v-list-item-subtitle
+				>
+				<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
+					<v-list-item-subtitle class="text-right" @click="sortBy('key')">Key</v-list-item-subtitle>
+					<v-list-item-subtitle class="mx-1" style="max-width: 8px; text-align: center;">/</v-list-item-subtitle>
+					<v-list-item-subtitle style="max-width: 40px" @click="sortBy('mode')">Mode</v-list-item-subtitle>
+				</v-list-item-subtitle>
+			</div>
+		</v-list-item>
+		<v-list class="px-0 " style="transform: translateY(60px)">
 			<playlist-track
 				v-for="(track, index) in sortedPlaylist"
 				:key="index + 1"
@@ -458,12 +458,28 @@ export default {
 </script>
 <style lang="scss">
 .sticky-row {
-	position: sticky;
+	position: fixed;
 	top: 0;
+	width: 100%;
 	padding-top: 16px;
-	padding-bottom: 8px;
 	z-index: 101;
 	background-color: #1e1e1e;
+	@media screen and (min-width: 900px) {
+		top: 56px;
+		width: calc(100% - 72px);
+	}
+}
+.filter-row {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	padding-bottom: 16px;
+	z-index: 1000;
+	background-color: #1e1e1e;
+	@media screen and (min-width: 900px) {
+		top: 110px;
+		width: calc(100% - 95px);
+	}
 }
 @media screen and (max-width: 420px) {
 	div.v-card div.sticky-row {
