@@ -58,13 +58,7 @@
 			<v-spacer />
 			<v-tooltip bottom>
 				<template v-slot:activator="{ on }">
-					<v-btn style="transform: translateY(-2px)" icon large v-on="on"><v-icon>mdi-refresh</v-icon></v-btn>
-				</template>
-				<span>Restore defaults</span>
-			</v-tooltip>
-			<v-tooltip bottom>
-				<template v-slot:activator="{ on }">
-					<span v-show="numberOfDuplicates > 0" class="mr-4 overline">{{ numberOfDuplicates }}</span>
+					<span v-show="numberOfDuplicates > 0" class="mr-4 overline" style="transform: translateX(-4px)">{{ numberOfDuplicates }}</span>
 					<v-btn style="transform: translateY(-3px)" icon :disabled="numberOfDuplicates === 0" large v-on="on"
 						><v-icon>mdi-minus-box-multiple-outline</v-icon></v-btn
 					>
