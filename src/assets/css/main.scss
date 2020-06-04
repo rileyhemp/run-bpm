@@ -44,3 +44,22 @@
 		transform: scale(1) !important;
 	}
 }
+
+.v-dialog::-webkit-scrollbar {
+	width: 16px;
+}
+
+.v-dialog::-webkit-scrollbar-track {
+	background: #202020;
+	border-left: 1px solid #2c2c2c;
+}
+
+.v-dialog::-webkit-scrollbar-thumb {
+	background: #3e3e3e;
+	border: solid 3px #202020;
+	border-radius: 7px;
+}
+
+.v-dialog::-webkit-scrollbar-thumb:hover {
+	background: white;
+}

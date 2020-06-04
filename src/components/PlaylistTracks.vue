@@ -1,5 +1,5 @@
 <template>
-	<v-card absolute style="z-index: 1000" class="pa-4">
+	<v-card absolute style="z-index: 1000" class="px-4">
 		<v-row class="sticky-row px-4">
 			<div class="controls-group ml-2">
 				<v-tooltip bottom>
@@ -77,53 +77,7 @@
 				</template>
 				<span>Remove duplicates</span>
 			</v-tooltip>
-			<v-btn color="primary" class="mr-4" @click="close">Done</v-btn>
-		</v-row>
-		<v-row class="mx-2 sticky-row sticky-list-item controls-container">
-			<!-- <div class="track-features">
-					<div
-						v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp"
-						@click="sortBy('doubletime')"
-						class="feature actionable overline"
-					>
-						BPM
-					</div>
-					<div
-						v-show="sortMethod === 'energy' || $vuetify.breakpoint.mdAndUp"
-						@click="sortBy('energy')"
-						class="feature actionable overline"
-					>
-						ENRG
-					</div>
-					<div
-						v-show="sortMethod === 'instrumentalness' || $vuetify.breakpoint.mdAndUp"
-						@click="sortBy('instrumentalness')"
-						class="feature actionable overline"
-					>
-						INST
-					</div>
-					<div
-						v-show="sortMethod === 'danceability' || $vuetify.breakpoint.mdAndUp"
-						@click="sortBy('danceability')"
-						class="feature actionable overline"
-					>
-						DANC
-					</div>
-					<div
-						v-show="sortMethod === 'acousticness' || $vuetify.breakpoint.mdAndUp"
-						@click="sortBy('acousticness')"
-						class="feature actionable overline"
-					>
-						ACST
-					</div>
-					<div
-						v-show="sortMethod === 'valence' || $vuetify.breakpoint.mdAndUp"
-						@click="sortBy('valence')"
-						class="feature actionable overline"
-					>
-						VLNC
-					</div>
-				</div> -->
+			<v-btn color="primary" @click="close">Done</v-btn>
 		</v-row>
 		<v-list class="px-0" :class="$vuetify.breakpoint.smAndDown ? null : 'mx-2'">
 			<v-list-item class="actionable">
@@ -142,21 +96,6 @@
 						<v-list-item-subtitle class="mx-1" style="max-width: 8px; text-align: center;">/</v-list-item-subtitle>
 						<v-list-item-subtitle>Mode</v-list-item-subtitle>
 					</v-list-item-subtitle>
-					<!-- <div v-show="sortMethod === 'energy' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.energy) }}
-						</div>
-						<div v-show="sortMethod === 'instrumentalness' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.instrumentalness) }}
-						</div>
-						<div v-show="sortMethod === 'danceability' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.danceability) }}
-						</div>
-						<div v-show="sortMethod === 'acousticness' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.acousticness) }}
-						</div>
-						<div v-show="sortMethod === 'valence' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.valence) }}
-						</div> -->
 				</div>
 			</v-list-item>
 			<v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
@@ -177,21 +116,6 @@
 							<v-list-item-subtitle class=" text-right mr-4">{{ getTrackKey(track) }}</v-list-item-subtitle>
 							<v-list-item-subtitle>{{ getTrackMode(track) }}</v-list-item-subtitle>
 						</v-list-item-subtitle>
-						<!-- <div v-show="sortMethod === 'energy' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.energy) }}
-						</div>
-						<div v-show="sortMethod === 'instrumentalness' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.instrumentalness) }}
-						</div>
-						<div v-show="sortMethod === 'danceability' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.danceability) }}
-						</div>
-						<div v-show="sortMethod === 'acousticness' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.acousticness) }}
-						</div>
-						<div v-show="sortMethod === 'valence' || $vuetify.breakpoint.mdAndUp" class="feature">
-							{{ getValue(track.features.valence) }}
-						</div> -->
 					</div>
 				</v-list-item>
 			</v-hover>
@@ -443,15 +367,11 @@ export default {
 <style lang="scss">
 .sticky-row {
 	position: sticky;
-	top: 16px;
+	top: 0;
+	padding-top: 16px;
+	padding-bottom: 8px;
 	z-index: 101;
-}
-.sticky-list-item {
-	top: 0px;
-	margin-top: -64px;
 	background-color: #1e1e1e;
-	z-index: 100;
-	padding-top: 64px;
 }
 .controls-container {
 	display: flex;
@@ -494,6 +414,9 @@ export default {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
 	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
+}
+.v-list-item {
+	padding: 0;
 }
 .on-hover {
 	background-color: transparent;
