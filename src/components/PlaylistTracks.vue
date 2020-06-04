@@ -1,5 +1,5 @@
 <template>
-	<v-card absolute style="z-index: 1000" class="px-4">
+	<v-card absolute style="z-index: 1000" class="px-4" :key="renderKey">
 		<v-row class="sticky-row px-4">
 			<div class="controls-group ml-2">
 				<v-tooltip bottom>
@@ -24,7 +24,7 @@
 			<div :class="$vuetify.breakpoint.mdAndUp ? 'ml-8' : null" class="controls-group">
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected || topIsSelected" @click="moveTop" v-on="on"
+						<v-btn icon large :disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected" @click="moveTop" v-on="on"
 							><v-icon large>mdi-chevron-double-up</v-icon></v-btn
 						>
 					</template>
@@ -32,7 +32,7 @@
 				</v-tooltip>
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected || topIsSelected" @click="moveUp" v-on="on"
+						<v-btn icon large :disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected" @click="moveUp" v-on="on"
 							><v-icon large>mdi-chevron-up</v-icon></v-btn
 						>
 					</template>
@@ -40,7 +40,7 @@
 				</v-tooltip>
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected" @click="moveDown" v-on="on"
+						<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected" @click="moveDown" v-on="on"
 							><v-icon large>mdi-chevron-down</v-icon></v-btn
 						>
 					</template>
@@ -48,32 +48,26 @@
 				</v-tooltip>
 				<v-tooltip bottom>
 					<template v-slot:activator="{ on }">
-						<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected" @click="moveBottom" v-on="on"
+						<v-btn icon large :disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected" @click="moveBottom" v-on="on"
 							><v-icon large>mdi-chevron-double-down</v-icon></v-btn
 						>
 					</template>
 					<span>Send to bottom</span>
 				</v-tooltip>
 			</div>
-			<div :class="$vuetify.breakpoint.mdAndUp ? 'ml-8' : null" class="controls-group">
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large v-on="on"><v-icon medium>mdi-sort-alphabetical-variant</v-icon></v-btn>
-					</template>
-					<span>Sort by</span>
-				</v-tooltip>
-				<v-tooltip bottom>
-					<template v-slot:activator="{ on }">
-						<v-btn icon large v-on="on"><v-icon>mdi-filter-variant-plus</v-icon></v-btn>
-					</template>
-					<span>More filters</span>
-				</v-tooltip>
-			</div>
 			<v-spacer />
 			<v-tooltip bottom>
 				<template v-slot:activator="{ on }">
+					<v-btn style="transform: translateY(-2px)" icon large v-on="on"><v-icon>mdi-refresh</v-icon></v-btn>
+				</template>
+				<span>Restore defaults</span>
+			</v-tooltip>
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
 					<span v-show="numberOfDuplicates > 0" class="mr-4 overline">{{ numberOfDuplicates }}</span>
-					<v-btn icon :disabled="numberOfDuplicates === 0" large v-on="on"><v-icon>mdi-minus-box-multiple-outline</v-icon></v-btn>
+					<v-btn style="transform: translateY(-3px)" icon :disabled="numberOfDuplicates === 0" large v-on="on"
+						><v-icon>mdi-minus-box-multiple-outline</v-icon></v-btn
+					>
 				</template>
 				<span>Remove duplicates</span>
 			</v-tooltip>
@@ -87,18 +81,25 @@
 					<v-list-item-subtitle class="px-4" style="transform: translateX(4px);">Artist</v-list-item-subtitle>
 				</v-list-item-content>
 				<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
-					<v-list-item-subtitle>Duration</v-list-item-subtitle>
-					<v-list-item-subtitle class="ml-4" v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp"
-						>Tempo</v-list-item-subtitle
-					>
+					<v-list-item-subtitle @click="sortBy('duration_ms')">Duration</v-list-item-subtitle>
+					<v-list-item-subtitle class="ml-4" @click="sortBy('doubletime')">Tempo</v-list-item-subtitle>
 					<v-list-item-subtitle class=" d-flex flex-nowrap">
-						<v-list-item-subtitle class="text-right">Key</v-list-item-subtitle>
+						<v-list-item-subtitle class="text-right" @click="sortBy('key')">Key</v-list-item-subtitle>
 						<v-list-item-subtitle class="mx-1" style="max-width: 8px; text-align: center;">/</v-list-item-subtitle>
-						<v-list-item-subtitle>Mode</v-list-item-subtitle>
+						<v-list-item-subtitle @click="sortBy('mode')">Mode</v-list-item-subtitle>
 					</v-list-item-subtitle>
 				</div>
 			</v-list-item>
-			<v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
+			<playlist-track
+				v-for="(track, index) in sortedPlaylist"
+				:key="index + 1"
+				:track="track"
+				:is_selected="track.is_selected"
+				:is_locked="track.is_locked"
+				:index="index"
+				@onClick="select"
+			/>
+			<!-- <v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
 				<v-list-item class="actionable list-item" @click="select($event, sortedPlaylist.indexOf(track), $el)" v-ripple="false">
 					<v-list-item-icon class="ml-0 mr-2"
 						><span class="text-right" style="width: 100%">{{ sortedPlaylist.indexOf(track) + 1 }}</span></v-list-item-icon
@@ -118,7 +119,7 @@
 						</v-list-item-subtitle>
 					</div>
 				</v-list-item>
-			</v-hover>
+			</v-hover> -->
 		</v-list>
 	</v-card>
 </template>
@@ -126,8 +127,12 @@
 <script>
 import msToHMS from "../scripts/msToHMS";
 import _ from "lodash";
+import Track from "./Track";
 export default {
-	props: ["playlist", "tracks"],
+	props: ["playlist"],
+	components: {
+		"playlist-track": Track,
+	},
 	data: function() {
 		return {
 			sortMethod: "doubletime",
@@ -139,6 +144,12 @@ export default {
 			lastIsSelected: false,
 			reversed: false,
 			lastClickedIndex: Number,
+			panel: false,
+			originalSelection: Object,
+			renderKey: 1,
+			nodes: undefined,
+			lockedTracksSelected: false,
+			hasMovedItems: false,
 		};
 	},
 	computed: {
@@ -150,9 +161,7 @@ export default {
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
 		},
-		nodes: function() {
-			return document.querySelectorAll(".list-item");
-		},
+
 		numberOfDuplicates: function() {
 			return 2;
 		},
@@ -186,6 +195,10 @@ export default {
 			this.$emit("close");
 		},
 		moveItem(arr, old_index, new_index) {
+			console.log(old_index, new_index);
+			this.nodes[new_index].classList = this.nodes[old_index].classList;
+			this.nodes[old_index].classList.remove("list-item-selected");
+			this.hasMovedItems = true;
 			if (new_index >= arr.length) {
 				var k = new_index - arr.length + 1;
 				while (k--) {
@@ -197,39 +210,28 @@ export default {
 		},
 		moveUp() {
 			this.lastIsSelected = false;
-			if (this.reversed) {
-				_.reverse(this.selectedTracks);
-				this.reversed = false;
-			}
 			for (let i = 0; i < this.selectedTracks.length; i++) {
 				let track = this.sortedPlaylist[this.selectedTracks[i].index];
 				let newIndex = track.index - 1;
-				while (this.sortedPlaylist[newIndex - 1] && this.sortedPlaylist[newIndex - 1].is_locked) {
+				while (this.sortedPlaylist[newIndex - 1] && this.sortedPlaylist[newIndex - 1].is_locked && newIndex > -1) {
 					newIndex--;
 				}
 				this.moveItem(this.sortedPlaylist, track.index, newIndex);
-				this.nodes[track.index].classList.toggle("list-item-selected");
-				this.nodes[newIndex].classList.toggle("list-item-selected");
-				track.index = newIndex;
+				track.index = this.sortedPlaylist.indexOf(track);
 				newIndex === 0 ? (this.topIsSelected = !this.topIsSelected) : null;
 			}
 		},
-		//look into splice API. Collect indexes in an array, number of items, and move all at once.
 		moveDown() {
 			this.topIsSelected = false;
-			if (!this.reversed) {
-				_.reverse(this.selectedTracks);
-				this.reversed = true;
-			}
-			for (let i = 0; i < this.selectedTracks.length; i++) {
-				let track = this.sortedPlaylist[this.selectedTracks[i].index];
+			for (let i = this.selectedTracks.length - 1; i > -1; i--) {
+				console.log("i", i);
+				let track = this.selectedTracks[i];
+				console.log("track index", track.index);
 				let newIndex = track.index + 1;
 				while (this.sortedPlaylist[newIndex + 1] && this.sortedPlaylist[newIndex + 1].is_locked) {
 					newIndex++;
 				}
 				this.moveItem(this.sortedPlaylist, track.index, newIndex);
-				this.nodes[track.index].classList.toggle("list-item-selected");
-				this.nodes[newIndex].classList.toggle("list-item-selected");
 				track.index = newIndex;
 				newIndex === this.sortedPlaylist.length - 1 ? (this.lastIsSelected = true) : null;
 			}
@@ -281,23 +283,28 @@ export default {
 		},
 		deleteSelected() {
 			_.pullAll(this.sortedPlaylist, this.selectedTracks);
+			this.renderKey++;
 			this.deselectAll();
 		},
-		select(event, index) {
-			this.nodes[index].classList.toggle("list-item-selected");
+		refreshNodeList() {
+			this.nodes = document.querySelectorAll(".list-item");
+		},
+
+		select(event) {
+			let index = event.index;
+			if (this.hasMovedItems) {
+				this.deselectAll();
+				this.hasMovedItems = false;
+			}
 			let indexes = [index];
 			let indexesToAdd = [];
-			if (event.shiftKey && !this.sortedPlaylist[this.lastClickedIndex].is_locked && !this.sortedPlaylist[index].is_locked) {
+			if (event.event.shiftKey) {
 				let itemsToFill = index - this.lastClickedIndex - 1;
 				itemsToFill < 0 ? (itemsToFill = itemsToFill + 2) : null;
 				for (let i = 0; i < Math.abs(itemsToFill); i++) {
 					let incriment = itemsToFill / Math.abs(itemsToFill);
 					indexes.push(this.lastClickedIndex + i * incriment + incriment);
 					indexesToAdd.push(this.lastClickedIndex + i * incriment + incriment);
-				}
-				for (let i = 0; i < indexesToAdd.length; i++) {
-					let target = this.nodes[indexesToAdd[i]];
-					target.classList.toggle("list-item-selected");
 				}
 			}
 			indexes.sort();
@@ -313,14 +320,20 @@ export default {
 			//Checks if the last item is selected
 			index === this.sortedPlaylist.length - 1 ? (this.lastIsSelected = !this.lastIsSelected) : null;
 			//Toggles select on the target
-			this.sortedPlaylist[index].is_selected = !this.sortedPlaylist[index].is_selected;
+			let state = this.sortedPlaylist[index].is_selected;
+			this.$set(this.sortedPlaylist, index, { ...this.sortedPlaylist[index], is_selected: !state });
 			//Get the selected item
 			let track = this.sortedPlaylist[index];
 			//Write its index to the object
 			this.sortedPlaylist[index].index = index;
 			//Add or remove the track from the selected tracks array, sorted by index
-			if (this.selectedTracks.includes(track)) {
-				this.selectedTracks = _.pull(this.selectedTracks, track);
+			if (this.selectedTracks.some((item) => item.index === track.index)) {
+				let index = 0;
+				this.selectedTracks.forEach((el) => {
+					el.index === track.index;
+					index = this.selectedTracks.indexOf(el);
+				});
+				this.selectedTracks.splice(index, 1);
 			} else {
 				this.selectedTracks.push(track);
 				this.selectedTracks.sort((a, b) => {
@@ -333,6 +346,7 @@ export default {
 			}
 			//Indicates to controls whether tracks are selected
 			this.tracksAreSelected = this.selectedTracks.length > 0;
+			this.areLockedTracksSelected();
 		},
 		lockSelected() {
 			for (let i = 0; i < this.selectedTracks.length; i++) {
@@ -342,25 +356,40 @@ export default {
 				} else if (index === this.sortedPlaylist.length - 1) {
 					this.lastIsSelected = false;
 				}
-				this.sortedPlaylist[index].is_locked = !this.sortedPlaylist[index].is_locked;
-				this.nodes[index].classList.toggle("list-item-locked");
+				let state = this.sortedPlaylist[index].is_locked;
+				this.$set(this.sortedPlaylist, index, { ...this.sortedPlaylist[index], is_locked: !state });
 			}
+
 			this.deselectAll();
 		},
 		deselectAll() {
 			for (let i = 0; i < this.sortedPlaylist.length; i++) {
 				this.sortedPlaylist[i].is_selected = false;
-				this.nodes[i].classList.remove("list-item-selected");
 			}
 			this.selectedTracks = [];
 			this.tracksAreSelected = false;
 		},
+		areLockedTracksSelected() {
+			let state = false;
+			let i = this.selectedTracks.length - 1;
+			let el = this.selectedTracks;
+			while (state === false && i > -1) {
+				state = el[i] && el[i].is_selected && el[i].is_locked ? true : false;
+				i--;
+			}
+			this.lockedTracksSelected = state;
+		},
 	},
 	mounted: function() {
-		for (let i = 0; i < this.tracks.length; i++) {
-			this.tracks[i].id = this.tracks[i].track.id;
+		for (let i = 0; i < this.playlist.length; i++) {
+			this.playlist[i].id = this.playlist[i].track.id;
+			this.playlist[i].is_selected = false;
+			this.playlist[i].is_locked = false;
 		}
-		this.sortedPlaylist = this.tracks;
+		this.sortedPlaylist = this.playlist;
+	},
+	updated: function() {
+		this.refreshNodeList();
 	},
 };
 </script>

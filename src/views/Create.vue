@@ -22,7 +22,7 @@
 			<v-btn color="grey-lighten-2" class="mx-4" @click="editPlaylist = true">Edit Tracks</v-btn>
 			<v-btn color="primary" :disabled="loading" @click="savePlaylist">Save Playlist</v-btn>
 			<v-dialog :fullscreen="$vuetify.breakpoint.smAndDown" v-model="editPlaylist" id="tracks-container">
-				<playlist-tracks :tracks="this.selectedTracks" @close="editPlaylist = false" />
+				<playlist-tracks :playlist="this.currentPlaylist" @close="editPlaylist = false" />
 			</v-dialog>
 		</v-row>
 		<div v-if="mountFilters" class="filters-container px-3 mt-2">
@@ -126,7 +126,7 @@ export default {
 		};
 	},
 	computed: {
-		selectedTracks: _.throttle(function() {
+		currentPlaylist: _.throttle(function() {
 			//Decides which tracks meet all selected filters and adds to an array
 			let tracksArray = [];
 			this.audioFeatures.forEach((track) => {
@@ -149,11 +149,11 @@ export default {
 			return tracksArray;
 		}, 10),
 		songCount: _.throttle(function() {
-			return this.selectedTracks.length;
+			return this.currentPlaylist.length;
 		}, 10),
 		mixDuration: _.throttle(function() {
 			let totalLength = 0;
-			this.selectedTracks.forEach((track) => {
+			this.currentPlaylist.forEach((track) => {
 				totalLength += track.track.duration_ms;
 			});
 			//Convert time in ms to hours minutes seconds and return
@@ -161,7 +161,7 @@ export default {
 		}, 10),
 		tempos: _.throttle(function() {
 			let tempos = [];
-			this.selectedTracks.map((el) => {
+			this.currentPlaylist.map((el) => {
 				tempos.push(el.features.doubletime);
 			});
 			return tempos;
@@ -184,9 +184,9 @@ export default {
 				tracks: this.songCount,
 				duration: this.mixDuration,
 			});
-			const selectedTracks = JSON.stringify(this.selectedTracks);
+			const currentPlaylist = JSON.stringify(this.currentPlaylist);
 			localStorage.setItem("playlistMetadata", metadata);
-			localStorage.setItem("playlistTracks", selectedTracks);
+			localStorage.setItem("playlistTracks", currentPlaylist);
 			this.$router.push("Save");
 		},
 		updateUserInfo() {
@@ -219,17 +219,17 @@ export default {
 					let segment = {};
 					let tracks = 0;
 					//Count how many tracks are in each segment
-					this.selectedTracks.forEach((track) => {
+					this.currentPlaylist.forEach((track) => {
 						track.features[el] * multiplier >= i && track.features[el] * multiplier < i + filter.segmentSize ? tracks++ : null;
 					});
 					//Axis name
 					segment.axis = i + 1;
 					//Percentage of total tracks in segment
-					segment.value = tracks / this.selectedTracks.length;
+					segment.value = tracks / this.currentPlaylist.length;
 					if ((segment.axis = 1 & (segment.value > 0.2))) {
 						segment.value = 0.2;
 					}
-					segment.valueSave = tracks / this.selectedTracks.length;
+					segment.valueSave = tracks / this.currentPlaylist.length;
 					//Number of tracks in segment
 					segment.tracks = tracks;
 					segments.push(segment);
@@ -243,7 +243,7 @@ export default {
 		},
 	},
 	watch: {
-		selectedTracks() {
+		currentPlaylist() {
 			this.initChartData();
 		},
 	},
