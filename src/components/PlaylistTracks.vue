@@ -59,12 +59,20 @@
 			<v-tooltip bottom v-if="!duplicatesRemoved">
 				<template v-slot:activator="{ on }">
 					<span class="mr-4 overline" style="transform: translateX(-4px)">{{ getDuplicates() }}</span>
-					<v-btn @click="removeDuplicates" style="transform: translateY(-3px)" icon :disabled="getDuplicates === 0" large v-on="on"
+					<v-btn
+						:class="$vuetify.breakpoint.smAndDown ? 'ml-3' : null"
+						@click="removeDuplicates"
+						style="transform: translateY(-3px)"
+						icon
+						:disabled="getDuplicates === 0"
+						large
+						v-on="on"
 						><v-icon>mdi-minus-box-multiple-outline</v-icon></v-btn
 					>
 				</template>
 				<span>Remove duplicates</span>
 			</v-tooltip>
+			<v-spacer v-if="$vuetify.breakpoint.smAndDown" />
 			<v-btn color="primary" @click="close">Done</v-btn>
 		</v-row>
 		<v-list class="px-0" :class="$vuetify.breakpoint.smAndDown ? null : 'mx-2'">
@@ -72,12 +80,28 @@
 				<v-list-item-icon class="mx-0"></v-list-item-icon>
 				<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap '">
 					<v-list-item-subtitle style="transform: translateX(4px);" @click="sortBy('title')">Title</v-list-item-subtitle>
-					<v-list-item-subtitle class="px-4" style="transform: translateX(4px);" @click="sortBy('artist')">Artist</v-list-item-subtitle>
+					<v-list-item-subtitle
+						:class="$vuetify.breakpoint.smAndDown ? null : 'px-4'"
+						style="transform: translateX(4px);"
+						@click="sortBy('artist')"
+						>Artist</v-list-item-subtitle
+					>
 				</v-list-item-content>
-				<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
-					<v-list-item-subtitle @click="sortBy('duration_ms')">Duration</v-list-item-subtitle>
-					<v-list-item-subtitle class="ml-4" @click="sortBy('doubletime')">Tempo</v-list-item-subtitle>
-					<v-list-item-subtitle class=" d-flex flex-nowrap">
+				<div
+					class="track-features"
+					:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
+					:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: .7'"
+				>
+					<v-list-item-subtitle
+						@click="sortBy('duration_ms')"
+						style="overflow:visible"
+						:class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+						>Duration</v-list-item-subtitle
+					>
+					<v-list-item-subtitle class="ml-4" @click="sortBy('doubletime')" :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+						>Tempo</v-list-item-subtitle
+					>
+					<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
 						<v-list-item-subtitle class="text-right" @click="sortBy('key')">Key</v-list-item-subtitle>
 						<v-list-item-subtitle class="mx-1" style="max-width: 8px; text-align: center;">/</v-list-item-subtitle>
 						<v-list-item-subtitle @click="sortBy('mode')">Mode</v-list-item-subtitle>
@@ -93,27 +117,6 @@
 				:index="index"
 				@onClick="select"
 			/>
-			<!-- <v-hover v-slot:default="{ hover }" v-ripple="false" v-for="(track, index) in sortedPlaylist" :key="index + 1">
-				<v-list-item class="actionable list-item" @click="select($event, sortedPlaylist.indexOf(track), $el)" v-ripple="false">
-					<v-list-item-icon class="ml-0 mr-2"
-						><span class="text-right" style="width: 100%">{{ sortedPlaylist.indexOf(track) + 1 }}</span></v-list-item-icon
-					>
-					<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
-						<v-list-item-title>{{ track.track.name }}</v-list-item-title>
-						<v-list-item-subtitle class="px-4">{{ getArtist(track) }}</v-list-item-subtitle>
-					</v-list-item-content>
-					<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
-						<v-list-item-subtitle>{{ getTrackDuration(track) }}</v-list-item-subtitle>
-						<v-list-item-subtitle class="ml-4" v-show="sortMethod === 'doubletime' || $vuetify.breakpoint.mdAndUp"
-							>{{ track.features.doubletime }} bpm</v-list-item-subtitle
-						>
-						<v-list-item-subtitle class=" d-flex flex-nowrap">
-							<v-list-item-subtitle class=" text-right mr-4">{{ getTrackKey(track) }}</v-list-item-subtitle>
-							<v-list-item-subtitle>{{ getTrackMode(track) }}</v-list-item-subtitle>
-						</v-list-item-subtitle>
-					</div>
-				</v-list-item>
-			</v-hover> -->
 		</v-list>
 	</v-card>
 </template>

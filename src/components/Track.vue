@@ -20,12 +20,20 @@
 			>
 			<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
 				<v-list-item-title>{{ track.track.name }}</v-list-item-title>
-				<v-list-item-subtitle class="px-4">{{ getArtist(track) }}</v-list-item-subtitle>
+				<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? null : 'px-4'">{{ getArtist(track) }}</v-list-item-subtitle>
 			</v-list-item-content>
-			<div class="track-features" :style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'">
-				<v-list-item-subtitle>{{ getTrackDuration(track) }}</v-list-item-subtitle>
-				<v-list-item-subtitle class="ml-4">{{ track.features.doubletime }} bpm</v-list-item-subtitle>
-				<v-list-item-subtitle class=" d-flex flex-nowrap">
+			<div
+				class="track-features"
+				:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
+				:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: .7'"
+			>
+				<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null">{{
+					getTrackDuration(track)
+				}}</v-list-item-subtitle>
+				<v-list-item-subtitle class="ml-4" :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+					>{{ track.features.doubletime }}{{ $vuetify.breakpoint.smAndDown ? null : "bpm" }}</v-list-item-subtitle
+				>
+				<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
 					<v-list-item-subtitle class=" text-right mr-4">{{ getTrackKey(track) }}</v-list-item-subtitle>
 					<v-list-item-subtitle>{{ getTrackMode(track) }}</v-list-item-subtitle>
 				</v-list-item-subtitle>

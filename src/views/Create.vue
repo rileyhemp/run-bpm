@@ -4,6 +4,7 @@
 		<v-row class="pr-4 sticky-nav">
 			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
+			<v-btn v-if="$vuetify.breakpoint.smAndDown" color="primary" :disabled="loading" @click="savePlaylist">Save Playlist</v-btn>
 		</v-row>
 		<v-row class="mt-6 mx-4">
 			<p class="subtitle-1">Step 2 / 3</p>
@@ -20,7 +21,7 @@
 		</v-row>
 		<v-row class="px-3 pt-4">
 			<v-btn color="grey-lighten-2" class="mx-4" @click="editPlaylist = true">Edit Tracks</v-btn>
-			<v-btn color="primary" :disabled="loading" @click="savePlaylist">Save Playlist</v-btn>
+			<v-btn v-if="$vuetify.breakpoint.mdAndUp" color="primary" :disabled="loading" @click="savePlaylist">Save Playlist</v-btn>
 			<v-dialog :fullscreen="$vuetify.breakpoint.smAndDown" v-model="editPlaylist" id="tracks-container">
 				<playlist-tracks :playlist="this.currentPlaylist" @close="closeEditor" />
 			</v-dialog>

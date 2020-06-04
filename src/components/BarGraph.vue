@@ -62,10 +62,13 @@ export default {
 }
 .bar {
 	width: 10%;
-	margin: 0 1.3%;
+	margin: 0 0.8%;
 	border-radius: 3px;
 	height: 100%;
 	transition: all 0.5s 0.05s ease;
+	@media screen and (min-width: 768px) {
+		margin: 0 1.3%;
+	}
 }
 
 .gradient-9 {
