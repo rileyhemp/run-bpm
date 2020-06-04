@@ -1,6 +1,6 @@
 // eslint-disable-file
 <template>
-	<v-container fluid>
+	<v-container fluid :key="renderKey">
 		<v-row class="pr-4 sticky-nav">
 			<v-btn text class="ml-4" @click="() => this.$router.push('Import')">Back</v-btn>
 			<v-spacer />
@@ -22,7 +22,7 @@
 			<v-btn color="grey-lighten-2" class="mx-4" @click="editPlaylist = true">Edit Tracks</v-btn>
 			<v-btn color="primary" :disabled="loading" @click="savePlaylist">Save Playlist</v-btn>
 			<v-dialog :fullscreen="$vuetify.breakpoint.smAndDown" v-model="editPlaylist" id="tracks-container">
-				<playlist-tracks :playlist="this.currentPlaylist" @close="editPlaylist = false" />
+				<playlist-tracks :playlist="this.currentPlaylist" @close="closeEditor" />
 			</v-dialog>
 		</v-row>
 		<div v-if="mountFilters" class="filters-container px-3 mt-2">
@@ -69,6 +69,7 @@ export default {
 			editPlaylist: false,
 			showMoreFilters: this.$vuetify.breakpoint.mdAndUp,
 			mountFilters: false,
+			renderKey: 1,
 			test: {
 				valence: {
 					range: [0, 100],
@@ -240,6 +241,11 @@ export default {
 		},
 		updateFilters: function(options) {
 			this.$set(this.filters[options.filter], "range", options.range);
+		},
+		closeEditor(event) {
+			this.audioFeatures = event;
+			this.renderKey++;
+			this.editPlaylist = false;
 		},
 	},
 	watch: {

@@ -56,10 +56,10 @@
 				</v-tooltip>
 			</div>
 			<v-spacer />
-			<v-tooltip bottom>
+			<v-tooltip bottom v-if="!duplicatesRemoved">
 				<template v-slot:activator="{ on }">
-					<span v-show="numberOfDuplicates > 0" class="mr-4 overline" style="transform: translateX(-4px)">{{ numberOfDuplicates }}</span>
-					<v-btn style="transform: translateY(-3px)" icon :disabled="numberOfDuplicates === 0" large v-on="on"
+					<span class="mr-4 overline" style="transform: translateX(-4px)">{{ getDuplicates() }}</span>
+					<v-btn @click="removeDuplicates" style="transform: translateY(-3px)" icon :disabled="getDuplicates === 0" large v-on="on"
 						><v-icon>mdi-minus-box-multiple-outline</v-icon></v-btn
 					>
 				</template>
@@ -140,10 +140,11 @@ export default {
 			lastClickedIndex: Number,
 			panel: false,
 			originalSelection: Object,
-			renderKey: 1,
 			nodes: undefined,
 			lockedTracksSelected: false,
 			hasMovedItems: false,
+			renderKey: 0,
+			duplicatesRemoved: false,
 		};
 	},
 	computed: {
@@ -155,12 +156,21 @@ export default {
 			//Convert time in ms to hours minutes seconds and return
 			return msToHMS(totalLength);
 		},
-
-		numberOfDuplicates: function() {
-			return 2;
-		},
 	},
 	methods: {
+		getDuplicates() {
+			var unique = _.uniqBy(this.playlist, function(el) {
+				return el.id;
+			});
+			return unique.length;
+		},
+		removeDuplicates() {
+			var unique = _.uniqBy(this.playlist, function(el) {
+				return el.id;
+			});
+			this.sortedPlaylist = unique;
+			this.duplicatesRemoved = true;
+		},
 		getArtist(track) {
 			const artists = track.track.artists;
 			let names = [];
@@ -186,7 +196,7 @@ export default {
 			return track.features.mode ? "major" : "minor";
 		},
 		close() {
-			this.$emit("close");
+			this.$emit("close", this.sortedPlaylist);
 		},
 		moveItem(arr, old_index, new_index) {
 			console.log(old_index, new_index);
