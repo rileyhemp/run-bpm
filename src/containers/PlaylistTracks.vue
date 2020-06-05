@@ -27,9 +27,9 @@
 				</v-btn>
 			</v-btn-toggle>
 			<v-overflow-btn
+				@input="enforceMaxFilters"
 				v-model="selectedFilters"
 				:items="available_filters"
-				left
 				multiple
 				prefix="Select filters"
 				class="ma-0 pa-0 select-filters"
@@ -44,8 +44,9 @@
 			</v-btn-toggle>
 		</div>
 		<v-list class="px-4 pt-0 tracks-list">
-			<playlist-track :is_header="true" :is_locked="false" :is_selected="false" :track="header" />
+			<playlist-track :selectedFilters="selectedFilters" :is_header="true" :is_locked="false" :is_selected="false" :track="header" />
 			<playlist-track
+				:selectedFilters="selectedFilters"
 				v-for="(track, index) in sortedPlaylist"
 				:key="index + 1"
 				:track="track"
@@ -71,17 +72,17 @@ export default {
 		return {
 			selectedTracks: [],
 			visibleFilters: [],
-			selectedFilters: [0, 1, 3],
+			selectedFilters: [0, 1, 8],
 			available_filters: [
 				{ text: "Duration", value: 0 },
 				{ text: "Tempo (doubletime)", value: 1 },
 				{ text: "Tempo (original)", value: 2 },
-				{ text: "Key / Mode", value: 3 },
+				{ text: "Key / Mode", value: 8 },
+				{ text: "Valence", value: 3 },
 				{ text: "Energy", value: 4 },
 				{ text: "Instrumentalness", value: 5 },
 				{ text: "Danceability", value: 6 },
 				{ text: "Acousticness", value: 7 },
-				{ text: "Valence", value: 8 },
 			],
 			sortedPlaylist: Object,
 			tracksAreSelected: false,
@@ -95,15 +96,15 @@ export default {
 					name: "Name",
 					artists: [{ name: "Artist" }],
 				},
-				features: {
-					doubletime: "Tempo",
-				},
 				is_locked: false,
 				is_selected: false,
 			},
 		};
 	},
 	methods: {
+		enforceMaxFilters() {
+			this.selectedFilters.length > 3 ? this.selectedFilters.shift() : null;
+		},
 		menuFix() {
 			let dropdown = document.querySelector(".menuable__content__active");
 			dropdown != null ? dropdown.classList.remove("v-menu__content") : null;
@@ -347,13 +348,12 @@ export default {
 	padding-top: 16px;
 	z-index: 101;
 	background-color: #1e1e1e;
-	@media screen and (min-width: 900px) {
-		top: 56px;
-		width: calc(100% - 72px);
-	}
 }
 .tracks-list {
 	transform: translateY(64px);
+}
+.select-filters {
+	max-width: 200px;
 }
 .filter-row {
 	position: fixed;

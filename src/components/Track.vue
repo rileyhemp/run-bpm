@@ -32,21 +32,51 @@
 			:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
 			:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'"
 		>
-			<v-list-item-subtitle
-				><span class="feature">{{ is_header ? "Duration" : getTrackDuration(track) }}</span></v-list-item-subtitle
-			>
-			<v-list-item-subtitle class="ml-4" :style="$vuetify.breakpoint.mdAndDown ? 'transform: translateX(8px)' : null"
-				><span class="feature"
+			<v-list-item-subtitle v-if="selectedFilters.includes(0)"
+				><span class="feature">{{ is_header ? "Duration" : getTrackDuration(track) }}</span>
+			</v-list-item-subtitle>
+
+			<v-list-item-subtitle v-if="selectedFilters.includes(1)"
+				><span class="feature" v-if="!is_header"
 					>{{ track.features.doubletime }}{{ $vuetify.breakpoint.smAndDown || is_header ? null : " bpm" }}</span
-				></v-list-item-subtitle
-			>
-			<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
-				<span class=" text-right mr-4" style="width: 30%"
+				>
+				<span class="feature" v-if="is_header">Tempo<br />(Doubletime)</span>
+			</v-list-item-subtitle>
+
+			<v-list-item-subtitle v-if="selectedFilters.includes(2)"
+				><span class="feature" v-if="!is_header"
+					>{{ track.features.tempo }}{{ $vuetify.breakpoint.smAndDown || is_header ? null : " bpm" }}</span
+				>
+				<span class="feature" v-if="is_header">Tempo<br />(Original)</span>
+			</v-list-item-subtitle>
+
+			<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="selectedFilters.includes(8)">
+				<span class="text-right mr-4" style="width: 30%"
 					><span class="feature" :class="is_header === true ? 'track-key' : null">{{ getTrackKey(track) }}</span></span
 				>
 				<span style="max-width: 40px"
 					><span class="feature">{{ getTrackMode(track) }}</span></span
 				>
+			</v-list-item-subtitle>
+
+			<v-list-item-subtitle v-if="selectedFilters.includes(4)"
+				><span class="feature">{{ is_header ? "Energy" : getValue(track.features.energy) }}</span>
+			</v-list-item-subtitle>
+
+			<v-list-item-subtitle v-if="selectedFilters.includes(5)"
+				><span class="feature">{{ is_header ? "Instrumentalness" : getValue(track.features.instrumentalness) }}</span>
+			</v-list-item-subtitle>
+
+			<v-list-item-subtitle v-if="selectedFilters.includes(6)"
+				><span class="feature">{{ is_header ? "Danceability" : getValue(track.features.danceability) }}</span>
+			</v-list-item-subtitle>
+
+			<v-list-item-subtitle v-if="selectedFilters.includes(7)"
+				><span class="feature">{{ is_header ? "Acousticness" : getValue(track.features.acousticness) }}</span>
+			</v-list-item-subtitle>
+
+			<v-list-item-subtitle v-if="selectedFilters.includes(3)"
+				><span class="feature">{{ is_header ? "Valence" : getValue(track.features.valence) }}</span>
 			</v-list-item-subtitle>
 		</div>
 	</v-list-item>
@@ -56,7 +86,7 @@
 import msToHMS from "../scripts/msToHMS";
 // import _ from "lodash";
 export default {
-	props: ["track", "index", "is_selected", "is_locked", "is_header"],
+	props: ["track", "index", "is_selected", "is_locked", "is_header", "selectedFilters"],
 	data: function() {
 		return {};
 	},
