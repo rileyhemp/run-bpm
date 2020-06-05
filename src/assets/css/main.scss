@@ -82,3 +82,11 @@
 .v-overflow-btn .v-select__slot {
 	height: 45px;
 }
+
+.v-list-item--link:before {
+	background-color: transparent;
+}
+
+.active-button:before {
+	background-color: transparent;
+}

@@ -12,7 +12,6 @@
 				? 'list-item-locked'
 				: null
 		"
-		@click="onClick"
 		v-ripple="false"
 	>
 		<v-list-item-icon class="ml-0 mr-2"
@@ -21,10 +20,10 @@
 		>
 		<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
 			<v-list-item-title
-				><span class="feature">{{ is_header ? "Name" : track.track.name }}</span></v-list-item-title
+				><span class="feature" @click="handleClick('name')">{{ is_header ? "Name" : track.track.name }}</span></v-list-item-title
 			>
 			<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? null : 'px-4'" style="flex-shrink: 1.2"
-				><span class="feature">{{ is_header ? "Artist" : getArtist(track) }}</span></v-list-item-subtitle
+				><span class="feature" @click="handleClick('artist')">{{ is_header ? "Artist" : getArtist(track) }}</span></v-list-item-subtitle
 			>
 		</v-list-item-content>
 		<div
@@ -33,50 +32,58 @@
 			:style="$vuetify.breakpoint.mdAndUp ? 'flex: .8' : 'flex: 1'"
 		>
 			<v-list-item-subtitle
-				><span class="feature">{{ is_header ? "Duration" : getTrackDuration(track) }}</span>
+				><span class="feature" @click="handleClick('duration_ms')">{{ is_header ? "Duration" : getTrackDuration(track) }}</span>
 			</v-list-item-subtitle>
 
 			<v-list-item-subtitle v-if="selectedFilters.includes(1)"
 				><span class="feature" v-if="!is_header"
 					>{{ track.features.doubletime }}{{ $vuetify.breakpoint.smAndDown || is_header ? null : " bpm" }}</span
 				>
-				<span class="feature" v-if="is_header">Tempo<br />(Doubletime)</span>
+				<span class="feature" v-if="is_header" @click="handleClick('doubletime')">Tempo<br />(Doubletime)</span>
 			</v-list-item-subtitle>
 
 			<v-list-item-subtitle v-if="selectedFilters.includes(2)"
 				><span class="feature" v-if="!is_header"
 					>{{ track.features.tempo }}{{ $vuetify.breakpoint.smAndDown || is_header ? null : " bpm" }}</span
 				>
-				<span class="feature" v-if="is_header">Tempo<br />(Original)</span>
+				<span class="feature" v-if="is_header" @click="handleClick('tempo')">Tempo<br />(Original)</span>
 			</v-list-item-subtitle>
 
 			<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="selectedFilters.includes(8)">
 				<span class="text-right mr-4" style="width: 30%"
-					><span class="feature" :class="is_header === true ? 'track-key' : null">{{ getTrackKey(track) }}</span></span
+					><span class="feature" :class="is_header === true ? 'track-key' : null" @click="handleClick('key')">{{
+						getTrackKey(track)
+					}}</span></span
 				>
 				<span style="max-width: 40px"
-					><span class="feature">{{ getTrackMode(track) }}</span></span
+					><span class="feature" @click="handleClick('mode')">{{ getTrackMode(track) }}</span></span
 				>
 			</v-list-item-subtitle>
 
 			<v-list-item-subtitle v-if="selectedFilters.includes(4)"
-				><span class="feature">{{ is_header ? "Energy" : getValue(track.features.energy) }}</span>
+				><span class="feature" @click="handleClick('energy')">{{ is_header ? "Energy" : getValue(track.features.energy) }}</span>
 			</v-list-item-subtitle>
 
 			<v-list-item-subtitle v-if="selectedFilters.includes(5)"
-				><span class="feature">{{ is_header ? "Instrumentalness" : getValue(track.features.instrumentalness) }}</span>
+				><span class="feature" @click="handleClick('instrumentalness')">{{
+					is_header ? "Instrumentalness" : getValue(track.features.instrumentalness)
+				}}</span>
 			</v-list-item-subtitle>
 
 			<v-list-item-subtitle v-if="selectedFilters.includes(6)"
-				><span class="feature">{{ is_header ? "Danceability" : getValue(track.features.danceability) }}</span>
+				><span class="feature" @click="handleClick('danceability')">{{
+					is_header ? "Danceability" : getValue(track.features.danceability)
+				}}</span>
 			</v-list-item-subtitle>
 
 			<v-list-item-subtitle v-if="selectedFilters.includes(7)"
-				><span class="feature">{{ is_header ? "Acousticness" : getValue(track.features.acousticness) }}</span>
+				><span class="feature" @click="handleClick('acousticness')">{{
+					is_header ? "Acousticness" : getValue(track.features.acousticness)
+				}}</span>
 			</v-list-item-subtitle>
 
 			<v-list-item-subtitle v-if="selectedFilters.includes(3)"
-				><span class="feature">{{ is_header ? "Valence" : getValue(track.features.valence) }}</span>
+				><span class="feature" @click="handleClick('valence')">{{ is_header ? "Valence" : getValue(track.features.valence) }}</span>
 			</v-list-item-subtitle>
 		</div>
 	</v-list-item>
@@ -91,6 +98,10 @@ export default {
 		return {};
 	},
 	methods: {
+		handleClick: function(e) {
+			console.log(e);
+			this.$emit("sort", e);
+		},
 		getArtist(track) {
 			const artists = track.track.artists;
 			let names = [];

@@ -2,29 +2,41 @@
 	<v-card>
 		<div class="sticky-row pt-5 pl-8 pr-6">
 			<v-btn-toggle rounded>
-				<v-btn>
-					<v-icon>mdi-chevron-double-up</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-chevron-up</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-chevron-down</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-chevron-double-down</v-icon>
-				</v-btn>
+				<playlist-control
+					icon="mdi-chevron-double-up"
+					tooltip="Send to top"
+					@click="moveTop"
+					:disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected"
+				/>
+				<playlist-control
+					icon="mdi-chevron-up"
+					tooltip="Move up"
+					@click="moveUp"
+					:disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected"
+				/>
+				<playlist-control
+					icon="mdi-chevron-down"
+					tooltip="Move down"
+					@click="moveDown"
+					:disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected"
+				/>
+				<playlist-control
+					icon="mdi-chevron-double-down"
+					tooltip="Send to bottom"
+					@click="moveBottom"
+					:disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected"
+				/>
 			</v-btn-toggle>
 			<v-btn-toggle rounded>
-				<v-btn>
-					<v-icon>mdi-lock</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-delete</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-cancel</v-icon>
-				</v-btn>
+				<playlist-control icon="mdi-lock" tooltip="Lock selected" @click="lockSelected" :disabled="!tracksAreSelected" />
+				<playlist-control icon="mdi-delete" tooltip="Delete" @click="deleteSelected" :disabled="!tracksAreSelected" />
+				<playlist-control icon="mdi-cancel" tooltip="Clear selection" @click="deselectAll" :disabled="!tracksAreSelected" />
+				<playlist-control
+					icon="mdi-minus-box-multiple-outline"
+					tooltip="Remove duplicates"
+					@click="removeDuplicates"
+					:disabled="getDuplicates === 0"
+				/>
 			</v-btn-toggle>
 			<v-overflow-btn
 				rounded
@@ -36,19 +48,21 @@
 				class="ma-0 pa-0 select-filters"
 			/>
 			<v-btn-toggle rounded @click.native="menuFix">
-				<v-btn>
-					<v-icon>mdi-close</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-check</v-icon>
-				</v-btn>
+				<playlist-control icon="mdi-close" tooltip="Cancel" @click="close" />
+				<playlist-control icon="mdi-check" tooltip="Save" @click="close" />
 			</v-btn-toggle>
 		</div>
 		<v-divider></v-divider>
 		<v-list class="px-4 pt-0 tracks-list">
-			<playlist-track :selectedFilters="selectedFilters" :is_header="true" :is_locked="false" :is_selected="false" :track="header" />
 			<playlist-track
-				style="transform: translateY(-16px)"
+				:selectedFilters="selectedFilters"
+				:is_header="true"
+				:is_locked="false"
+				:is_selected="false"
+				:track="header"
+				@sort="sortBy"
+			/>
+			<playlist-track
 				:selectedFilters="selectedFilters"
 				v-for="(track, index) in sortedPlaylist"
 				:key="index + 1"
@@ -66,10 +80,12 @@
 <script>
 import _ from "lodash";
 import Track from "../components/Track";
+import Control from "../components/PlaylistControl";
 export default {
 	props: ["playlist", "filters"],
 	components: {
 		"playlist-track": Track,
+		"playlist-control": Control,
 	},
 	data: function() {
 		return {
@@ -104,6 +120,9 @@ export default {
 		};
 	},
 	methods: {
+		test(e) {
+			console.log(e);
+		},
 		enforceMaxFilters() {
 			//TODO ====> Let them select more if the screen is larger
 			this.selectedFilters.length > 2 ? this.selectedFilters.shift() : null;
@@ -124,6 +143,17 @@ export default {
 			});
 			this.sortedPlaylist = unique;
 			this.duplicatesRemoved = true;
+		},
+		getArtist(track) {
+			const artists = track.track.artists;
+			let names = [];
+			if (artists.length > 1) {
+				artists.forEach((el) => {
+					names.push(el.name);
+				});
+				return names.join(", ");
+			}
+			return artists[0].name;
 		},
 		close() {
 			this.$emit("close", this.sortedPlaylist);
@@ -171,6 +201,7 @@ export default {
 			}
 		},
 		moveTop() {
+			console.log("move top");
 			while (!this.topIsSelected) {
 				this.moveUp();
 			}
