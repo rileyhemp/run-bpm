@@ -3,7 +3,7 @@
 		class="actionable list-item"
 		:class="
 			is_header
-				? 'no-hover header pt-4'
+				? 'no-hover header pb-6'
 				: is_selected && !is_locked
 				? 'list-item-selected'
 				: is_selected && is_locked
@@ -23,16 +23,16 @@
 			<v-list-item-title
 				><span class="feature">{{ is_header ? "Name" : track.track.name }}</span></v-list-item-title
 			>
-			<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? null : 'px-4'"
+			<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? null : 'px-4'" style="flex-shrink: 1.2"
 				><span class="feature">{{ is_header ? "Artist" : getArtist(track) }}</span></v-list-item-subtitle
 			>
 		</v-list-item-content>
 		<div
 			class="track-features"
 			:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
-			:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'"
+			:style="$vuetify.breakpoint.mdAndUp ? 'flex: .8' : 'flex: 1'"
 		>
-			<v-list-item-subtitle v-if="selectedFilters.includes(0)"
+			<v-list-item-subtitle
 				><span class="feature">{{ is_header ? "Duration" : getTrackDuration(track) }}</span>
 			</v-list-item-subtitle>
 
@@ -126,9 +126,9 @@ export default {
 <style lang="scss">
 .header {
 	position: sticky;
-	top: 0;
+	top: 68px;
 	background-color: #1e1e1e;
-	z-index: 101;
+	z-index: 99;
 }
 .track-features {
 	display: flex;
@@ -138,6 +138,11 @@ export default {
 .feature {
 	cursor: pointer;
 }
+
+.header .feature {
+	position: absolute;
+}
+
 .track-key {
 	position: absolute;
 	overflow: visible;

@@ -1,6 +1,6 @@
 <template>
 	<v-card>
-		<div class="sticky-row py-4 pl-8 pr-6">
+		<div class="sticky-row pt-5 pl-8 pr-6">
 			<v-btn-toggle rounded>
 				<v-btn>
 					<v-icon>mdi-chevron-double-up</v-icon>
@@ -27,6 +27,7 @@
 				</v-btn>
 			</v-btn-toggle>
 			<v-overflow-btn
+				rounded
 				@input="enforceMaxFilters"
 				v-model="selectedFilters"
 				:items="available_filters"
@@ -43,9 +44,11 @@
 				</v-btn>
 			</v-btn-toggle>
 		</div>
+		<v-divider></v-divider>
 		<v-list class="px-4 pt-0 tracks-list">
 			<playlist-track :selectedFilters="selectedFilters" :is_header="true" :is_locked="false" :is_selected="false" :track="header" />
 			<playlist-track
+				style="transform: translateY(-16px)"
 				:selectedFilters="selectedFilters"
 				v-for="(track, index) in sortedPlaylist"
 				:key="index + 1"
@@ -72,9 +75,8 @@ export default {
 		return {
 			selectedTracks: [],
 			visibleFilters: [],
-			selectedFilters: [0, 1, 8],
+			selectedFilters: [1, 8],
 			available_filters: [
-				{ text: "Duration", value: 0 },
 				{ text: "Tempo (doubletime)", value: 1 },
 				{ text: "Tempo (original)", value: 2 },
 				{ text: "Key / Mode", value: 8 },
@@ -103,7 +105,8 @@ export default {
 	},
 	methods: {
 		enforceMaxFilters() {
-			this.selectedFilters.length > 3 ? this.selectedFilters.shift() : null;
+			//TODO ====> Let them select more if the screen is larger
+			this.selectedFilters.length > 2 ? this.selectedFilters.shift() : null;
 		},
 		menuFix() {
 			let dropdown = document.querySelector(".menuable__content__active");
@@ -339,7 +342,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .sticky-row {
-	/* position: fixed; */
+	position: sticky;
 	display: flex;
 	justify-content: space-between;
 	/* align-items: center; */
@@ -350,7 +353,7 @@ export default {
 	background-color: #1e1e1e;
 }
 .tracks-list {
-	transform: translateY(64px);
+	/* transform: translateY(32px); */
 }
 .select-filters {
 	max-width: 200px;
