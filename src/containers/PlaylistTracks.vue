@@ -1,15 +1,59 @@
 <template>
 	<v-card>
-		<v-list class="pa-4">
+		<div class="sticky-row py-4 pl-8 pr-6">
+			<v-btn-toggle rounded>
+				<v-btn>
+					<v-icon>mdi-chevron-double-up</v-icon>
+				</v-btn>
+				<v-btn>
+					<v-icon>mdi-chevron-up</v-icon>
+				</v-btn>
+				<v-btn>
+					<v-icon>mdi-chevron-down</v-icon>
+				</v-btn>
+				<v-btn>
+					<v-icon>mdi-chevron-double-down</v-icon>
+				</v-btn>
+			</v-btn-toggle>
+			<v-btn-toggle rounded>
+				<v-btn>
+					<v-icon>mdi-lock</v-icon>
+				</v-btn>
+				<v-btn>
+					<v-icon>mdi-delete</v-icon>
+				</v-btn>
+				<v-btn>
+					<v-icon>mdi-cancel</v-icon>
+				</v-btn>
+			</v-btn-toggle>
+			<v-overflow-btn
+				v-model="selectedFilters"
+				:items="available_filters"
+				left
+				multiple
+				prefix="Select filters"
+				class="ma-0 pa-0 select-filters"
+			/>
+			<v-btn-toggle rounded @click.native="menuFix">
+				<v-btn>
+					<v-icon>mdi-close</v-icon>
+				</v-btn>
+				<v-btn>
+					<v-icon>mdi-check</v-icon>
+				</v-btn>
+			</v-btn-toggle>
+		</div>
+		<v-list class="px-4 pt-0 tracks-list">
 			<playlist-track :is_header="true" :is_locked="false" :is_selected="false" :track="header" />
 			<playlist-track
-				v-for="(track, index) in playlist"
+				v-for="(track, index) in sortedPlaylist"
 				:key="index + 1"
 				:track="track"
 				:is_selected="track.is_selected"
 				:is_locked="track.is_locked"
 				:index="index"
 				:is_header="false"
+				@onClick="select"
 			/>
 		</v-list>
 	</v-card>
@@ -19,13 +63,34 @@
 import _ from "lodash";
 import Track from "../components/Track";
 export default {
-	props: ["playlist"],
+	props: ["playlist", "filters"],
 	components: {
 		"playlist-track": Track,
 	},
 	data: function() {
 		return {
+			selectedTracks: [],
+			visibleFilters: [],
+			selectedFilters: [0, 1, 3],
+			available_filters: [
+				{ text: "Duration", value: 0 },
+				{ text: "Tempo (doubletime)", value: 1 },
+				{ text: "Tempo (original)", value: 2 },
+				{ text: "Key / Mode", value: 3 },
+				{ text: "Energy", value: 4 },
+				{ text: "Instrumentalness", value: 5 },
+				{ text: "Danceability", value: 6 },
+				{ text: "Acousticness", value: 7 },
+				{ text: "Valence", value: 8 },
+			],
+			sortedPlaylist: Object,
+			tracksAreSelected: false,
+			topIsSelected: false,
+			lastIsSelected: false,
+			lockedTracksSelected: false,
+			duplicatesRemoved: false,
 			header: {
+				// Dummy content for list header
 				track: {
 					name: "Name",
 					artists: [{ name: "Artist" }],
@@ -39,6 +104,10 @@ export default {
 		};
 	},
 	methods: {
+		menuFix() {
+			let dropdown = document.querySelector(".menuable__content__active");
+			dropdown != null ? dropdown.classList.remove("v-menu__content") : null;
+		},
 		getDuplicates() {
 			var unique = _.uniqBy(this.playlist, function(el) {
 				return el.id;
@@ -161,9 +230,9 @@ export default {
 			this.renderKey++;
 			this.deselectAll();
 		},
-		refreshNodeList() {
-			this.nodes = document.querySelectorAll(".list-item");
-		},
+		// refreshNodeList() {
+		// 	this.nodes = document.querySelectorAll(".list-item");
+		// },
 
 		select(event) {
 			let index = event.index;
@@ -262,15 +331,17 @@ export default {
 			this.playlist[i].is_locked = false;
 		}
 		this.sortedPlaylist = this.playlist;
+		document.querySelector(".select-filters").addEventListener("click", this.menuFix);
 	},
-	updated: function() {
-		this.refreshNodeList();
-	},
+	updated: function() {},
 };
 </script>
 <style scoped lang="scss">
 .sticky-row {
-	position: fixed;
+	/* position: fixed; */
+	display: flex;
+	justify-content: space-between;
+	/* align-items: center; */
 	top: 0;
 	width: 100%;
 	padding-top: 16px;
@@ -280,6 +351,9 @@ export default {
 		top: 56px;
 		width: calc(100% - 72px);
 	}
+}
+.tracks-list {
+	transform: translateY(64px);
 }
 .filter-row {
 	position: fixed;

@@ -61,7 +61,7 @@
 }
 
 .v-dialog::-webkit-scrollbar-thumb:hover {
-	background: white;
+	background: rgba(255, 255, 255, 0.8);
 }
 
 .v-list-item.no-hover {
@@ -69,4 +69,12 @@
 	&:before {
 		display: none;
 	}
+}
+
+.v-menu__content {
+	left: initial;
+}
+
+.v-select__selection {
+	display: none;
 }

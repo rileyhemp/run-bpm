@@ -23,7 +23,7 @@
 			<v-btn color="grey-lighten-2" class="mx-4" @click="editPlaylist = true">Edit Tracks</v-btn>
 			<v-btn v-if="$vuetify.breakpoint.mdAndUp" color="primary" :disabled="loading" @click="savePlaylist">Save Playlist</v-btn>
 			<v-dialog :fullscreen="$vuetify.breakpoint.smAndDown" v-model="editPlaylist" id="tracks-container">
-				<playlist-tracks :playlist="this.currentPlaylist" @close="closeEditor" />
+				<playlist-tracks :playlist="this.currentPlaylist" :filters="this.filters" @close="closeEditor" />
 			</v-dialog>
 		</v-row>
 		<div v-if="mountFilters" class="filters-container px-3 mt-2">

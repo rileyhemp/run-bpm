@@ -3,7 +3,7 @@
 		class="actionable list-item"
 		:class="
 			is_header
-				? 'no-hover'
+				? 'no-hover header pt-4'
 				: is_selected && !is_locked
 				? 'list-item-selected'
 				: is_selected && is_locked
@@ -30,22 +30,22 @@
 		<div
 			class="track-features"
 			:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
-			:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: .7'"
+			:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: 1'"
 		>
-			<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+			<v-list-item-subtitle
 				><span class="feature">{{ is_header ? "Duration" : getTrackDuration(track) }}</span></v-list-item-subtitle
 			>
-			<v-list-item-subtitle class="ml-4" :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+			<v-list-item-subtitle class="ml-4" :style="$vuetify.breakpoint.mdAndDown ? 'transform: translateX(8px)' : null"
 				><span class="feature"
 					>{{ track.features.doubletime }}{{ $vuetify.breakpoint.smAndDown || is_header ? null : " bpm" }}</span
 				></v-list-item-subtitle
 			>
 			<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
-				<v-list-item-subtitle class=" text-right mr-4"
-					><span class="feature">{{ getTrackKey(track) }}</span></v-list-item-subtitle
+				<span class=" text-right mr-4" style="width: 30%"
+					><span class="feature" :class="is_header === true ? 'track-key' : null">{{ getTrackKey(track) }}</span></span
 				>
-				<v-list-item-subtitle style="max-width: 40px"
-					><span class="feature">{{ getTrackMode(track) }}</span></v-list-item-subtitle
+				<span style="max-width: 40px"
+					><span class="feature">{{ getTrackMode(track) }}</span></span
 				>
 			</v-list-item-subtitle>
 		</div>
@@ -94,58 +94,46 @@ export default {
 };
 </script>
 <style lang="scss">
-.sticky-row {
+.header {
 	position: sticky;
 	top: 0;
-	padding-top: 16px;
-	padding-bottom: 8px;
-	z-index: 101;
 	background-color: #1e1e1e;
-}
-.controls-container {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-	flex-wrap: wrap;
-}
-.controls-group {
-	transform: translateY(-4px);
+	z-index: 101;
 }
 .track-features {
 	display: flex;
 	justify-content: space-between;
 	flex: 1;
-	/* @media screen and (min-width: 960px) {
-		width: 35%;
-	} */
 }
 .feature {
-	/* margin-left: 8px; */
-	/* text-align: right; */
 	cursor: pointer;
 }
-
+.track-key {
+	position: absolute;
+	overflow: visible;
+	transform: translateX(-21px);
+	&:after {
+		content: "/";
+		position: absolute;
+		left: 27px;
+		pointer-events: none;
+	}
+}
 .actionable {
 	cursor: pointer;
 }
 .list-item-selected {
-	/* background-color: rgba(255, 255, 255, 0.075); */
 	background-color: rgba(41, 182, 246, 0.2);
 	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
 	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
 }
 .list-item-locked {
 	opacity: 0.5;
-	/* pointer-events: none; */
 }
 .locked-item-selected {
-	/* pointer-events: none; */
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
 	border-top: 0.5px solid rgba(0, 0, 0, 0.2);
-}
-.v-list-item {
-	padding: 0;
 }
 .v-list-item--link:before {
 	background-color: transparent;
