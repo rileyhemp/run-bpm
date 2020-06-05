@@ -51,7 +51,7 @@ import PlaylistFilter from "../containers/PlaylistFilter";
 import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
-import PlaylistTracks from "../components/PlaylistTracks";
+import PlaylistTracks from "../containers/PlaylistTracks";
 // import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 
 export default {

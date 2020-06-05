@@ -1,57 +1,64 @@
 <template>
-	<v-hover v-ripple="false">
-		<v-list-item
-			class="actionable list-item"
-			:class="
-				is_selected && !is_locked
-					? 'list-item-selected'
-					: is_selected && is_locked
-					? 'locked-item-selected'
-					: !is_selected && is_locked
-					? 'list-item-locked'
-					: null
-			"
-			@click="onClick"
-			v-ripple="false"
+	<v-list-item
+		class="actionable list-item"
+		:class="
+			is_header
+				? 'no-hover'
+				: is_selected && !is_locked
+				? 'list-item-selected'
+				: is_selected && is_locked
+				? 'locked-item-selected'
+				: !is_selected && is_locked
+				? 'list-item-locked'
+				: null
+		"
+		@click="onClick"
+		v-ripple="false"
+	>
+		<v-list-item-icon class="ml-0 mr-2"
+			><span v-if="!track.is_locked" class="text-right" style="width: 100%" v-show="!is_header">{{ index + 1 }}</span
+			><v-icon v-if="track.is_locked">mdi-lock</v-icon></v-list-item-icon
 		>
-			<v-list-item-icon class="ml-0 mr-2"
-				><span v-if="!track.is_locked" class="text-right" style="width: 100%">{{ index + 1 }}</span
-				><v-icon v-if="track.is_locked">mdi-lock</v-icon></v-list-item-icon
+		<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
+			<v-list-item-title
+				><span class="feature">{{ is_header ? "Name" : track.track.name }}</span></v-list-item-title
 			>
-			<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
-				<v-list-item-title>{{ track.track.name }}</v-list-item-title>
-				<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? null : 'px-4'">{{ getArtist(track) }}</v-list-item-subtitle>
-			</v-list-item-content>
-			<div
-				class="track-features"
-				:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
-				:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: .7'"
+			<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? null : 'px-4'"
+				><span class="feature">{{ is_header ? "Artist" : getArtist(track) }}</span></v-list-item-subtitle
 			>
-				<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null">{{
-					getTrackDuration(track)
-				}}</v-list-item-subtitle>
-				<v-list-item-subtitle class="ml-4" :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
-					>{{ track.features.doubletime }}{{ $vuetify.breakpoint.smAndDown ? null : "bpm" }}</v-list-item-subtitle
+		</v-list-item-content>
+		<div
+			class="track-features"
+			:class="$vuetify.breakpoint.smAndDown ? 'pl-4' : null"
+			:style="$vuetify.breakpoint.mdAndUp ? 'flex: 0.5' : 'flex: .7'"
+		>
+			<v-list-item-subtitle :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+				><span class="feature">{{ is_header ? "Duration" : getTrackDuration(track) }}</span></v-list-item-subtitle
+			>
+			<v-list-item-subtitle class="ml-4" :class="$vuetify.breakpoint.smAndDown ? 'text-right' : null"
+				><span class="feature"
+					>{{ track.features.doubletime }}{{ $vuetify.breakpoint.smAndDown || is_header ? null : " bpm" }}</span
+				></v-list-item-subtitle
+			>
+			<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
+				<v-list-item-subtitle class=" text-right mr-4"
+					><span class="feature">{{ getTrackKey(track) }}</span></v-list-item-subtitle
 				>
-				<v-list-item-subtitle class=" d-flex flex-nowrap" v-if="$vuetify.breakpoint.smAndUp">
-					<v-list-item-subtitle class=" text-right mr-4">{{ getTrackKey(track) }}</v-list-item-subtitle>
-					<v-list-item-subtitle style="max-width: 40px">{{ getTrackMode(track) }}</v-list-item-subtitle>
-				</v-list-item-subtitle>
-			</div>
-		</v-list-item>
-	</v-hover>
+				<v-list-item-subtitle style="max-width: 40px"
+					><span class="feature">{{ getTrackMode(track) }}</span></v-list-item-subtitle
+				>
+			</v-list-item-subtitle>
+		</div>
+	</v-list-item>
 </template>
 
 <script>
 import msToHMS from "../scripts/msToHMS";
 // import _ from "lodash";
 export default {
-	props: ["track", "index", "is_selected", "is_locked"],
+	props: ["track", "index", "is_selected", "is_locked", "is_header"],
 	data: function() {
-		return {
-			// is_locked: this.track.is_locked,
-			// is_selected: this.track.is_selected,
-		};
+		return {};
 	},
 	methods: {
 		getArtist(track) {
@@ -69,14 +76,16 @@ export default {
 			return Math.floor(value.toFixed(2) * 100);
 		},
 		getTrackDuration(track) {
-			return msToHMS(track.track.duration_ms).split("00:")[1];
+			if (!this.is_header) {
+				return msToHMS(track.track.duration_ms).split("00:")[1];
+			} else return "Duration";
 		},
 		getTrackKey(track) {
 			const scale = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
-			return scale[track.features.key];
+			return this.is_header ? "Key" : scale[track.features.key];
 		},
 		getTrackMode(track) {
-			return track.features.mode ? "major" : "minor";
+			return this.is_header ? "Mode" : track.features.mode ? "major" : "minor";
 		},
 		onClick(event) {
 			this.$emit("onClick", { event: event, index: this.index });
@@ -137,12 +146,6 @@ export default {
 }
 .v-list-item {
 	padding: 0;
-}
-.on-hover {
-	background-color: transparent;
-	@media screen and (min-width: 960px) {
-		background-color: rgba(41, 182, 246, 0.2);
-	}
 }
 .v-list-item--link:before {
 	background-color: transparent;
