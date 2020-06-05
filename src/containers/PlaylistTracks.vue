@@ -33,13 +33,14 @@
 				<playlist-control icon="mdi-cancel" tooltip="Clear selection" @click="deselectAll" :disabled="!tracksAreSelected" />
 				<playlist-control
 					icon="mdi-minus-box-multiple-outline"
-					tooltip="Remove duplicates"
+					:disabled="getDuplicates() === 0"
+					:tooltip="`Remove duplicates (${getDuplicates()})`"
 					@click="removeDuplicates"
-					:disabled="getDuplicates === 0"
 				/>
 			</v-btn-toggle>
 			<v-overflow-btn
 				rounded
+				hide-selected
 				@input="enforceMaxFilters"
 				v-model="selectedFilters"
 				:items="available_filters"
@@ -48,8 +49,8 @@
 				class="ma-0 pa-0 select-filters"
 			/>
 			<v-btn-toggle rounded @click.native="menuFix">
-				<playlist-control icon="mdi-close" tooltip="Cancel" @click="close" />
-				<playlist-control icon="mdi-check" tooltip="Save" @click="close" />
+				<playlist-control icon="mdi-close" tooltip="Cancel" @click="close" special_class="red-hover" />
+				<playlist-control icon="mdi-check" tooltip="Save" @click="close" special_class="green-hover" />
 			</v-btn-toggle>
 		</div>
 		<v-divider></v-divider>
@@ -91,11 +92,12 @@ export default {
 		return {
 			selectedTracks: [],
 			visibleFilters: [],
-			selectedFilters: [1, 8],
+			selectedFilters: [0, 1, 8],
 			available_filters: [
+				{ text: "Duration", value: 0 },
 				{ text: "Tempo (doubletime)", value: 1 },
-				{ text: "Tempo (original)", value: 2 },
 				{ text: "Key / Mode", value: 8 },
+				{ text: "Tempo (original)", value: 2 },
 				{ text: "Valence", value: 3 },
 				{ text: "Energy", value: 4 },
 				{ text: "Instrumentalness", value: 5 },
@@ -108,6 +110,7 @@ export default {
 			lastIsSelected: false,
 			lockedTracksSelected: false,
 			duplicatesRemoved: false,
+			hasDuplicates: false,
 			header: {
 				// Dummy content for list header
 				track: {
@@ -125,7 +128,7 @@ export default {
 		},
 		enforceMaxFilters() {
 			//TODO ====> Let them select more if the screen is larger
-			this.selectedFilters.length > 2 ? this.selectedFilters.shift() : null;
+			this.selectedFilters.length > 3 ? this.selectedFilters.shift() : null;
 		},
 		menuFix() {
 			let dropdown = document.querySelector(".menuable__content__active");
@@ -135,7 +138,8 @@ export default {
 			var unique = _.uniqBy(this.playlist, function(el) {
 				return el.id;
 			});
-			return unique.length;
+
+			return this.playlist.length - unique.length;
 		},
 		removeDuplicates() {
 			var unique = _.uniqBy(this.playlist, function(el) {
@@ -376,18 +380,29 @@ export default {
 	position: sticky;
 	display: flex;
 	justify-content: space-between;
-	/* align-items: center; */
 	top: 0;
 	width: 100%;
 	padding-top: 16px;
 	z-index: 101;
 	background-color: #1e1e1e;
 }
-.tracks-list {
-	/* transform: translateY(32px); */
-}
+
 .select-filters {
 	max-width: 200px;
+}
+#app
+	> div.v-dialog__content.v-dialog__content--active
+	> div
+	> div
+	> div.sticky-row.pt-5.pl-8.pr-6
+	> div.v-input.ma-0.pa-0.select-filters.v-input--is-label-active.v-input--is-dirty.v-input--is-focused.theme--dark.v-text-field.v-text-field--prefix.v-text-field--single-line.v-text-field--is-booted.v-text-field--rounded.v-select.v-select--is-multi.v-autocomplete.v-overflow-btn
+	> div
+	> div.v-input__slot
+	> div.v-select__slot
+	> div.v-input__append-inner
+	> div
+	> i {
+	cursor: pointer;
 }
 .filter-row {
 	position: fixed;
