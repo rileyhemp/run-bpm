@@ -52,7 +52,7 @@
 				<playlist-control icon="mdi-check" tooltip="Save" @click="close" special_class="green-hover" />
 			</v-btn-toggle>
 		</div>
-		<v-divider></v-divider>
+		<!-- <v-divider></v-divider> -->
 		<v-list class="px-4 pt-0 tracks-list">
 			<playlist-track
 				@onSort="sortBy"

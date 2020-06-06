@@ -1,57 +1,64 @@
 <template>
-	<v-list-item
-		class="actionable list-item pr-2"
-		:class="
-			is_header
-				? 'no-hover header pb-3'
-				: is_selected && !is_locked
-				? 'list-item-selected'
-				: is_selected && is_locked
-				? 'locked-item-selected'
-				: !is_selected && is_locked
-				? 'list-item-locked'
-				: null
-		"
-		@click="onClick"
-		v-ripple="false"
-	>
-		<v-list-item-icon class="ml-0 mr-2"
-			><span v-if="!track.is_locked" class="text-right" style="width: 100%" v-show="!is_header">{{ index + 1 }}</span
-			><v-icon v-if="track.is_locked">mdi-lock</v-icon></v-list-item-icon
+	<div :class="is_header ? 'no-hover header pb-3' : null">
+		<v-divider v-if="!is_header"></v-divider>
+		<v-list-item
+			class="actionable list-item pr-2"
+			:class="
+				is_selected && !is_locked
+					? 'list-item-selected'
+					: is_selected && is_locked
+					? 'locked-item-selected'
+					: !is_selected && is_locked
+					? 'list-item-locked'
+					: null
+			"
+			@click="onClick"
+			v-ripple="false"
 		>
-		<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
-			<v-list-item-title class="pr-4">
-				<span v-if="is_header" class="feature" @click="onSort('name')">Title</span>
-				<span v-if="!is_header">{{ track.track.name }}</span>
-			</v-list-item-title>
+			<v-list-item-icon class="ml-0 mr-2"
+				><span v-if="!track.is_locked" class="text-right" style="width: 100%" v-show="!is_header">{{ index + 1 }}</span
+				><v-icon v-if="track.is_locked">mdi-lock</v-icon></v-list-item-icon
+			>
+			<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
+				<v-list-item-title class="pr-4">
+					<span v-if="is_header" class="feature" @click="onSort('name')">Title</span>
+					<span v-if="!is_header">{{ track.track.name }}</span>
+				</v-list-item-title>
 
-			<v-list-item-subtitle class="pr-4">
-				<span v-if="is_header" class="feature" @click="onSort('artist')">Artist</span>
-				<span v-if="!is_header">{{ getArtist(track) }}</span>
-			</v-list-item-subtitle>
-		</v-list-item-content>
-		<div class="track-features">
-			<v-list-item-subtitle v-for="(filter, index) in selectedFilters" :key="index + 1" class="feature-container">
-				<span v-if="filters[filter].id != 'key'">
-					<span v-if="is_header" class="feature" @click="onSort(filters[filter].id)">{{ filters[filter].text.split(" ")[0] }}</span>
-					<span v-if="!is_header">{{ getValue(filters[filter].id) }}</span>
-				</span>
-				<p
-					class="feature-second-line"
-					v-if="(is_header && filters[filter].id === 'doubletime') || (filters[filter].id === 'tempo' && is_header)"
-					@click="onSort(filters[filter].id)"
+				<v-list-item-subtitle class="pr-4">
+					<span v-if="is_header" class="feature" @click="onSort('artist')">Artist</span>
+					<span v-if="!is_header">{{ getArtist(track) }}</span>
+				</v-list-item-subtitle>
+			</v-list-item-content>
+			<div class="track-features">
+				<v-list-item-subtitle
+					v-for="(filter, index) in selectedFilters"
+					:key="index + 1"
+					class="feature-container"
+					:class="
+						(is_header && filters[filter].id === 'doubletime') || (filters[filter].id === 'tempo' && is_header) ? 'header-tempo' : null
+					"
 				>
-					{{ filters[filter].text.split(" ")[1] }}
-				</p>
-				<span v-if="filters[filter].id === 'key'" class="pl-4">
-					<span v-if="is_header" class="feature track-key" @click="onSort('key')">Key</span>
-					<span v-if="is_header" class="feature ml-9" @click="onSort('mode')">Mode</span>
-					<span v-if="!is_header">{{ getValue("key") }}</span>
-					<span v-if="!is_header" class="pl-1">{{ getValue("mode") }}</span>
-				</span>
-			</v-list-item-subtitle>
-		</div>
-		<!-- <v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
+					<span v-if="filters[filter].id != 'key'">
+						<span v-if="is_header" class="feature" @click="onSort(filters[filter].id)">{{ filters[filter].text.split(" ")[0] }}</span>
+						<span v-if="!is_header">{{ getValue(filters[filter].id) }}</span>
+					</span>
+					<p
+						class="feature-second-line"
+						v-if="(is_header && filters[filter].id === 'doubletime') || (filters[filter].id === 'tempo' && is_header)"
+						@click="onSort(filters[filter].id)"
+					>
+						{{ filters[filter].text.split(" ")[1] }}
+					</p>
+					<span v-if="filters[filter].id === 'key'" class="pl-4">
+						<span v-if="is_header" class="feature track-key" @click="onSort('key')">Key</span>
+						<span v-if="is_header" class="feature ml-9" @click="onSort('mode')">Mode</span>
+						<span v-if="!is_header">{{ getValue("key") }}</span>
+						<span v-if="!is_header" class="pl-1">{{ getValue("mode") }}</span>
+					</span>
+				</v-list-item-subtitle>
+			</div>
+			<!-- <v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
 			<v-list-item-title
 				><span class="feature">{{ is_header ? "Name" : track.track.name }}</span></v-list-item-title
 			>
@@ -111,7 +118,8 @@
 				><span class="feature">{{ is_header ? "Valence" : getValue(track.features.valence) }}</span>
 			</v-list-item-subtitle>
 		</div> -->
-	</v-list-item>
+		</v-list-item>
+	</div>
 </template>
 
 <script>
@@ -207,8 +215,9 @@ export default {
 	transform: translateY(20px);
 	cursor: pointer;
 }
-.header .feature {
-	/* position: absolute; */
+.header-tempo {
+	transform: translateY(-8px);
+	overflow: visible;
 }
 
 .track-key {
