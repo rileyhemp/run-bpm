@@ -1,6 +1,6 @@
 <template>
 	<v-list-item
-		class="actionable list-item"
+		class="actionable list-item pr-2"
 		:class="
 			is_header
 				? 'no-hover header pb-6'
@@ -31,11 +31,17 @@
 			</v-list-item-subtitle>
 		</v-list-item-content>
 		<div class="track-features">
-			<v-list-item-subtitle v-for="(filter, index) in selectedFilters" :key="index + 1">
+			<v-list-item-subtitle v-for="(filter, index) in selectedFilters" :key="index + 1" class="feature-container">
 				<span v-if="filters[filter].id != 'key'">
-					<span v-if="is_header" class="feature" @click="onSort(filters[filter].id)">{{ filters[filter].text }}</span>
+					<span v-if="is_header" class="feature" @click="onSort(filters[filter].id)">{{ filters[filter].text.split(" ")[0] }}</span>
 					<span v-if="!is_header">{{ getValue(filters[filter].id) }}</span>
 				</span>
+				<p
+					class="feature-second-line"
+					v-if="(is_header && filters[filter].id === 'doubletime') || (filters[filter].id === 'tempo' && is_header)"
+				>
+					{{ filters[filter].text.split(" ")[1] }}
+				</p>
 				<span v-if="filters[filter].id === 'key'" class="pl-4">
 					<span v-if="is_header" class="feature track-key" @click="onSort('key')">Key</span>
 					<span v-if="is_header" class="feature ml-9" @click="onSort('mode')">Mode</span>
@@ -181,14 +187,26 @@ export default {
 }
 .track-features {
 	display: flex;
+	width: 100%;
 	justify-content: space-between;
-	flex: 1;
+	flex: 0.7;
 }
 .feature {
 	cursor: pointer;
+	display: block;
+	text-align: left;
+}
+.feature-container {
+	display: flex;
+	justify-content: flex-end;
+	max-width: min-content;
+}
+.feature-second-line {
+	position: absolute;
+	transform: translateY(20px);
 }
 .header .feature {
-	position: absolute;
+	/* position: absolute; */
 }
 
 .track-key {
