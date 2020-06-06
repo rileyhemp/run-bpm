@@ -82,3 +82,15 @@
 .v-overflow-btn .v-select__slot {
 	height: 45px;
 }
+
+.theme--dark.v-btn--active::before {
+	opacity: 0;
+}
+
+.red-hover:before {
+	color: #ff0000;
+}
+
+.green-hover:before {
+	color: #00ff59;
+}

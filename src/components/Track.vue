@@ -39,6 +39,7 @@
 				<p
 					class="feature-second-line"
 					v-if="(is_header && filters[filter].id === 'doubletime') || (filters[filter].id === 'tempo' && is_header)"
+					@click="onSort(filters[filter].id)"
 				>
 					{{ filters[filter].text.split(" ")[1] }}
 				</p>
@@ -204,6 +205,7 @@ export default {
 .feature-second-line {
 	position: absolute;
 	transform: translateY(20px);
+	cursor: pointer;
 }
 .header .feature {
 	/* position: absolute; */

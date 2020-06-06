@@ -2,29 +2,41 @@
 	<v-card>
 		<div class="sticky-row pt-5 pl-8 pr-6">
 			<v-btn-toggle rounded>
-				<v-btn>
-					<v-icon>mdi-chevron-double-up</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-chevron-up</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-chevron-down</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-chevron-double-down</v-icon>
-				</v-btn>
+				<playlist-control
+					icon="mdi-chevron-double-up"
+					tooltip="Send to top"
+					@click="moveTop"
+					:disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected"
+				/>
+				<playlist-control
+					icon="mdi-chevron-up"
+					tooltip="Move up"
+					@click="moveUp"
+					:disabled="!tracksAreSelected || topIsSelected || lockedTracksSelected"
+				/>
+				<playlist-control
+					icon="mdi-chevron-down"
+					tooltip="Move down"
+					@click="moveDown"
+					:disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected"
+				/>
+				<playlist-control
+					icon="mdi-chevron-double-down"
+					tooltip="Send to bottom"
+					@click="moveBottom"
+					:disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected"
+				/>
 			</v-btn-toggle>
 			<v-btn-toggle rounded>
-				<v-btn>
-					<v-icon>mdi-lock</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-delete</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-cancel</v-icon>
-				</v-btn>
+				<playlist-control icon="mdi-lock" tooltip="Lock selected" @click="lockSelected" :disabled="!tracksAreSelected" />
+				<playlist-control icon="mdi-delete" tooltip="Delete" @click="deleteSelected" :disabled="!tracksAreSelected" />
+				<playlist-control icon="mdi-cancel" tooltip="Clear selection" @click="deselectAll" :disabled="!tracksAreSelected" />
+				<playlist-control
+					icon="mdi-minus-box-multiple-outline"
+					:disabled="getDuplicates() === 0"
+					:tooltip="`Remove duplicates (${getDuplicates()})`"
+					@click="removeDuplicates"
+				/>
 			</v-btn-toggle>
 			<v-overflow-btn
 				rounded
@@ -36,12 +48,8 @@
 				class="ma-0 pa-0 select-filters"
 			/>
 			<v-btn-toggle rounded @click.native="menuFix">
-				<v-btn>
-					<v-icon>mdi-close</v-icon>
-				</v-btn>
-				<v-btn>
-					<v-icon>mdi-check</v-icon>
-				</v-btn>
+				<playlist-control icon="mdi-close" tooltip="Cancel" @click="close" special_class="red-hover" />
+				<playlist-control icon="mdi-check" tooltip="Save" @click="close" special_class="green-hover" />
 			</v-btn-toggle>
 		</div>
 		<v-divider></v-divider>
@@ -74,10 +82,12 @@
 <script>
 import _ from "lodash";
 import Track from "../components/Track";
+import Control from "../components/PlaylistControl";
 export default {
 	props: ["playlist", "filters"],
 	components: {
 		"playlist-track": Track,
+		"playlist-control": Control,
 	},
 	data: function() {
 		return {
