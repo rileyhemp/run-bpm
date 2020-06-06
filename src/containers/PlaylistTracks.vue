@@ -29,7 +29,7 @@
 			</v-btn-toggle>
 			<v-btn-toggle rounded>
 				<playlist-control icon="mdi-lock" tooltip="Lock selected" @click="lockSelected" :disabled="!tracksAreSelected" />
-				<playlist-control icon="mdi-delete" tooltip="Delete" @click="deleteSelected" :disabled="!tracksAreSelected" />
+				<playlist-control icon="mdi-delete" tooltip="Delete" @click="deleteSelected" :disabled="!tracksAreSelected || lockedTracksSelected" />
 				<playlist-control icon="mdi-cancel" tooltip="Clear selection" @click="deselectAll" :disabled="!tracksAreSelected" />
 				<playlist-control
 					icon="mdi-minus-box-multiple-outline"
@@ -111,6 +111,7 @@ export default {
 			lastIsSelected: false,
 			lockedTracksSelected: false,
 			duplicatesRemoved: false,
+			nodes: undefined,
 			header: {
 				is_locked: false,
 				is_selected: false,
@@ -354,6 +355,9 @@ export default {
 			}
 			this.lockedTracksSelected = state;
 		},
+		refreshNodeList() {
+			this.nodes = document.querySelectorAll(".list-item");
+		},
 	},
 	mounted: function() {
 		for (let i = 0; i < this.playlist.length; i++) {
@@ -364,7 +368,9 @@ export default {
 		this.sortedPlaylist = this.playlist;
 		document.querySelector(".select-filters").addEventListener("click", this.menuFix);
 	},
-	updated: function() {},
+	updated: function() {
+		this.refreshNodeList();
+	},
 };
 </script>
 <style scoped lang="scss">
