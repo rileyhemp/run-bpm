@@ -202,7 +202,6 @@ export default {
 	},
 	methods: {
 		enforceMaxFilters() {
-			//TODO ====> Let them select more if the screen is larger
 			this.selectedFilters.length > this.maxFilters ? this.selectedFilters.shift() : null;
 		},
 		getArtist(track) {
