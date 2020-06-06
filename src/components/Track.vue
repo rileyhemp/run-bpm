@@ -3,7 +3,7 @@
 		class="actionable list-item pr-2"
 		:class="
 			is_header
-				? 'no-hover header pb-6'
+				? 'no-hover header pb-3'
 				: is_selected && !is_locked
 				? 'list-item-selected'
 				: is_selected && is_locked
@@ -182,7 +182,7 @@ export default {
 <style lang="scss">
 .header {
 	position: sticky;
-	top: 68px;
+	top: 84px;
 	background-color: #1e1e1e;
 	z-index: 99;
 }
@@ -200,7 +200,7 @@ export default {
 .feature-container {
 	display: flex;
 	justify-content: flex-end;
-	max-width: min-content;
+	max-width: 70px;
 }
 .feature-second-line {
 	position: absolute;
