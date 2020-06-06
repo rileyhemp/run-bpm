@@ -2,7 +2,7 @@
 	<div :class="is_header ? 'no-hover header pb-3' : null">
 		<v-divider v-if="!is_header"></v-divider>
 		<v-list-item
-			class="actionable list-item pr-2"
+			class="actionable list-item pa-0"
 			:class="
 				is_header
 					? 'no-hover'
@@ -130,15 +130,32 @@ export default {
 <style lang="scss">
 .header {
 	position: sticky;
-	top: 84px;
+	top: 124px;
 	background-color: #1e1e1e;
-	z-index: 99;
+	z-index: 120;
+	@media screen and (min-width: 500px) {
+		top: 84px;
+		z-index: 99;
+	}
 }
 .track-features {
 	display: flex;
 	width: 100%;
 	justify-content: space-between;
-	flex: 0.7;
+	flex: 1;
+	padding-right: 8px;
+	@media screen and (min-width: 500px) {
+		flex: 0.7;
+		padding-right: 0;
+	}
+	@media screen and (min-width: 1024px) {
+		flex: 1;
+		padding-right: 0;
+	}
+	@media screen and (min-width: 1200px) {
+		flex: 1.25;
+		padding-right: 0;
+	}
 }
 .feature {
 	cursor: pointer;
@@ -150,6 +167,9 @@ export default {
 	justify-content: flex-end;
 	max-width: 70px;
 	overflow: visible !important;
+	@media screen and (min-width: 600px) {
+		padding-right: 20px;
+	}
 }
 .feature-second-line {
 	position: absolute;

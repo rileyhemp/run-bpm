@@ -1,7 +1,10 @@
 <template>
 	<v-card>
-		<div class="sticky-row pt-5 pl-8 pr-6">
-			<v-btn-toggle rounded>
+		<div
+			class="sticky-row controls-group"
+			:class="$vuetify.breakpoint.xsOnly ? 'px-0 mx-0 pb-0 mb-0' : $vuetify.breakpoint.smAndDown ? 'px-2 mx-0 pb-0 mb-0' : 'pt-5 pl-8 pr-6'"
+		>
+			<v-btn-toggle rounded :class="$vuetify.breakpoint.smAndDown ? 'pb-2' : null">
 				<playlist-control
 					icon="mdi-chevron-double-up"
 					tooltip="Send to top"
@@ -27,10 +30,16 @@
 					:disabled="!tracksAreSelected || lastIsSelected || lockedTracksSelected"
 				/>
 			</v-btn-toggle>
-			<v-btn-toggle rounded>
+			<v-btn-toggle rounded :class="$vuetify.breakpoint.smAndDown ? 'pb-2' : null">
 				<playlist-control icon="mdi-lock" tooltip="Lock selected" @click="lockSelected" :disabled="!tracksAreSelected" />
 				<playlist-control icon="mdi-delete" tooltip="Delete" @click="deleteSelected" :disabled="!tracksAreSelected || lockedTracksSelected" />
-				<playlist-control icon="mdi-cancel" tooltip="Clear selection" @click="deselectAll" :disabled="!tracksAreSelected" />
+				<playlist-control
+					icon="mdi-cancel"
+					v-if="$vuetify.breakpoint.mdAndUp"
+					tooltip="Clear selection"
+					@click="deselectAll"
+					:disabled="!tracksAreSelected"
+				/>
 				<playlist-control
 					icon="mdi-minus-box-multiple-outline"
 					:disabled="numberOfDuplicates === 0"
@@ -80,7 +89,7 @@
 				/>
 			</v-btn-toggle>
 		</div>
-		<v-list class="px-4 pt-0 tracks-list">
+		<v-list class="tracks-list" :class="$vuetify.breakpoint.smAndDown ? 'pl-0 pr-1 py-0' : 'px-4 pt-0'">
 			<playlist-track
 				@onSort="sortBy"
 				:selectedFilters="selectedFilters"
@@ -149,12 +158,12 @@ export default {
 		return {
 			selectedTracks: [],
 			visibleFilters: [],
-			selectedFilters: [0, 1, 3],
+			selectedFilters: [0, 1, 2],
 			available_filters: [
 				{ text: "Duration", value: 0, id: "duration_ms" },
 				{ text: "Tempo (doubletime)", value: 1, id: "doubletime" },
-				{ text: "Tempo (original)", value: 2, id: "tempo" },
-				{ text: "Key / Mode", value: 3, id: "key" },
+				{ text: "Key / Mode", value: 2, id: "key" },
+				{ text: "Tempo (original)", value: 3, id: "tempo" },
 				{ text: "Valence", value: 4, id: "valence" },
 				{ text: "Energy", value: 5, id: "energy" },
 				{ text: "Instrumentalness", value: 6, id: "instrumentalness" },
@@ -178,10 +187,23 @@ export default {
 			},
 		};
 	},
+	computed: {
+		maxFilters: function() {
+			return this.$vuetify.breakpoint.xsOnly
+				? 2
+				: this.$vuetify.breakpoint.mdAndDown
+				? 3
+				: this.$vuetify.breakpoint.lgAndDown
+				? 7
+				: this.$vuetify.breakpoint.xlOnly
+				? 9
+				: null;
+		},
+	},
 	methods: {
 		enforceMaxFilters() {
 			//TODO ====> Let them select more if the screen is larger
-			this.selectedFilters.length > 3 ? this.selectedFilters.shift() : null;
+			this.selectedFilters.length > this.maxFilters ? this.selectedFilters.shift() : null;
 		},
 		getArtist(track) {
 			const artists = track.track.artists;
@@ -429,6 +451,10 @@ export default {
 		this.sortedPlaylist = this.playlist;
 		document.querySelector(".select-filters").addEventListener("click", this.menuFix);
 		this.getDuplicates();
+		this.enforceMaxFilters();
+		for (let i = 0; i < this.maxFilters - this.selectedFilters.length + 1; i++) {
+			this.selectedFilters.push(3 + i);
+		}
 	},
 	updated: function() {
 		this.refreshNodeList();
@@ -446,9 +472,6 @@ export default {
 	padding-top: 16px;
 	z-index: 101;
 	background-color: #1e1e1e;
-}
-.tracks-list {
-	/* transform: translateY(32px); */
 }
 .select-filters {
 	max-width: 200px;
@@ -477,7 +500,11 @@ export default {
 	flex-wrap: wrap;
 }
 .controls-group {
-	transform: translateY(-4px);
+	flex-wrap: wrap;
+	justify-content: space-around;
+	@media screen and (min-width: 660px) {
+		justify-content: space-between;
+	}
 }
 
 .list-item-selected {
