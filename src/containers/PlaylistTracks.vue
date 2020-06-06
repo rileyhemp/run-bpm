@@ -33,9 +33,12 @@
 				<playlist-control icon="mdi-cancel" tooltip="Clear selection" @click="deselectAll" :disabled="!tracksAreSelected" />
 				<playlist-control
 					icon="mdi-minus-box-multiple-outline"
-					:disabled="getDuplicates() === 0"
-					:tooltip="`Remove duplicates (${getDuplicates()})`"
-					@click="removeDuplicates"
+					:disabled="numberOfDuplicates === 0"
+					:tooltip="`Remove duplicates (${numberOfDuplicates})`"
+					@click="
+						confirm = true;
+						action = 'remove duplicates';
+					"
 				/>
 			</v-btn-toggle>
 			<v-overflow-btn
@@ -47,12 +50,36 @@
 				prefix="Select filters"
 				class="ma-0 pa-0 select-filters"
 			/>
-			<v-btn-toggle rounded @click.native="menuFix">
-				<playlist-control icon="mdi-close" tooltip="Cancel" @click="close" special_class="red-hover" />
-				<playlist-control icon="mdi-check" tooltip="Save" @click="close" special_class="green-hover" />
+			<v-btn-toggle rounded>
+				<playlist-control
+					icon="mdi-close"
+					color="error"
+					tooltip="Cancel"
+					@click="
+						() => {
+							if (!changed) {
+								cancel();
+							} else {
+								confirm = true;
+								action = 'cancel';
+							}
+						}
+					"
+					special_class="red-hover"
+				/>
+				<playlist-control
+					icon="mdi-check"
+					color="success"
+					tooltip="Save"
+					:disabled="!changed"
+					@click="
+						confirm = true;
+						action = 'save';
+					"
+					special_class="green-hover"
+				/>
 			</v-btn-toggle>
 		</div>
-		<!-- <v-divider></v-divider> -->
 		<v-list class="px-4 pt-0 tracks-list">
 			<playlist-track
 				@onSort="sortBy"
@@ -76,6 +103,35 @@
 				:filters="available_filters"
 			/>
 		</v-list>
+		<v-dialog v-model="confirm" max-width="300">
+			<v-card class="d-flex align-center flex-column">
+				<v-card-title class="title">{{
+					action === "save"
+						? "Save changes?"
+						: action === "cancel"
+						? "Delete changes?"
+						: action === "remove duplicates"
+						? "Remove " + numberOfDuplicates + " duplicates?"
+						: null
+				}}</v-card-title>
+
+				<v-card-actions>
+					<v-btn color="error" text @click="confirm = false">
+						No
+					</v-btn>
+
+					<v-btn
+						color="success"
+						text
+						@click="
+							action === 'save' ? close() : action === 'cancel' ? cancel() : action === 'remove duplicates' ? removeDuplicates() : null
+						"
+					>
+						Yes
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-card>
 </template>
 
@@ -110,8 +166,12 @@ export default {
 			topIsSelected: false,
 			lastIsSelected: false,
 			lockedTracksSelected: false,
+			numberOfDuplicates: Number,
 			duplicatesRemoved: false,
 			nodes: undefined,
+			confirm: false,
+			action: String,
+			changed: false,
 			header: {
 				is_locked: false,
 				is_selected: false,
@@ -142,20 +202,26 @@ export default {
 			var unique = _.uniqBy(this.playlist, function(el) {
 				return el.id;
 			});
-			return unique.length;
+			this.numberOfDuplicates = this.sortedPlaylist.length - unique.length;
 		},
 		removeDuplicates() {
+			this.changed = true;
 			var unique = _.uniqBy(this.playlist, function(el) {
 				return el.id;
 			});
 			this.sortedPlaylist = unique;
-			this.duplicatesRemoved = true;
+			this.numberOfDuplicates = 0;
+			this.confirm = false;
 		},
 		close() {
 			this.$emit("close", this.sortedPlaylist);
 		},
+		cancel() {
+			this.$emit("cancel");
+			this.confirm = false;
+		},
 		moveItem(arr, old_index, new_index) {
-			console.log(old_index, new_index);
+			this.changed = true;
 			this.nodes[new_index].classList = this.nodes[old_index].classList;
 			this.nodes[old_index].classList.remove("list-item-selected");
 			this.hasMovedItems = true;
@@ -184,9 +250,7 @@ export default {
 		moveDown() {
 			this.topIsSelected = false;
 			for (let i = this.selectedTracks.length - 1; i > -1; i--) {
-				console.log("i", i);
 				let track = this.selectedTracks[i];
-				console.log("track index", track.index);
 				let newIndex = track.index + 1;
 				while (this.sortedPlaylist[newIndex + 1] && this.sortedPlaylist[newIndex + 1].is_locked) {
 					newIndex++;
@@ -232,9 +296,9 @@ export default {
 			this.selectedTracks = sortedList;
 		},
 		sortBy(event) {
+			this.changed = true;
 			const property = event.event;
 			let list = this.sortedPlaylist;
-			console.log(this.sortedPlaylist);
 			if (property === "artist") {
 				if (this.sortHighToLow) {
 					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : this.getArtist(a) < this.getArtist(b) ? 1 : -1));
@@ -258,14 +322,11 @@ export default {
 			this.sortedPlaylist = list;
 		},
 		deleteSelected() {
+			this.changed = true;
 			_.pullAll(this.sortedPlaylist, this.selectedTracks);
 			this.renderKey++;
 			this.deselectAll();
 		},
-		// refreshNodeList() {
-		// 	this.nodes = document.querySelectorAll(".list-item");
-		// },
-
 		select(event) {
 			let index = event.index;
 			if (this.hasMovedItems) {
@@ -367,6 +428,7 @@ export default {
 		}
 		this.sortedPlaylist = this.playlist;
 		document.querySelector(".select-filters").addEventListener("click", this.menuFix);
+		this.getDuplicates();
 	},
 	updated: function() {
 		this.refreshNodeList();
