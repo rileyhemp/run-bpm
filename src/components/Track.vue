@@ -20,6 +20,31 @@
 			><v-icon v-if="track.is_locked">mdi-lock</v-icon></v-list-item-icon
 		>
 		<v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
+			<v-list-item-title class="pr-4">
+				<span v-if="is_header" class="feature" @click="onSort('name')">Title</span>
+				<span v-if="!is_header">{{ track.track.name }}</span>
+			</v-list-item-title>
+
+			<v-list-item-subtitle class="pr-4">
+				<span v-if="is_header" class="feature" @click="onSort('artist')">Artist</span>
+				<span v-if="!is_header">{{ getArtist(track) }}</span>
+			</v-list-item-subtitle>
+		</v-list-item-content>
+		<div class="track-features">
+			<v-list-item-subtitle v-for="(filter, index) in selectedFilters" :key="index + 1">
+				<span v-if="filters[filter].id != 'key'">
+					<span v-if="is_header" class="feature" @click="onSort(filters[filter].id)">{{ filters[filter].text }}</span>
+					<span v-if="!is_header">{{ getValue(filters[filter].id) }}</span>
+				</span>
+				<span v-if="filters[filter].id === 'key'" class="pl-4">
+					<span v-if="is_header" class="feature track-key" @click="onSort('key')">Key</span>
+					<span v-if="is_header" class="feature ml-9" @click="onSort('mode')">Mode</span>
+					<span v-if="!is_header">{{ getValue("key") }}</span>
+					<span v-if="!is_header" class="pl-1">{{ getValue("mode") }}</span>
+				</span>
+			</v-list-item-subtitle>
+		</div>
+		<!-- <v-list-item-content :class="$vuetify.breakpoint.smAndDown ? null : 'd-flex flex-row flex-nowrap'">
 			<v-list-item-title
 				><span class="feature">{{ is_header ? "Name" : track.track.name }}</span></v-list-item-title
 			>
@@ -78,7 +103,7 @@
 			<v-list-item-subtitle v-if="selectedFilters.includes(3)"
 				><span class="feature">{{ is_header ? "Valence" : getValue(track.features.valence) }}</span>
 			</v-list-item-subtitle>
-		</div>
+		</div> -->
 	</v-list-item>
 </template>
 
@@ -86,7 +111,7 @@
 import msToHMS from "../scripts/msToHMS";
 // import _ from "lodash";
 export default {
-	props: ["track", "index", "is_selected", "is_locked", "is_header", "selectedFilters"],
+	props: ["track", "index", "is_selected", "is_locked", "is_header", "selectedFilters", "filters"],
 	data: function() {
 		return {};
 	},
@@ -102,23 +127,47 @@ export default {
 			}
 			return artists[0].name;
 		},
-		getValue(value) {
-			return Math.floor(value.toFixed(2) * 100);
+		getValue(feature) {
+			let value = this.track.features[feature];
+			let result;
+			switch (feature) {
+				case "duration_ms":
+					result = this.getTrackDuration(value);
+					break;
+
+				case "doubletime":
+					result = value + " bpm";
+					break;
+				case "tempo":
+					result = value + "bpm";
+					break;
+				case "key":
+					result = this.getTrackKey(value);
+					break;
+				case "mode":
+					result = this.getTrackMode(value);
+					break;
+				default:
+					result = Math.floor(value * 100);
+			}
+			return result;
 		},
-		getTrackDuration(track) {
-			if (!this.is_header) {
-				return msToHMS(track.track.duration_ms).split("00:")[1];
-			} else return "Duration";
+		getTrackDuration(value) {
+			return msToHMS(value).split("00:")[1];
 		},
-		getTrackKey(track) {
+		getTrackKey(value) {
 			const scale = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
-			return this.is_header ? "Key" : scale[track.features.key];
+			return scale[value];
 		},
-		getTrackMode(track) {
-			return this.is_header ? "Mode" : track.features.mode ? "major" : "minor";
+		getTrackMode(value) {
+			return value ? "major" : "minor";
 		},
 		onClick(event) {
 			this.$emit("onClick", { event: event, index: this.index });
+		},
+		onSort(target) {
+			console.log(target);
+			this.$emit("onSort", { event: target });
 		},
 	},
 };
@@ -138,7 +187,6 @@ export default {
 .feature {
 	cursor: pointer;
 }
-
 .header .feature {
 	position: absolute;
 }
@@ -146,7 +194,6 @@ export default {
 .track-key {
 	position: absolute;
 	overflow: visible;
-	transform: translateX(-21px);
 	&:after {
 		content: "/";
 		position: absolute;

@@ -67,7 +67,7 @@ export default {
 			audioFeatures: features,
 			chartData: Object,
 			chartsReady: false,
-			editPlaylist: false,
+			editPlaylist: true,
 			showMoreFilters: this.$vuetify.breakpoint.mdAndUp,
 			mountFilters: false,
 			renderKey: 1,

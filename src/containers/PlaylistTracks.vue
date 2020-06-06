@@ -46,9 +46,17 @@
 		</div>
 		<v-divider></v-divider>
 		<v-list class="px-4 pt-0 tracks-list">
-			<playlist-track :selectedFilters="selectedFilters" :is_header="true" :is_locked="false" :is_selected="false" :track="header" />
 			<playlist-track
-				style="transform: translateY(-16px)"
+				@onSort="sortBy"
+				:selectedFilters="selectedFilters"
+				:is_header="true"
+				:is_locked="false"
+				:is_selected="false"
+				:track="header"
+				:filters="available_filters"
+			/>
+			<playlist-track
+				@onClick="select"
 				:selectedFilters="selectedFilters"
 				v-for="(track, index) in sortedPlaylist"
 				:key="index + 1"
@@ -57,7 +65,7 @@
 				:is_locked="track.is_locked"
 				:index="index"
 				:is_header="false"
-				@onClick="select"
+				:filters="available_filters"
 			/>
 		</v-list>
 	</v-card>
@@ -75,16 +83,17 @@ export default {
 		return {
 			selectedTracks: [],
 			visibleFilters: [],
-			selectedFilters: [1, 8],
+			selectedFilters: [0, 1, 3],
 			available_filters: [
-				{ text: "Tempo (doubletime)", value: 1 },
-				{ text: "Tempo (original)", value: 2 },
-				{ text: "Key / Mode", value: 8 },
-				{ text: "Valence", value: 3 },
-				{ text: "Energy", value: 4 },
-				{ text: "Instrumentalness", value: 5 },
-				{ text: "Danceability", value: 6 },
-				{ text: "Acousticness", value: 7 },
+				{ text: "Duration", value: 0, id: "duration_ms" },
+				{ text: "Tempo (doubletime)", value: 1, id: "doubletime" },
+				{ text: "Tempo (original)", value: 2, id: "tempo" },
+				{ text: "Key / Mode", value: 3, id: "key" },
+				{ text: "Valence", value: 4, id: "valence" },
+				{ text: "Energy", value: 5, id: "energy" },
+				{ text: "Instrumentalness", value: 6, id: "instrumentalness" },
+				{ text: "Danceability", value: 7, id: "danceability" },
+				{ text: "Acousticness", value: 8, id: "acousticness" },
 			],
 			sortedPlaylist: Object,
 			tracksAreSelected: false,
@@ -93,11 +102,6 @@ export default {
 			lockedTracksSelected: false,
 			duplicatesRemoved: false,
 			header: {
-				// Dummy content for list header
-				track: {
-					name: "Name",
-					artists: [{ name: "Artist" }],
-				},
 				is_locked: false,
 				is_selected: false,
 			},
@@ -106,7 +110,18 @@ export default {
 	methods: {
 		enforceMaxFilters() {
 			//TODO ====> Let them select more if the screen is larger
-			this.selectedFilters.length > 2 ? this.selectedFilters.shift() : null;
+			this.selectedFilters.length > 3 ? this.selectedFilters.shift() : null;
+		},
+		getArtist(track) {
+			const artists = track.track.artists;
+			let names = [];
+			if (artists.length > 1) {
+				artists.forEach((el) => {
+					names.push(el.name);
+				});
+				return names.join(", ");
+			}
+			return artists[0].name;
 		},
 		menuFix() {
 			let dropdown = document.querySelector(".menuable__content__active");
@@ -205,15 +220,17 @@ export default {
 
 			this.selectedTracks = sortedList;
 		},
-		sortBy(property) {
+		sortBy(event) {
+			const property = event.event;
 			let list = this.sortedPlaylist;
+			console.log(this.sortedPlaylist);
 			if (property === "artist") {
 				if (this.sortHighToLow) {
 					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : this.getArtist(a) < this.getArtist(b) ? 1 : -1));
 				} else {
 					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : this.getArtist(a) > this.getArtist(b) ? 1 : -1));
 				}
-			} else if (property === "title") {
+			} else if (property === "name") {
 				if (this.sortHighToLow) {
 					list.sort((a, b) => (b.is_locked || a.is_locked ? 0 : a.track.name < b.track.name ? 1 : -1));
 				} else {
