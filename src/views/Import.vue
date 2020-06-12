@@ -69,7 +69,7 @@ export default {
 		doSearch() {
 			if (this.query.length > 0) {
 				this.$http
-					.get(`http://localhost:3000/search-playlists`, {
+					.get(`http://https://d2ob92q3jfbd5e.cloudfront.net/search-playlists`, {
 						params: {
 							q: this.query,
 							credentials: localStorage.RunBPM,

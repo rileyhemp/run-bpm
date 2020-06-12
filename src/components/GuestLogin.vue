@@ -7,7 +7,7 @@ export default {
 	methods: {
 		authorizeSpotify: function() {
 			this.$http
-				.get("http://localhost:3000/get-guest-credentials")
+				.get("http://https://d2ob92q3jfbd5e.cloudfront.net/get-guest-credentials")
 				.then((res) => {
 					const credentials = {
 						accessToken: res.data["access_token"],

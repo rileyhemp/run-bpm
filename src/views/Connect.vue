@@ -46,7 +46,7 @@ export default {
 			this.redirect = true;
 			//Get access token and navigat to page designated as the login source on document.cookie
 			this.$http
-				.get(`http://localhost:3000/authorize?${window.location.search.split("?")[1]}`)
+				.get(`http://https://d2ob92q3jfbd5e.cloudfront.net/authorize?${window.location.search.split("?")[1]}`)
 				.then((res) => {
 					const credentials = {
 						accessToken: res.data.body["access_token"],

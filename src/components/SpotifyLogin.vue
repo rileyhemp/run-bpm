@@ -15,7 +15,7 @@ export default {
 			}
 			document.cookie = this.source;
 			this.$http
-				.get("http://localhost:3000/get-auth-url")
+				.get("http://https://d2ob92q3jfbd5e.cloudfront.net/get-auth-url")
 				.then((data) => {
 					window.location.href = data.data;
 				})
