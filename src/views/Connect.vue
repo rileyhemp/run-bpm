@@ -1,5 +1,5 @@
 <template>
-	<v-container class="fill-height d-flex text-center flex-column justify-center align-center px-10">
+	<v-container v-if="!this.redirect" class="fill-height d-flex text-center flex-column justify-center align-center px-10">
 		<div class="home-page">
 			<div class="content-home">
 				<p class="subtitle-1 app-description">
@@ -89,7 +89,7 @@
 										Run BPM is 100% free and we will never sell your data. Click below to get started.
 									</p>
 									<div class="d-flex justify-center">
-										<spotify-login />
+										<spotify-login source="/" />
 									</div>
 								</v-stepper-content>
 							</v-stepper-items>
@@ -116,10 +116,15 @@ export default {
 		return {
 			dialog: false,
 			e1: 1,
+			redirect: false,
 		};
 	},
 	mounted: function() {
+		console.log(this.$root);
 		if (window.location.search.length > 0) {
+			//If redirect is true, the template doesn't render
+			this.redirect = true;
+			//Get access token and navigat to page designated as the login source on document.cookie
 			this.$http
 				.get(`http://localhost:3000/authorize?${window.location.search.split("?")[1]}`)
 				.then((res) => {
@@ -130,7 +135,9 @@ export default {
 						isGuest: false,
 					};
 					localStorage.RunBPM = JSON.stringify(credentials);
-					this.$router.push("/");
+					this.redirect = false;
+					//Storing source of login in cookie
+					this.$router.push(document.cookie || "/");
 				})
 				.catch((err) => console.log(err));
 		}

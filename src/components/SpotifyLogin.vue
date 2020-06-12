@@ -4,12 +4,19 @@
 
 <script>
 export default {
+	props: ["source"],
 	methods: {
 		authorizeSpotify: function() {
+			if (localStorage.RunBPM != undefined) {
+				let sessionData = JSON.parse(localStorage.RunBPM);
+				sessionData.isGuest = false;
+				localStorage.RunBPM = JSON.stringify(sessionData);
+				localStorage.removeItem("RunBPM");
+				document.cookie = this.source;
+			}
 			this.$http
 				.get("http://localhost:3000/get-auth-url")
 				.then((data) => {
-					console.log(data);
 					window.location.href = data.data;
 				})
 				.catch((err) => console.log(err));

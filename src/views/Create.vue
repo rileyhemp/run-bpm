@@ -42,6 +42,12 @@
 				@filterChartData="updateFilters"
 			/>
 		</div>
+		<v-dialog v-model="loginAlert">
+			<v-card class="py-8 d-flex flex-column align-center">
+				<v-card-text>Connect Run BPM to your Spotify account to save this playlist.</v-card-text>
+				<spotify-login source="/create" />
+			</v-card>
+		</v-dialog>
 	</v-container>
 </template>
 
@@ -52,6 +58,7 @@ import "vue-slider-component/theme/default.css";
 import _ from "lodash";
 import msToHMS from "@/scripts/msToHMS";
 import PlaylistTracks from "../containers/PlaylistTracks";
+import SpotifyLogin from "../components/SpotifyLogin";
 // import getIDsFromDetails from "@/scripts/getIDsFromDetails";
 
 export default {
@@ -59,6 +66,7 @@ export default {
 	components: {
 		"playlist-filter": PlaylistFilter,
 		"playlist-tracks": PlaylistTracks,
+		"spotify-login": SpotifyLogin,
 	},
 	data: function() {
 		return {
@@ -68,6 +76,7 @@ export default {
 			chartData: Object,
 			chartsReady: false,
 			editPlaylist: false,
+			loginAlert: false,
 			showMoreFilters: this.$vuetify.breakpoint.mdAndUp,
 			mountFilters: false,
 			renderKey: 1,
@@ -128,6 +137,9 @@ export default {
 		};
 	},
 	computed: {
+		isGuest: function() {
+			return this.$attrs.isGuest;
+		},
 		currentPlaylist: _.throttle(function() {
 			//Decides which tracks meet all selected filters and adds to an array
 			let tracksArray = [];
@@ -180,16 +192,20 @@ export default {
 	},
 	methods: {
 		savePlaylist() {
-			const metadata = JSON.stringify({
-				lowBPM: this.lowBPM,
-				highBPM: this.highBPM,
-				tracks: this.songCount,
-				duration: this.mixDuration,
-			});
-			const currentPlaylist = JSON.stringify(this.currentPlaylist);
-			localStorage.setItem("playlistMetadata", metadata);
-			localStorage.setItem("playlistTracks", currentPlaylist);
-			this.$router.push("Save");
+			if (this.isGuest === true) {
+				this.askGuestToConnect();
+			} else {
+				const metadata = JSON.stringify({
+					lowBPM: this.lowBPM,
+					highBPM: this.highBPM,
+					tracks: this.songCount,
+					duration: this.mixDuration,
+				});
+				const currentPlaylist = JSON.stringify(this.currentPlaylist);
+				localStorage.setItem("playlistMetadata", metadata);
+				localStorage.setItem("playlistTracks", currentPlaylist);
+				this.$router.push("Save");
+			}
 		},
 		updateUserInfo() {
 			this.$emit("updateUserInfo");
@@ -250,6 +266,9 @@ export default {
 		},
 		cancelEditor() {
 			this.editPlaylist = false;
+		},
+		askGuestToConnect() {
+			this.loginAlert = true;
 		},
 	},
 	watch: {
