@@ -19,8 +19,7 @@
 					createNewPlaylist = true;
 					addToPlaylist = false;
 				"
-				:block="!$vuetify.breakpoint.mdAndUp"
-				width="40%"
+				:block="!$vuetify.breakpoint.smAndUp"
 				>Create a new playlist</v-btn
 			></v-row
 		><v-row class="px-4">
@@ -31,12 +30,11 @@
 					addToPlaylist = true;
 					createNewPlaylist = false;
 				"
-				:block="!$vuetify.breakpoint.mdAndUp"
-				width="40%"
+				:block="!$vuetify.breakpoint.smAndUp"
 				>Add to an existing playlist</v-btn
 			>
 		</v-row>
-		<v-row v-if="createNewPlaylist" class="px-4 pb-8 pt-4">
+		<v-row v-if="createNewPlaylist" class="px-4 pb-8 pt-4" style="max-width: 500px">
 			<v-text-field autofocus label="Enter a name" hide-details="auto" v-model="playlistName" />
 		</v-row>
 		<v-row class="px-4" v-if="createNewPlaylist"
@@ -48,8 +46,7 @@
 						this.createPlaylistFromSelection().then(() => this.$router.push('/'));
 					}
 				"
-				:block="!$vuetify.breakpoint.mdAndUp"
-				width="40%"
+				:block="!$vuetify.breakpoint.smAndUp"
 				>Create</v-btn
 			>
 		</v-row>
@@ -66,13 +63,9 @@
 		<v-row>
 			<v-dialog v-model="confirm" :width="$vuetify.breakpoint.mdAndUp ? 400 : 300">
 				<v-card v-if="!loading" class="pb-8" style="overflow:hidden">
-					<v-row class="px-4 mt-1">
-						<v-spacer />
-						<v-btn icon @click="closeModal"><v-icon>mdi-close</v-icon></v-btn>
-					</v-row>
-					<v-card-title class="subtitle-1 no-word-break" v-if="!success">
+					<v-card-text class="no-word-break pt-6 body-1" v-if="!success">
 						Add {{ playlistMetadata.tracks }} tracks to {{ playlistToUpdate.name }}?
-					</v-card-title>
+					</v-card-text>
 					<v-card-title class="subtitle-1 no-word-break" v-if="success">
 						{{ duplicatesRemoved > 0 ? "Removed " + duplicatesRemoved + " duplicates." : null }}
 						{{ tracksAdded > 0 ? tracksAdded + " tracks added." : "0 tracks added." }}
@@ -130,7 +123,10 @@ export default {
 			let ownedPlaylists = [];
 			let userPlaylists = this.$attrs.userPlaylists.items;
 			for (let i = 0; i < userPlaylists.length; i++) {
-				if (userPlaylists[i].collaborative === true || userPlaylists[i].owner.id === this.$attrs.user.id) {
+				if (
+					!userPlaylists[i].hasOwnProperty("isLibrary") &&
+					(userPlaylists[i].collaborative === true || userPlaylists[i].owner.id === this.$attrs.user.id)
+				) {
 					ownedPlaylists.push(userPlaylists[i]);
 				}
 			}
