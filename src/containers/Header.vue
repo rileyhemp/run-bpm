@@ -8,8 +8,8 @@
 					<v-list-item @click="openSpotifyProfile">
 						<v-list-item-title>Connected as {{ this.$attrs.user.display_name }}</v-list-item-title>
 					</v-list-item>
-					<v-list-item @click="logout">
-						<v-list-item-title>Logout</v-list-item-title>
+					<v-list-item @click="this.$attrs.isGuest ? login : logout">
+						<v-list-item-title>{{ this.$attrs.isGuest ? "Login" : "Logout" }}</v-list-item-title>
 					</v-list-item>
 				</v-list>
 			</v-menu>
