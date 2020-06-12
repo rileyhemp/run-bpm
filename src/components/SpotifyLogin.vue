@@ -12,8 +12,8 @@ export default {
 				sessionData.isGuest = false;
 				localStorage.RunBPM = JSON.stringify(sessionData);
 				localStorage.removeItem("RunBPM");
-				document.cookie = this.source;
 			}
+			document.cookie = this.source;
 			this.$http
 				.get("http://localhost:3000/get-auth-url")
 				.then((data) => {
