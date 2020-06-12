@@ -41,6 +41,12 @@ app.get("/get-auth-url", function(req, res) {
 	res.send(authURL);
 });
 
+app.get("/get-guest-credentials", function(req, res) {
+	let credentials = spotifyApi.clientCredentialsGrant().then(function(data) {
+		res.send(data.body);
+	});
+});
+
 //Uses the authorization code to get access and refresh tokens
 app.get("/authorize", function(req, res) {
 	spotifyApi
@@ -62,17 +68,23 @@ function accessToken(user) {
 		if (user.expiresAt - new Date().getTime() > 0) {
 			resolve(user.accessToken);
 		} else {
-			//token is expired
-			api.setAccessToken(user.accessToken);
-			api.setRefreshToken(user.refreshToken);
-			api.refreshAccessToken()
-				.then((data) => {
+			if (user.refreshToken === null) {
+				api.clientCredentialsGrant(user.accessToken).then(function(data) {
 					resolve(data.body["access_token"]);
-				})
-				.catch((err) => reject("Could not refresh access token", err));
+				});
+			} else {
+				api.setAccessToken(user.accessToken);
+				api.setRefreshToken(user.refreshToken);
+				api.refreshAccessToken()
+					.then((data) => {
+						resolve(data.body["access_token"]);
+					})
+					.catch((err) => reject("Could not refresh access token", err));
+			}
 		}
 	});
 }
+
 function spotifyApiWithToken(token) {
 	const api = new SpotifyWebApi(credentials);
 	api.setAccessToken(token);

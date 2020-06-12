@@ -1,5 +1,5 @@
 <template>
-	<v-btn color="success" @click="authorizeSpotify" rounded class="px-6">Connect with Spotify</v-btn>
+	<v-btn color="success" width="230" @click="authorizeSpotify" rounded class="px-6 mb-4">Connect with Spotify</v-btn>
 </template>
 
 <script>
@@ -13,7 +13,6 @@ export default {
 					window.location.href = data.data;
 				})
 				.catch((err) => console.log(err));
-			//   this.$router.push("redirect");
 		},
 	},
 };

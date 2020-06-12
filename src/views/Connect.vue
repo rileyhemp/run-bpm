@@ -6,9 +6,11 @@
 					Create killer running playlists in seconds. Filter your music by tempo, energy level, danceability and more.
 				</p>
 
+				<spotify-login />
+				<guest-login />
 				<v-dialog v-model="dialog" max-width="500">
 					<template v-slot:activator="{ on }">
-						<v-btn color="blue-grey lighten-2" v-on="on" @click="e1 = 1" rounded class="px-6 mb-5">take a tour</v-btn>
+						<v-btn text v-on="on" width="230" @click="e1 = 1" rounded class="px-6 mb-4">take a tour</v-btn>
 					</template>
 					<v-card
 						><v-stepper v-model="e1" class="pb-8">
@@ -94,7 +96,6 @@
 						</v-stepper>
 					</v-card>
 				</v-dialog>
-				<spotify-login />
 			</div>
 		</div>
 	</v-container>
@@ -103,11 +104,13 @@
 <script>
 // @ is an alias to /src
 import SpotifyLogin from "../components/SpotifyLogin.vue";
+import GuestLogin from "../components/GuestLogin.vue";
 
 export default {
 	name: "Connect",
 	components: {
 		"spotify-login": SpotifyLogin,
+		"guest-login": GuestLogin,
 	},
 	data() {
 		return {
@@ -120,11 +123,11 @@ export default {
 			this.$http
 				.get(`http://localhost:3000/authorize?${window.location.search.split("?")[1]}`)
 				.then((res) => {
-					console.log("hi");
 					const credentials = {
 						accessToken: res.data.body["access_token"],
 						refreshToken: res.data.body["refresh_token"],
 						expiresAt: new Date().getTime() + 3000000,
+						isGuest: false,
 					};
 					localStorage.RunBPM = JSON.stringify(credentials);
 					this.$router.push("/");
@@ -135,12 +138,11 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .home-page {
 	background-image: url("../assets/runbpm-logo.png");
 	background-size: contain;
 	background-color: black;
-	background-position-y: 30%;
 	width: 100%;
 	margin: auto;
 	background-position-x: 52%;
@@ -150,6 +152,10 @@ export default {
 	flex-direction: column;
 	align-items: center;
 	position: relative;
+	background-position-y: 10%;
+	@media screen and (min-width: 768px) {
+		background-position-y: 30%;
+	}
 }
 .app-description {
 	max-width: 500px;

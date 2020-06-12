@@ -34,17 +34,15 @@
 		<router-view
 			:class="$vuetify.breakpoint.mdAndUp ? 'px-8' : null"
 			:userPlaylists="this.userPlaylists"
+			:isGuest="this.isGuest"
 			:CreatedPlaylists="this.CreatedPlaylists"
 			:userDevices="this.userDevices"
 			:user="this.userData"
 			:loading="this.loading"
-			:currentTrack="this.currentTrack"
 			:disableButtons="this.disableButtons"
 			v-bind="$attrs"
 			@updatePlaylists="updatePlaylists"
 			@updateUserInfo="getUserData"
-			@updateTrack="getCurrentTrack"
-			@updatePlayState="updatePlayState"
 			@loading="loading = true"
 		/>
 	</div>
@@ -53,7 +51,6 @@
 <script>
 import UserAvatar from "../components/UserAvatar";
 import HeaderVue from "../containers/Header.vue";
-import { getCurrentTrack, getTrackDetails, initTimer, updatePlayState } from "@/helpers/PlayerMethods";
 export default {
 	name: "Dashboard",
 	components: {
@@ -66,10 +63,7 @@ export default {
 			userPlaylists: Object,
 			CreatedPlaylists: Object,
 			userDevices: Object,
-			currentTrack: {
-				id: null,
-				isPlaying: false,
-			},
+			isGuest: Boolean,
 			disableButtons: false,
 			displaySaved: false,
 			loading: false,
@@ -82,30 +76,33 @@ export default {
 		},
 		getUserData() {
 			let userCredientials = JSON.parse(localStorage.RunBPM);
-			this.getCurrentTrack();
-			this.loading = true;
-			this.$http
-				.get("http://localhost:3000/get-user-data", {
-					params: {
-						credentials: localStorage.RunBPM,
-					},
-				})
-				.then((response) => {
-					this.userData = response.data.userData;
-					this.userPlaylists = response.data.userPlaylists;
-					this.userDevices = response.data.userDevices;
-					this.updatePlaylists();
-					userCredientials.accessToken = response.data.userCredentials.token;
-					userCredientials.expiresAt = response.data.userCredentials.expiresAt;
-					localStorage.RunBPM = JSON.stringify(userCredientials);
-				})
-				.catch((err) => {
-					//If access token throws an error, the server will request a new one.
-					userCredientials.accessToken = err.response.data;
-					localStorage.RunBPM = JSON.stringify(userCredientials);
-					//Retry with new access token
-					this.getUserData();
-				});
+			if (!userCredientials.isGuest) {
+				this.loading = true;
+				this.$http
+					.get("http://localhost:3000/get-user-data", {
+						params: {
+							credentials: localStorage.RunBPM,
+						},
+					})
+					.then((response) => {
+						this.userData = response.data.userData;
+						this.userPlaylists = response.data.userPlaylists;
+						this.userDevices = response.data.userDevices;
+						this.updatePlaylists();
+						userCredientials.accessToken = response.data.userCredentials.token;
+						userCredientials.expiresAt = response.data.userCredentials.expiresAt;
+						localStorage.RunBPM = JSON.stringify(userCredientials);
+					})
+					.catch((err) => {
+						//If access token throws an error, the server will request a new one.
+						userCredientials.accessToken = err.response.data;
+						localStorage.RunBPM = JSON.stringify(userCredientials);
+						//Retry with new access token
+						this.getUserData();
+					});
+			} else {
+				this.isGuest = true;
+			}
 		},
 		updatePlaylists() {
 			this.$http
@@ -126,10 +123,6 @@ export default {
 					console.log(err);
 				});
 		},
-		getCurrentTrack,
-		getTrackDetails,
-		initTimer,
-		updatePlayState,
 	},
 	mounted: function() {
 		if (Object.entries(this.userData).length === 0) {
