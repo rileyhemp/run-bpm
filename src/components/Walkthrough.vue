@@ -81,5 +81,8 @@ export default {
 			slide: 1,
 		};
 	},
+	mounted: function() {
+		this.slide = 1;
+	},
 };
 </script>

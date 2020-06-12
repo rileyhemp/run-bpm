@@ -1,18 +1,19 @@
 <template>
 	<v-container v-if="!this.redirect" class="fill-height d-flex text-center flex-column justify-center align-center px-10">
-		<div class="hero-image"></div>
+		<div class="hero-image" />
 		<div class="home">
+			<h1>Run BPM</h1>
 			<p class="subtitle-1 app-description">
 				Create killer running playlists in seconds. Filter your own music by tempo, energy level, danceability and more.
 			</p>
 
 			<spotify-login source="/" />
 			<guest-login />
-			<v-dialog v-model="dialog" max-width="500">
+			<v-dialog v-model="dialog" :max-width="500">
 				<template v-slot:activator="{ on }">
-					<v-btn text v-on="on" width="230" @click="slide = 1" rounded class="px-6 mb-4">take a tour</v-btn>
+					<v-btn text v-on="on" width="230" @click="walkthrough = true" rounded class="px-6 mb-4">take a tour</v-btn>
 				</template>
-				<walkthrough />
+				<walkthrough v-if="dialog" />
 			</v-dialog>
 		</div>
 	</v-container>
@@ -35,6 +36,7 @@ export default {
 		return {
 			dialog: false,
 			redirect: false,
+			walkthrough: false,
 		};
 	},
 	mounted: function() {
@@ -64,44 +66,43 @@ export default {
 </script>
 
 <style lang="scss">
-.hero-image {
-	background-image: url("../assets/runbpm-logo.png");
-	background-size: contain;
-	background-color: black;
-	width: 100%;
-	margin: auto;
-	background-position-x: 50%;
-	height: 90vh;
-	max-height: 650px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	position: relative;
-	background-position-y: 10%;
-	position: absolute;
-	top: 0;
+h1 {
+	color: rgb(247, 245, 236);
+	font-size: 3.5rem;
+	font-weight: 900;
+	text-transform: uppercase;
+	@media screen and (min-width: 500px) {
+		font-size: 5rem;
+	}
+	@media screen and (min-width: 660px) {
+		font-size: 6rem;
+	}
+	@media screen and (min-width: 900px) {
+		font-size: 7rem;
+	}
 }
 .app-description {
 	max-width: 500px;
-	/* padding-top: 50%; */
 }
 .home {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	position: absolute;
-	bottom: 10%;
-	@media screen and (min-height: 600px) {
-		bottom: 25%;
-	}
+	z-index: 2;
 }
-
-@media screen and (min-width: 768px) {
-	.hero-image {
-		background-image: url("../assets/runbpm-logo-desktop.png");
-		flex-wrap: nowrap !important;
-		background-size: 100vh;
+.hero-image {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	background-image: url("../assets/runbpm-logo-new.png");
+	background-size: contain;
+	background-position-y: 25%;
+	transform: scale(1.2) translateX(5%);
+	@media screen and (min-width: 768px) {
+		background-position-y: 40%;
 	}
 }
 </style>
