@@ -18,13 +18,14 @@ const scopes = [
 	"user-read-playback-state",
 	"user-read-currently-playing",
 	"user-modify-playback-state",
+	"user-library-read",
 ];
 
 const spotifyApi = new SpotifyWebApi(credentials);
 
 const allowCrossDomain = function(req, res, next) {
-	res.header("Access-Control-Allow-Origin", "https://runbpm.app");
-	// res.header("Access-Control-Allow-Origin", "*");
+	// res.header("Access-Control-Allow-Origin", "https://runbpm.app");
+	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Methods", "*");
 	res.header("Access-Control-Allow-Headers", "*");
 	next();
@@ -48,7 +49,7 @@ app.get("/authorize", function(req, res) {
 			res.send(data);
 		})
 		.catch(function(err) {
-			res.status(401).send(error);
+			res.status(err.statusCode).send(err);
 		});
 });
 
@@ -78,7 +79,7 @@ function spotifyApiWithToken(token) {
 	return api;
 }
 
-//Get user profile information, playlists, and connected devices.
+//Get user profile information, playlists, and library.
 //This endpoint also validates the access token.
 app.get("/get-user-data", async function(req, res) {
 	const token = await accessToken(req.query.credentials);
@@ -91,23 +92,25 @@ app.get("/get-user-data", async function(req, res) {
 			api.getUserPlaylists(userData.id)
 				.then((data) => {
 					let userPlaylists = data.body;
-					//Get a list of active devices
-					api.getMyDevices()
-						.then((data) => {
-							let userDevices = data.body;
-							//Return data to front end, including current access token
-							res.send({
-								userData: userData,
-								userPlaylists: userPlaylists,
-								userDevices: userDevices,
-								userCredentials: {
-									token: token,
-									//Access tokens technically expire after one hour, but we'll request a new one early just to be safe.
-									expiresAt: new Date().getTime() + 3000000,
-								},
-							});
-						})
-						.catch((err) => res.status(err.statusCode).send(err));
+					api.getMySavedTracks().then((data) => {
+						let savedTracks = {
+							name: "Your Saved Tracks",
+							isLibrary: true,
+							tracks: data.body.items.map((t) => {
+								return t.track;
+							}),
+						};
+						userPlaylists.items.unshift(savedTracks);
+						res.send({
+							userData: userData,
+							userPlaylists: userPlaylists,
+							userCredentials: {
+								token: token,
+								expiresAt: new Date().getTime() + 3000000,
+							},
+						});
+					});
+					// Return data to front end, including current access token
 				})
 				.catch((err) => res.status(err.statusCode).send(err));
 		})
@@ -148,7 +151,7 @@ app.get("/playlists", function(req, res) {
 		.then((response) => {
 			res.send(response);
 		})
-		.catch((err) => res.send(err));
+		.catch((err) => res.status(err.statusCode).send(err));
 });
 
 //Add a new playlist to Run BPM's database
@@ -160,7 +163,7 @@ app.post("/playlists", async (req, res) => {
 		.then((response) => {
 			res.status(201).send(response);
 		})
-		.catch((err) => res.send("Something went wrong. Error: " + err));
+		.catch((err) => res.status(err.statusCode).send(err));
 });
 
 app.put("/playlists", async (req, res) => {
@@ -172,7 +175,7 @@ app.put("/playlists", async (req, res) => {
 		.then(() => {
 			res.status(201).send();
 		})
-		.catch((err) => res.send(err));
+		.catch((err) => res.status(err.statusCode).send(err));
 });
 
 //Delete a playlist
@@ -188,9 +191,9 @@ app.delete("/playlists", async (req, res) => {
 				.then((response) => {
 					res.status(204).send();
 				})
-				.catch((err) => res.send(err));
+				.catch((err) => res.status(err.statusCode).send(err));
 		})
-		.catch((err) => res.send(err));
+		.catch((err) => res.status(err.statusCode).send(err));
 });
 
 //Get audio features for many tracks
@@ -209,7 +212,7 @@ app.post("/analyze-tracks", async (req, res) => {
 							.then((data) => {
 								resolve(data.body.audio_features);
 							})
-							.catch((err) => reject(err));
+							.catch((err) => res.status(err.statusCode).send(err));
 					})
 				);
 			}
@@ -220,9 +223,9 @@ app.post("/analyze-tracks", async (req, res) => {
 						audioFeatures: _.flatten(response),
 					}); //used to have 'deets ?' taking out, see if it breaks anything.
 				})
-				.catch((err) => res.send(err));
+				.catch((err) => res.status(err.statusCode).send(err));
 		})
-		.catch((err) => res.send(err));
+		.catch((err) => res.status(err.statusCode).send(err));
 });
 
 //Get audio features for indevidual tracks
@@ -233,7 +236,7 @@ app.get("/analyze-tracks", async (req, res) => {
 		.then((response) => {
 			res.send(response.body);
 		})
-		.catch((err) => res.send(err));
+		.catch((err) => res.status(err.statusCode).send(err));
 });
 
 //Control playback
@@ -246,22 +249,22 @@ app.put("/player", async (req, res) => {
 		case "play":
 			api.play(options)
 				.then((response) => res.status(response.statusCode).send())
-				.catch((error) => res.status(error.statusCode).send(error));
+				.catch((err) => res.status(err.statusCode).send(err));
 			break;
 		case "pause":
 			api.pause(options)
 				.then((response) => res.status(response.statusCode).send())
-				.catch((error) => res.status(error.statusCode).send(error));
+				.catch((err) => res.status(err.statusCode).send(err));
 			break;
 		case "next":
 			api.skipToNext()
 				.then((response) => res.status(response.statusCode).send())
-				.catch((error) => res.status(error.statusCode).send(error));
+				.catch((err) => res.status(err.statusCode).send(err));
 			break;
 		case "previous":
 			api.skipToPrevious()
 				.then((response) => res.status(response.statusCode).send())
-				.catch((error) => res.status(error.statusCode).send(error));
+				.catch((err) => res.status(err.statusCode).send(err));
 			break;
 	}
 });
@@ -276,7 +279,7 @@ app.get("/player", async (req, res) => {
 			res.send(response.body);
 		})
 		.catch((err) => {
-			res.send(err);
+			res.status(err.statusCode).send(err);
 		});
 });
 
@@ -292,11 +295,10 @@ function addToPlaylist(playlistID, trackIDs, api) {
 		for (let i = 0; i < chunkedTrackIDs.length; i++) {
 			addedTracks.push(
 				new Promise((resolve, reject) => {
-					api.addTracksToPlaylist(playlistID, chunkedTrackIDs[i])
-						.then((data) => {
-							resolve();
-						})
-						.catch((err) => reject(err));
+					api.addTracksToPlaylist(playlistID, chunkedTrackIDs[i]).then((data) => {
+						resolve();
+					});
+					res.status(err.statusCode).send(err);
 				})
 			);
 		}
@@ -304,7 +306,7 @@ function addToPlaylist(playlistID, trackIDs, api) {
 			.then(() => {
 				resolve();
 			})
-			.catch((err) => reject(err.message));
+			.catch((err) => res.status(err.statusCode).send(err));
 	});
 }
 
@@ -332,7 +334,7 @@ function createPlaylist(userID, playlistName, trackIDs, metadata, api, image) {
 							.then((data) => {
 								resolve();
 							})
-							.catch((err) => reject(err));
+							.catch((err) => res.status(err.statusCode).send(err));
 					})
 				);
 			}
@@ -344,9 +346,9 @@ function createPlaylist(userID, playlistName, trackIDs, metadata, api, image) {
 						.then((response) => {
 							resolve();
 						})
-						.catch((err) => reject(err.message));
+						.catch((err) => res.status(err.statusCode).send(err));
 				})
-				.catch((err) => reject(err.message));
+				.catch((err) => res.status(err.statusCode).send(err));
 
 			// 	api.addTracksToPlaylist(playlistID, getURIsFromIDs(trackIDs))
 			// 		.then(response => {
@@ -372,26 +374,40 @@ function getPlaylistTracks(playlists, api) {
 		for (let i = 0; i < playlists.length; i++) {
 			playlistDetails.push(
 				new Promise((resolve, reject) => {
-					const playlistLength = playlists[i].tracks.total;
-					const passes = Math.floor(playlistLength / 100 + 1);
-					const arr = [];
-					for (let j = 0; j < passes; j++) {
-						let offset = j * 100;
-						arr.push(
-							new Promise((resolve, reject) => {
-								api.getPlaylistTracks(playlists[i].id, { offset: offset })
-									.then(function(data) {
-										resolve(data.body.items);
-									})
-									.catch((err) => reject(err));
+					//If the playlist is the users saved tracks
+					if (playlists[i].isLibrary) {
+						//Puts the tracks in the same format as the playlists
+						resolve(
+							playlists[i].tracks.map((t) => {
+								let obj = {
+									track: t,
+								};
+								return obj;
 							})
 						);
+					} else {
+						const playlistLength = playlists[i].tracks.total;
+						const passes = Math.floor(playlistLength / 100 + 1);
+						const arr = [];
+						//Multiple passes for playlists over 100 tracks
+						for (let j = 0; j < passes; j++) {
+							let offset = j * 100;
+							arr.push(
+								new Promise((resolve, reject) => {
+									api.getPlaylistTracks(playlists[i].id, { offset: offset })
+										.then(function(data) {
+											resolve(data.body.items);
+										})
+										.catch((err) => res.status(err.statusCode).send(err));
+								})
+							);
+						}
+						Promise.all(arr)
+							.then((data) => {
+								resolve(_.flatten(data));
+							})
+							.catch((err) => res.status(err.statusCode).send(err));
 					}
-					Promise.all(arr)
-						.then((data) => {
-							resolve(_.flatten(data));
-						})
-						.catch((err) => reject(err));
 				})
 			);
 		}
@@ -399,7 +415,7 @@ function getPlaylistTracks(playlists, api) {
 			.then((data) => {
 				resolve(_.flatten(data));
 			})
-			.catch((err) => reject(err));
+			.catch((err) => res.status(err.statusCode).send(err));
 	});
 }
 

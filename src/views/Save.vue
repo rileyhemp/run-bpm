@@ -156,7 +156,7 @@ export default {
 			return new Promise((resolve, reject) => {
 				//Get a list of tracks in the target playlist
 				this.$http
-					.put(`https://d2ob92q3jfbd5e.cloudfront.net/playlist-details`, {
+					.put(`http://localhost:3000/playlist-details`, {
 						data: {
 							playlist: this.playlistToUpdate,
 							credentials: localStorage.RunBPM,
@@ -169,7 +169,7 @@ export default {
 						const trackIDs = getIDsFromDetails(this.playlistTracks);
 						const uniqueTracks = _.difference(trackIDs, targetPlaylistTrackIDs);
 						this.$http
-							.put("https://d2ob92q3jfbd5e.cloudfront.net/playlists", {
+							.put("http://localhost:3000/playlists", {
 								data: {
 									trackIDs: uniqueTracks,
 									targetPlaylist: this.playlistToUpdate,
@@ -193,7 +193,7 @@ export default {
 				this.$emit("loading");
 				// Create the playlist
 				this.$http
-					.post("https://d2ob92q3jfbd5e.cloudfront.net/playlists", {
+					.post("http://localhost:3000/playlists", {
 						data: {
 							userID: this.$attrs.user.id,
 							trackIDs: trackIDs,

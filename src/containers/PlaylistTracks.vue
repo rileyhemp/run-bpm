@@ -158,7 +158,7 @@ export default {
 		return {
 			selectedTracks: [],
 			visibleFilters: [],
-			selectedFilters: [0, 1, 2],
+			selectedFilters: [1, 2],
 			available_filters: [
 				{ text: "Duration", value: 0, id: "duration_ms" },
 				{ text: "Tempo (doubletime)", value: 1, id: "doubletime" },
@@ -189,7 +189,7 @@ export default {
 	},
 	computed: {
 		maxFilters: function() {
-			return this.$vuetify.breakpoint.xsOnly
+			return this.$vuetify.breakpoint.smAndDown
 				? 2
 				: this.$vuetify.breakpoint.mdAndDown
 				? 3
@@ -451,8 +451,8 @@ export default {
 		document.querySelector(".select-filters").addEventListener("click", this.menuFix);
 		this.getDuplicates();
 		this.enforceMaxFilters();
-		for (let i = 0; i < this.maxFilters - this.selectedFilters.length + 1; i++) {
-			this.selectedFilters.push(3 + i);
+		for (let i = 0; i < this.maxFilters - this.selectedFilters.length; i++) {
+			this.selectedFilters.push(2 + i);
 		}
 	},
 	updated: function() {

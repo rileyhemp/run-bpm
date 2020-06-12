@@ -2,8 +2,8 @@ export function getCurrentTrack() {
 	clearInterval(this.counter);
 	this.disableButtons = false;
 	this.$http
-		.get(`https://d2ob92q3jfbd5e.cloudfront.net/player?q=current&credentials=${localStorage.RunBPM}`)
-		.then(response => {
+		.get(`http://localhost:3000/player?q=current&credentials=${localStorage.RunBPM}`)
+		.then((response) => {
 			this.currentTrack.id = response.data;
 			this.currentTrack.isPlaying = response.data.is_playing;
 			if (response.data.item) {
@@ -14,10 +14,10 @@ export function getCurrentTrack() {
 				this.initTimer(response.data.progress_ms, response.data.item.duration_ms);
 			}
 		})
-		.catch(err => console.log(err));
+		.catch((err) => console.log(err));
 }
 export function getTrackDetails(id) {
-	this.$http.get(`https://d2ob92q3jfbd5e.cloudfront.net/analyze-tracks?id=${id}&credentials=${localStorage.RunBPM}`).then(response => {
+	this.$http.get(`http://localhost:3000/analyze-tracks?id=${id}&credentials=${localStorage.RunBPM}`).then((response) => {
 		this.currentTrack.audioFeatures = response.data;
 	});
 }
@@ -49,33 +49,33 @@ export function updatePlayState(event) {
 	}
 	const play = () => {
 		this.$http
-			.put(`https://d2ob92q3jfbd5e.cloudfront.net/player?action=play&credentials=${localStorage.RunBPM}`, {
+			.put(`http://localhost:3000/player?action=play&credentials=${localStorage.RunBPM}`, {
 				data: {
-					...options
-				}
+					...options,
+				},
 			})
 			.then(() => this.getCurrentTrack())
-			.catch(error => console.log(error));
+			.catch((error) => console.log(error));
 	};
 	const pause = () => {
 		this.$http
-			.put(`https://d2ob92q3jfbd5e.cloudfront.net/player?action=pause&credentials=${localStorage.RunBPM}`)
+			.put(`http://localhost:3000/player?action=pause&credentials=${localStorage.RunBPM}`)
 			.then(() => this.getCurrentTrack())
-			.catch(error => console.log(error));
+			.catch((error) => console.log(error));
 	};
 	const previous = () => {
 		this.$http
-			.put(`https://d2ob92q3jfbd5e.cloudfront.net/player?action=previous&credentials=${localStorage.RunBPM}`, {
-				data: this.options
+			.put(`http://localhost:3000/player?action=previous&credentials=${localStorage.RunBPM}`, {
+				data: this.options,
 			})
 			.then(() => this.getCurrentTrack())
-			.catch(error => console.log(error));
+			.catch((error) => console.log(error));
 	};
 	const next = () => {
 		this.$http
-			.put(`https://d2ob92q3jfbd5e.cloudfront.net/player?action=next&credentials=${localStorage.RunBPM}`)
+			.put(`http://localhost:3000/player?action=next&credentials=${localStorage.RunBPM}`)
 			.then(() => this.getCurrentTrack())
-			.catch(error => console.log(error));
+			.catch((error) => console.log(error));
 	};
 	switch (event.state) {
 		case "play":

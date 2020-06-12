@@ -118,8 +118,9 @@ export default {
 	mounted: function() {
 		if (window.location.search.length > 0) {
 			this.$http
-				.get(`https://d2ob92q3jfbd5e.cloudfront.net/authorize?${window.location.search.split("?")[1]}`)
+				.get(`http://localhost:3000/authorize?${window.location.search.split("?")[1]}`)
 				.then((res) => {
+					console.log("hi");
 					const credentials = {
 						accessToken: res.data.body["access_token"],
 						refreshToken: res.data.body["refresh_token"],

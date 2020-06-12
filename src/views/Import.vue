@@ -9,14 +9,6 @@
 			<p class="subtitle-1">Step 1 / 3</p>
 			<p class="subtitle-1 pl-2">Import music</p>
 		</v-row>
-		<!-- <v-row class="my-2 mx-2">
-			<p class="body-2">
-				Select one or more playlists to import and analyze. Playlists will be combined in the next step.
-			</p>
-		</v-row>
-		<v-row class="mx-2">
-			<p class="body-2">For best results, select at least 2 hours of music.</p>
-		</v-row> -->
 		<v-row class="d-flex align-center mx-1">
 			<v-text-field v-model="query" class="mx-2" append-icon="mdi-magnify" @keydown="handleKeydown" @click:append="doSearch">
 				<template v-slot:label>Search playlists</template>
@@ -77,7 +69,7 @@ export default {
 		doSearch() {
 			if (this.query.length > 0) {
 				this.$http
-					.get(`https://d2ob92q3jfbd5e.cloudfront.net/search-playlists`, {
+					.get(`http://localhost:3000/search-playlists`, {
 						params: {
 							q: this.query,
 							credentials: localStorage.RunBPM,
@@ -94,5 +86,4 @@ export default {
 		this.$emit("updateUserInfo");
 	},
 };
-//
 </script>

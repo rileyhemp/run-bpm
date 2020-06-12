@@ -7,7 +7,7 @@ export default {
 	methods: {
 		authorizeSpotify: function() {
 			this.$http
-				.get("https://d2ob92q3jfbd5e.cloudfront.net/get-auth-url")
+				.get("http://localhost:3000/get-auth-url")
 				.then((data) => {
 					console.log(data);
 					window.location.href = data.data;

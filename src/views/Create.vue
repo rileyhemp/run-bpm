@@ -271,7 +271,7 @@ export default {
 			setTimeout(10);
 			//Gets audio features for selected tracks
 			this.$http
-				.post("https://d2ob92q3jfbd5e.cloudfront.net/analyze-tracks", {
+				.post("http://localhost:3000/analyze-tracks", {
 					data: {
 						playlists: playlists,
 						credentials: localStorage.RunBPM,
