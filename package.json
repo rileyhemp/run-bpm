@@ -13,7 +13,7 @@
 		"d3": "^3.5.17",
 		"gsap": "^3.2.6",
 		"jsonwebtoken": "^8.5.1",
-		"lodash": "^4.17.15",
+		"lodash": "^4.17.19",
 		"register-service-worker": "^1.7.1",
 		"spotify-web-api-node": "^4.0.0",
 		"sqlite3": "^4.1.1",
